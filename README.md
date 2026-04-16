@@ -1,2 +1,3 @@
 # JustVibing34.github.io
-A algae cleaning game
+An algae cleaning game
+### Remember to download both files, or the background won't work.
