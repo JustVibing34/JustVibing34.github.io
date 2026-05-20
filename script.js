@@ -4,16 +4,22 @@
 
 // ─── STAT DEFINITIONS ───────────────────────
 const STAT_DEFS = [
-  { key: 'capitalStability',    label: 'Capital Stability',    type: 'good' },
-  { key: 'colonyLoyalty',       label: 'Colony Loyalty',       type: 'good' },
-  { key: 'militaryReadiness',   label: 'Military Readiness',   type: 'good' },
-  { key: 'economicBalance',     label: 'Economic Balance',     type: 'good' },
-  { key: 'religiousTension',    label: 'Religious Tension',    type: 'bad'  },
-  { key: 'publicTrust',         label: 'Public Trust',         type: 'good' },
-  { key: 'medicalCapacity',     label: 'Medical Capacity',     type: 'good' },
-  { key: 'foreignThreat',       label: 'Foreign Threat',       type: 'bad'  },
-  { key: 'councilSupport',      label: 'Council Support',      type: 'good' },
-  { key: 'rebelRadicalization', label: 'Rebel Radicalization', type: 'bad'  },
+  // G — Geography (coastal routes, naval position)
+  { key: 'militaryReadiness',   label: 'Coastal Defense',      grapes: 'G', grapesLabel: 'Geography',   type: 'good' },
+  { key: 'foreignThreat',       label: 'Foreign Threat',       grapes: 'G', grapesLabel: 'Geography',   type: 'bad'  },
+  // R — Religion (faith tensions, marginalized communities)
+  { key: 'religiousTension',    label: 'Religious Tension',    grapes: 'R', grapesLabel: 'Religion',    type: 'bad'  },
+  // A — Achievement (medical corps, hospitals)
+  { key: 'medicalCapacity',     label: 'Medical Capacity',     grapes: 'A', grapesLabel: 'Achievement', type: 'good' },
+  // P — Politics (centralized government, council, colonies)
+  { key: 'capitalStability',    label: 'Capital Stability',    grapes: 'P', grapesLabel: 'Politics',    type: 'good' },
+  { key: 'councilSupport',      label: 'Council Support',      grapes: 'P', grapesLabel: 'Politics',    type: 'good' },
+  { key: 'colonyLoyalty',       label: 'Colony Loyalty',       grapes: 'P', grapesLabel: 'Politics',    type: 'good' },
+  // E — Economics (trade goods, tribute, harbor revenue)
+  { key: 'economicBalance',     label: 'Economic Balance',     grapes: 'E', grapesLabel: 'Economics',   type: 'good' },
+  // S — Social (merit class, public trust, radicalization)
+  { key: 'publicTrust',         label: 'Public Trust',         grapes: 'S', grapesLabel: 'Social',      type: 'good' },
+  { key: 'rebelRadicalization', label: 'Rebel Radicalization', grapes: 'S', grapesLabel: 'Social',      type: 'bad'  },
 ];
 
 const INITIAL_STATS = {
@@ -37,9 +43,13 @@ const SCENES = [
     progress: '1 / 7',
     title:    "The Storm's Legacy",
     body: [
-      'Three weeks since the Black Tide Storm made landfall at Veyra. The harbor district is still submerged. Grain stores are destroyed. Sixty percent of Veyra\'s olive groves — the colony\'s primary tribute commodity — are gone. Governor Dresh Fael sends word by fast courier: <strong>Veyra cannot pay tribute</strong>. Not this season. Perhaps not next.',
-      'From the watchtower at Cape Dros, the signal fires burn red: thirty Marenic warships have been spotted on the horizon. They are not attacking. They are <em>waiting</em>.',
-      'The imperial council meets in emergency session. They are watching you — the Crisis Strategist who rose through merit, not blood, to sit at this table. Some of them believe you will crack. Prove them wrong.',
+      'Three weeks since the Black Tide Storm made landfall at Veyra. The harbor district is submerged. Grain stores are gone. Sixty percent of the colony\'s olive groves — the primary tribute commodity — are destroyed. Governor Dresh Fael sends word: <strong>Veyra cannot pay tribute</strong>. Not this season. Perhaps not next.',
+      'From the watchtower at Cape Dros, signal fires burn red: thirty Marenic warships hold position on the horizon. They are not attacking. They are <em>waiting</em>. The council meets in emergency session. They are watching you — the Strategist who rose without noble blood. Prove them wrong.',
+    ],
+    lore: [
+      { g: 'G', text: 'Veyra\'s deep-water harbor is the empire\'s only large port in a 300-league coastal stretch. The watchtower relay at Cape Dros transmits signals to Aurelion in under two hours via signal-fire chains.' },
+      { g: 'E', text: 'Iliatania\'s trade exports include sugarcane, olive oil, leather, weapons, medicine, and timber. Veyra\'s olive harvest alone accounts for 18% of southern tribute revenue.' },
+      { g: 'A', text: 'Before the storm, Veyra housed the empire\'s second-largest hospital complex — part of a state-funded medical system established after the Great Fever of 312.' },
     ],
     choices: [
       {
@@ -70,6 +80,18 @@ const SCENES = [
         consequence: 'The commission departs. In Veyra, the wait is read as cold indifference. Governor Fael\'s moderating influence weakens as radical voices ask why the empire sends accountants instead of food. The Marenic ships are still on the horizon.',
         changes: { councilSupport: 8, colonyLoyalty: -12, religiousTension: 8, rebelRadicalization: 10, publicTrust: -5 },
       },
+      {
+        letter: 'E',
+        label:  'Use the highland supply routes — send aid through the interior roads, invisible to Marenic naval observation.',
+        tip:    'Strategic. Veyra receives help without revealing imperial movement to the watching fleet.',
+        consequence: 'The highland route is slower but invisible to Marenic scouts. When the first supply wagon arrives in Veyra three days late, it carries more than food — it carries proof that Iliatania knows how to move without being seen. Maren\'s fleet holds position, uncertain what just happened.',
+        changes: { colonyLoyalty: 12, publicTrust: 7, medicalCapacity: 6, foreignThreat: -4, economicBalance: -7 },
+      },
+    ],
+    advisors: [
+      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Thirty warships do not wait — they position. Show Maren that entering Iliatanian waters carries a price. Every hour we delay is an hour they read as permission.' },
+      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'Verify the damage before committing treasury resources. Every coin dispatched without audit is a coin the council cannot trace. Compassion is not the enemy — unverified compassion is.' },
+      { name: 'High Priest Orryn',  role: 'Dominant Faith',    icon: '✦', grapes: 'R', dialogue: 'The Temple of the Meridian Sun supports a measured gesture of care for Veyra\'s faithful. But do not let Savra Olan use our mercy as a stage for her movement.' },
     ],
   },
 
@@ -79,9 +101,13 @@ const SCENES = [
     progress: '2 / 7',
     title:    'Accounting for Ruin',
     body: [
-      'The reports are in. Veyra lost 60% of its harvest, three hospitals flooded beyond use, and fourteen thousand civilians displaced. Governor Fael formally requests a <strong>two-year tribute postponement</strong>. He is measured and deferential in his phrasing. His deputy, Savra Olan — a firebrand from Veyra\'s marginalized faith — is not at the meeting. That absence worries your analysts.',
-      'The council is split. Finance Minister Caeldris argues that a postponement sets a precedent every colony will exploit. Admiral Vath says Veyra\'s harbor is too strategically important to alienate. High Priest Orryn — representing the dominant faith — says nothing. <em>His silence costs something too.</em>',
-      'You have the emperor\'s ear. What you recommend will be implemented.',
+      'The reports are in: 60% of the harvest gone, three hospitals flooded, fourteen thousand displaced. Governor Fael requests a <strong>two-year tribute postponement</strong> — measured, deferential. His deputy Savra Olan, a firebrand of the marginalized faith, was not at the meeting. <em>That absence worries your analysts.</em>',
+      'The council is split. Finance Minister Caeldris warns of precedent. Admiral Vath says the harbor is too vital to alienate. High Priest Orryn says nothing — and his silence costs something too. You have the emperor\'s ear. What you recommend will be implemented.',
+    ],
+    lore: [
+      { g: 'P', text: 'The Imperial Council operates by centralized consensus — the emperor holds final authority, but no major policy survives without council majority. Finance, War, and the High Priest hold the most influence.' },
+      { g: 'S', text: 'Iliatania\'s merit system allows talented civilians to rise across class lines. You, the Crisis Strategist, are its product — selected over noble-born candidates by the emperor\'s own hand.' },
+      { g: 'E', text: 'Emergency tribute suspensions historically take 2-3 seasons before neighboring colonies request similar treatment. Finance Minister Caeldris has refused three such requests in the past decade.' },
     ],
     choices: [
       {
@@ -112,6 +138,18 @@ const SCENES = [
         consequence: 'The proposal takes weeks to draft. In the interim, Maren moves two ships closer to shore. But when the compact is announced, it is welcomed across half the empire\'s colonies. Minister Caeldris resigns in protest. You must now manage the council without her.',
         changes: { colonyLoyalty: 20, publicTrust: 15, economicBalance: -10, councilSupport: -15, rebelRadicalization: -10, foreignThreat: 5 },
       },
+      {
+        letter: 'E',
+        label:  'Accept the postponement, but require Veyra to provide sailors and harbor labor — turning maritime skill into imperial military value instead of coin.',
+        tip:    'Creative compromise. Uses what Veyra has rather than what it lacks.',
+        consequence: 'Veyra\'s fishermen — with nothing else to offer — receive imperial commissions and rank. Governor Fael calls it the most inventive proposal the empire has ever sent. The arrangement costs tribute but builds the fleet. Minister Caeldris calls it dangerous precedent. Admiral Vath calls it a gift.',
+        changes: { colonyLoyalty: 15, militaryReadiness: 10, economicBalance: -8, councilSupport: -5, publicTrust: 8 },
+      },
+    ],
+    advisors: [
+      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Veyra\'s harbor is not a line item. Lose it to Maren\'s offer and we spend a decade trying to reclaim what we handed away. What you spend on the colony now, you recover in strategic positioning.' },
+      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'A full postponement enters every colony\'s ledger within a week. I can find relief — I cannot find a structure that does not set precedent. Whatever we offer must be bounded, named, and time-limited.' },
+      { name: 'High Priest Orryn',  role: 'Dominant Faith',    icon: '✦', grapes: 'R', dialogue: 'Savra Olan\'s absence from this meeting is the most important fact in that report. Whatever you decide today, she is watching and will act on it. Factor her into the calculus.' },
     ],
   },
 
@@ -121,9 +159,13 @@ const SCENES = [
     progress: '3 / 7',
     title:    'The Weight of One Ward',
     body: [
-      'Veyra\'s central hospital holds 400 beds. It now holds 1,100 people. Fever spreads through the outer wards. The imperial medical team — twelve doctors, three surgeons — has enough medicine to treat perhaps 300 serious cases. In the queue are soldiers, imperial administrators, Veyran civilians, and priests of the marginalized faith who arrived with their own sick.',
-      'Healer Tessyn, who leads the local Veyran faith community, approaches your envoy. She has <strong>120 trained healers</strong> ready to work. Her methods differ from imperial medicine, but her mortality rates in the outer villages are comparable to your doctors. She asks to be integrated into the response. She asks, also, for <em>official recognition of her guild\'s medical authority</em>.',
-      'The imperial doctors are uncomfortable. The council will be watching what you decide here.',
+      'Veyra\'s central hospital holds 400 beds. It now holds 1,100 people. Fever spreads through the outer wards. The imperial medical team has medicine for perhaps 300 serious cases. Soldiers, administrators, civilians, and marginalized-faith priests all wait in the same queue.',
+      'Healer Tessyn approaches your envoy. She has <strong>120 trained healers</strong> ready to work — with mortality rates comparable to your surgeons. She asks to be integrated. She also asks for <em>official recognition of her guild\'s medical authority</em>. The imperial doctors are uncomfortable. The council will be watching.',
+    ],
+    lore: [
+      { g: 'A', text: 'The Imperial Medical Corps was founded after the Great Fever of 312 and expanded under the current emperor\'s grandmother, who made physician training state-funded. Iliatania\'s epidemic mortality rates are among the lowest in the known world.' },
+      { g: 'R', text: 'There is one dominant state faith — the Temple of the Meridian Sun. At least four other communities exist within the empire, granted nominal tolerance but no official status or legal protection.' },
+      { g: 'S', text: 'Healer Tessyn\'s guild practices a tradition older than the empire — plant-based, community-embedded, patient-paced. Its documented success in fever cases matches imperial surgery. It simply has no seal.' },
     ],
     choices: [
       {
@@ -154,6 +196,18 @@ const SCENES = [
         consequence: 'A Veyran elder, a Marenic trader, and an imperial soldier are treated in the same ward on the same day. The symbolic power is not lost on anyone. It is the least controversial decision you have made — but the council demands to know why you did not prioritize the garrison.',
         changes: { publicTrust: 15, colonyLoyalty: 10, medicalCapacity: 10, religiousTension: -5, councilSupport: -5, militaryReadiness: -3 },
       },
+      {
+        letter: 'E',
+        label:  'Designate Veyra\'s hospital an Imperial Medical Center — request reinforcement surgeons from the northern cities and formally expand resources to the crisis.',
+        tip:    'Institutional. Elevates the colony\'s status and resources without the religious question.',
+        consequence: 'The designation arrives ahead of the surgeons. In Veyra, it is read as a signal that the empire considers the colony worth preserving, not just administering. Tessyn is not invited to the ceremony — but she is working in the wards when the new team arrives, and no one stops her.',
+        changes: { medicalCapacity: 20, colonyLoyalty: 12, publicTrust: 10, economicBalance: -10, councilSupport: 5 },
+      },
+    ],
+    advisors: [
+      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Treat the garrison first. A recovered army protects everyone else — including the civilians in the queue. Without military capacity, the hospital becomes irrelevant to the outcome.' },
+      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'The imperial medical standard exists because consistency saves lives and prevents liability. Integrating outside practitioners without protocol creates chaos in conditions that already have too much of it.' },
+      { name: 'Healer Tessyn',      role: 'Guild Leader',      icon: '✚', grapes: 'A', dialogue: 'I am not asking for a monument. I am asking to save the people already dying in the outer ward. My healers are already here. You need only say yes — and the dying stops faster.' },
     ],
   },
 
@@ -163,9 +217,13 @@ const SCENES = [
     progress: '4 / 7',
     title:    'The Weight of Prayers',
     body: [
-      'Savra Olan holds a public assembly. She claims, with documentation, that imperial aid shipments have consistently prioritized communities that follow the dominant faith. Her numbers are not invented. They are not wrong.',
-      'High Priest Orryn responds from Aurelion, calling her claims <em>"sedition dressed in theology."</em> He demands the imperial government suppress the movement and arrest its leaders.',
-      'In Veyra\'s temple district, three minor skirmishes have broken out between faith communities. No deaths yet. The Marenic emissary has reportedly been seen attending one of Tessyn\'s open ceremonies.',
+      'Savra Olan holds a public assembly. Her claim — backed by documentation — is that imperial aid has consistently favored communities of the dominant faith. Her numbers are not invented. They are not wrong.',
+      'High Priest Orryn calls it <em>"sedition dressed in theology"</em> and demands arrests. Three skirmishes have broken out in Veyra\'s temple district. No deaths yet. The Marenic emissary has reportedly attended one of Tessyn\'s open ceremonies.',
+    ],
+    lore: [
+      { g: 'R', text: 'The dominant faith controls 42% of charitable institutions in the empire\'s southern colonies. Three historically marginalized faiths — including Tessyn\'s — operate without legal protection in seven of twelve colonies.' },
+      { g: 'S', text: 'Savra Olan represents what the merit system was supposed to produce: a gifted organizer who rose through competence. The difference is she was never offered the path upward — so she built her own.' },
+      { g: 'G', text: 'Veyra\'s temple district occupies the colony\'s highest ground — built before the harbor, the market, or the garrison. Both faiths built their first structures there. The land itself is disputed history.' },
     ],
     choices: [
       {
@@ -196,6 +254,18 @@ const SCENES = [
         consequence: 'The inquiry is welcomed by Olan and condemned by Orryn. The process takes forty days. Its preliminary findings confirm unequal distribution. In Veyra, the crisis stabilizes slightly — people tend to trust a system that examines itself.',
         changes: { publicTrust: 18, religiousTension: -12, colonyLoyalty: 12, rebelRadicalization: -10, councilSupport: -12, economicBalance: -5 },
       },
+      {
+        letter: 'E',
+        label:  'Release the preliminary aid distribution data yourself — publicly — before Olan can weaponize it. Take control of the narrative through transparency.',
+        tip:    'Bold. Removes Olan\'s most powerful tool: the revelation.',
+        consequence: 'By publishing the figures first, you transform a scandal into a disclosure. The data is still damning, but it comes from the empire, not its critics. High Priest Orryn calls you naive. Olan calls you late. The public calls it a beginning. For now, that is enough.',
+        changes: { publicTrust: 15, religiousTension: -8, rebelRadicalization: -12, colonyLoyalty: 10, councilSupport: -8 },
+      },
+    ],
+    advisors: [
+      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Religious tensions become military problems faster than anyone anticipates. I have seen it in the eastern colonies. Resolve this before someone turns a torch into a siege, because sieges are expensive.' },
+      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'Whatever this is, contain it quickly and quietly. Public inquiries cost time and resources we do not have. A private settlement between Orryn and Olan costs far less.' },
+      { name: 'High Priest Orryn',  role: 'Dominant Faith',    icon: '✦', grapes: 'R', dialogue: 'Olan\'s assembly is sedition wearing a theological mask. The Temple has served this empire faithfully for generations. That record deserves protection — not scrutiny from an inquiry board.' },
     ],
   },
 
@@ -205,9 +275,13 @@ const SCENES = [
     progress: '5 / 7',
     title:    "The Empire's Promise",
     body: [
-      "A Marenic emissary, Ambassador Crevath, arrives in Veyra's half-flooded port with a formal offer in a sealed letter. The letter reaches you before Governor Fael even opens it. Your intelligence network is, at least, still functional.",
-      "Maren's offer: No tribute. Full religious freedom for all communities. Immediate reconstruction funding from Maren's treasury — more than Iliatania has sent in three years combined. In exchange: <strong>Veyra's harbor becomes a Marenic naval base</strong>. The colony becomes a Marenic protectorate, not an Iliatanian one.",
-      'You have seventy-two hours before Fael must respond. Crevath is charismatic, patient, and well-funded. Savra Olan has already granted him a private audience.',
+      "Ambassador Crevath arrives in Veyra's half-flooded port. His offer is sealed — but the letter reaches you before Fael opens it. Your intelligence network, at least, still functions.",
+      "Maren offers: no tribute, full religious freedom, and immediate reconstruction funding worth more than Iliatania has sent in three years. In exchange: <strong>Veyra's harbor becomes a Marenic naval base</strong>. You have seventy-two hours. Savra Olan has already granted Crevath a private audience.",
+    ],
+    lore: [
+      { g: 'P', text: 'The Marenic Empire governs colonies through appointed satraps, not governors — stronger central control but no colonial consultation. Maren can offer more because it has fewer constraints on its treasury.' },
+      { g: 'G', text: 'The Meridian Sea\'s southern corridor — Veyra\'s position — controls access to three regional trade routes. Whoever holds the harbor holds the key to the region\'s maritime economy for the next century.' },
+      { g: 'E', text: 'Without Veyra\'s harbor, Iliatanian trade vessels traveling between northern and southern colonies must reroute inland, adding 4-6 days of sailing time per voyage across hundreds of shipments annually.' },
     ],
     choices: [
       {
@@ -238,6 +312,18 @@ const SCENES = [
         consequence: "Fael does not respond for four days. When he does, it is not to you — it is to the emperor directly. He says the Crisis Strategist has offered Veyra a choice between starvation and war, while Maren offers reconstruction. He asks whether Iliatania's loyalty runs both directions.",
         changes: { colonyLoyalty: -25, councilSupport: 8, rebelRadicalization: 20, foreignThreat: 8, publicTrust: -15, religiousTension: 10 },
       },
+      {
+        letter: 'E',
+        label:  'Brief Governor Fael directly on Crevath\'s intelligence-gathering activities — show him that Maren wants a harbor, not a people.',
+        tip:    'Undercuts Maren without military escalation. Uses truth as the weapon.',
+        consequence: 'Fael spends six hours reviewing the intelligence before responding. His reply is careful: "The empire has shown me that Maren wants a harbor, not a people. I will need something in return for turning him away." A door has opened. It will cost something to walk through it — but it is open.',
+        changes: { foreignThreat: -8, colonyLoyalty: 8, councilSupport: 8, militaryReadiness: 3, publicTrust: 5, economicBalance: -5 },
+      },
+    ],
+    advisors: [
+      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Crevath is not an ambassador — he is a surveyor. Every meeting he holds in Veyra is a map of our vulnerabilities being sent back to Maren. Stop the access or accept the consequences.' },
+      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'Whatever Iliatania counter-offers must be immediate and concrete. Governor Fael is pragmatic — he will choose whoever makes the better real promise, not the better speech. Substance, not sentiment.' },
+      { name: 'High Priest Orryn',  role: 'Dominant Faith',    icon: '✦', grapes: 'R', dialogue: 'Formal religious protections for Veyra\'s communities undercuts Maren\'s strongest argument without costing us the harbor. It may be the least expensive strategic investment available to us right now.' },
     ],
   },
 
@@ -247,9 +333,13 @@ const SCENES = [
     progress: '6 / 7',
     title:    'Iron Water',
     body: [
-      "Sixteen Marenic warships have established a loose blockade across Veyra's harbor mouth. Imperial trade vessels are turned back without violence — for now. Veyra's fishing fleet cannot reach its grounds. The harbor economy is dying by degrees.",
-      "Admiral Vath presents the military council's position: <em>break the blockade by force or accept that Maren controls Veyra's lifeline.</em> The council is divided between those who want war and those who believe a naval battle risks destroying Iliatania's most important trade harbor in its own waters.",
-      "Your secret supply routes through the interior are still open — barely. And somewhere beneath all this, Savra Olan is meeting with Crevath again.",
+      "Sixteen Marenic warships form a loose blockade across Veyra's harbor mouth. Trade vessels are turned back without violence — for now. The fishing fleet hasn't left port in eleven days. The harbor economy is dying by degrees.",
+      "Admiral Vath says the choice is simple: <em>break the blockade by force or accept that Maren controls Veyra's lifeline.</em> The council is split between war and surrender. Your secret supply routes through the interior are still open — barely. Savra Olan is meeting with Crevath again.",
+    ],
+    lore: [
+      { g: 'G', text: 'Iliatania\'s highland interior roads — built during the Colonization Period — can move goods between Aurelion and Veyra without passing through any harbor. They are slower, less efficient, and invisible to naval blockades.' },
+      { g: 'E', text: 'Veyra\'s diversified economy includes timber, salt processing, olive oil, fishing, and harbor service fees. The blockade kills harbor revenue but does not destroy all sectors immediately — the interior routes buy time.' },
+      { g: 'A', text: 'Iliatania\'s naval engineers built the watchtower signal-fire relay system enabling rapid coastal communication. Maren appears to have obtained intelligence about these routes through informants inside the colony.' },
     ],
     choices: [
       {
@@ -280,6 +370,18 @@ const SCENES = [
         consequence: 'The Veyran militia intercepts two Marenic patrol boats at night. Both sides suffer casualties. Maren lodges a formal protest, calling it piracy. In Veyra, the resistance becomes a symbol — but it places every Veyran sailor in the line of fire.',
         changes: { colonyLoyalty: 15, militaryReadiness: 5, foreignThreat: 10, rebelRadicalization: -5, economicBalance: -8, publicTrust: 8 },
       },
+      {
+        letter: 'E',
+        label:  'Close Iliatanian ports to Marenic merchants — impose economic pressure and signal that the blockade will cost Maren commercially, not just militarily.',
+        tip:    'Economic warfare without naval confrontation. Leverages the empire\'s trade network.',
+        consequence: 'Three Marenic merchant vessels are turned back from Aurelion\'s harbor within the week. Maren\'s trade council sends a formal protest. Within two weeks, Maren begins signaling willingness to negotiate blockade terms. It is not a victory — but it is leverage, and it costs no ships.',
+        changes: { economicBalance: -8, foreignThreat: -12, councilSupport: 5, militaryReadiness: 5, colonyLoyalty: 3, publicTrust: 5 },
+      },
+    ],
+    advisors: [
+      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Every day that blockade holds is a day Maren practices controlling our supply lines. I do not recommend patience. I recommend engagement before they grow comfortable in our waters.' },
+      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'The harbor generates more annual value than any fleet action we could afford. Think about what you are protecting before deciding how to protect it. Destroy the harbor and you win a battle and lose the war.' },
+      { name: 'High Priest Orryn',  role: 'Dominant Faith',    icon: '✦', grapes: 'R', dialogue: 'Olan is meeting Crevath nightly. If the blockade continues, you will lose Veyra politically before you lose it militarily. The clock runs in Maren\'s favor, not ours.' },
     ],
   },
 
@@ -290,9 +392,13 @@ const SCENES = [
     title:    'The Shape of Dominion',
     isFinal:  true,
     body: [
-      "It has come to this. Maren's fleet holds position outside Veyra's harbor. Governor Fael is in his office and has not slept in three days. Savra Olan is preparing a public statement. The imperial council has given you one hour to present your recommendation to the emperor.",
-      "Veyra's loyalty is fractured. The empire's economy is strained. The dominant faith presses for order. The marginalized faith presses for recognition. The military wants a clear engagement. And the harbor — <em>Veyra's harbor</em> — sits at the center of everything.",
-      "This is your decision. It will be recorded in the Imperial Archive. It will be judged by generations who cannot know what this room felt like tonight.",
+      "It has come to this. Maren's fleet holds outside Veyra's harbor. Governor Fael has not slept in three days. Savra Olan is preparing a statement. The council has given you one hour to present your recommendation to the emperor.",
+      "Veyra's loyalty is fractured. The economy is strained. The dominant faith presses for order. The marginalized faith presses for recognition. The military wants engagement. And the harbor — <em>Veyra's harbor</em> — sits at the center of everything. This decision will be recorded. It will be judged.",
+    ],
+    lore: [
+      { g: 'P', text: 'Iliatania has held its colonial system for 180 years by making loyalty appear inevitable. The moment one colony breaks the norm without consequence, others observe — and begin calculating.' },
+      { g: 'S', text: 'Savra Olan\'s movement is not only about religion. It argues that talent and loyalty in the colonies are rewarded only when convenient for the empire — and withheld when they become threatening.' },
+      { g: 'E', text: 'Military force creates compliance but generates resentment that compounds for decades. Reform reduces short-term revenue but may stabilize a system that otherwise requires constant garrison maintenance.' },
     ],
     choices: [
       {
@@ -335,6 +441,11 @@ const SCENES = [
         changes: { foreignThreat: -25, economicBalance: -25, colonyLoyalty: -35, rebelRadicalization: 30, publicTrust: -25, militaryReadiness: 5, capitalStability: -10 },
         flag: 'sabotage',
       },
+    ],
+    advisors: [
+      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Whatever you decide — decide now. Delay is the one option that guarantees Maren wins without a fight. I can execute any of these orders. I cannot execute hesitation.' },
+      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'The empire\'s long-term financial survival requires a functioning harbor at Veyra. Everything else on this table is negotiable. The harbor is not. Keep that truth central to whatever you decide.' },
+      { name: 'High Priest Orryn',  role: 'Dominant Faith',    icon: '✦', grapes: 'R', dialogue: 'History judges decisions by their results, not their intentions. The empire has endured for 180 years by being willing to do what is necessary. Whatever is necessary — be willing.' },
     ],
   },
 ];
@@ -402,6 +513,153 @@ const ENDINGS = {
     ],
   },
 };
+
+// ─── SCENE ART PANELS ────────────────────────
+const SCENE_ARTS = [
+
+  // 0 — The Storm's Legacy: watchtower, signal fire, Marenic ships on horizon
+  `<div style="position:absolute;inset:0;background:linear-gradient(180deg,#06111e 0%,#0c1c30 52%,#091520 100%);">
+    <div style="position:absolute;bottom:0;left:0;width:100%;height:44%;background:linear-gradient(0deg,#030c18 0%,#071422 70%,transparent 100%);"></div>
+    <div class="cs-shimmer-layer" style="height:44%;opacity:0.15;"></div>
+    <div style="position:absolute;bottom:44%;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(50,90,150,0.18),transparent);"></div>
+    <svg style="position:absolute;bottom:44.5%;left:40%;width:7%;opacity:0.44;" viewBox="0 0 90 48" fill="none"><path d="M4 30 Q45 38 86 30 L80 44 Q45 50 10 44Z" fill="#060918"/><line x1="28" y1="30" x2="28" y2="6" stroke="#060918" stroke-width="2"/><line x1="55" y1="30" x2="55" y2="2" stroke="#060918" stroke-width="2"/><polygon points="28,8 46,16 28,28" fill="#0a1020"/><polygon points="55,4 76,14 55,28" fill="#0a1020"/><polygon points="28,8 44,12 28,17" fill="#560a0a" opacity="0.88"/></svg>
+    <svg style="position:absolute;bottom:45%;left:51%;width:5%;opacity:0.3;" viewBox="0 0 80 42" fill="none"><path d="M3 26 Q40 34 77 26 L72 38 Q40 44 8 38Z" fill="#07091a"/><line x1="24" y1="26" x2="24" y2="5" stroke="#07091a" stroke-width="2"/><line x1="48" y1="26" x2="48" y2="2" stroke="#07091a" stroke-width="2"/><polygon points="24,7 40,14 24,24" fill="#090e1e"/><polygon points="48,4 65,12 48,24" fill="#090e1e"/></svg>
+    <svg style="position:absolute;bottom:45.5%;left:60%;width:4%;opacity:0.18;" viewBox="0 0 70 36" fill="none"><path d="M2 22 Q35 30 68 22 L63 34 Q35 38 7 34Z" fill="#07091a"/><line x1="20" y1="22" x2="20" y2="4" stroke="#07091a" stroke-width="1.5"/><line x1="42" y1="22" x2="42" y2="2" stroke="#07091a" stroke-width="1.5"/><polygon points="20,6 33,12 20,20" fill="#0a1020"/><polygon points="42,4 57,10 42,20" fill="#0a1020"/></svg>
+    <div style="position:absolute;bottom:42%;left:9%;width:4%;height:34%;background:#040810;"></div>
+    <div style="position:absolute;bottom:74%;left:7.5%;width:7%;height:6%;background:#030710;border-radius:1px 1px 0 0;clip-path:polygon(0% 100%,50% 0%,100% 100%);"></div>
+    <div style="position:absolute;bottom:79%;left:10.5%;width:2%;height:2%;background:radial-gradient(circle,#f08020 0%,#c04010 55%,transparent 72%);border-radius:50%;box-shadow:0 0 10px 6px rgba(240,120,28,0.52);animation:cs-pulse 1.8s ease-in-out infinite;"></div>
+    <div style="position:absolute;bottom:42%;left:0;width:22%;height:3%;background:#030710;border-top:1px solid #0c1428;"></div>
+    <div style="position:absolute;bottom:43%;left:3%;width:1.5%;height:5%;background:#04080e;"></div>
+    <div style="position:absolute;bottom:43%;left:6.5%;width:1.5%;height:4%;background:#040810;"></div>
+    <div style="position:absolute;bottom:42%;left:15%;width:1.5%;height:6%;background:#04080e;"></div>
+    <div style="position:absolute;bottom:42%;left:18.5%;width:1.5%;height:5%;background:#040810;"></div>
+  </div>`,
+
+  // 1 — Accounting for Ruin: council chamber, torches, figures around table
+  `<div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 55%,#110e07 0%,#070508 52%,#030304 100%);">
+    <div style="position:absolute;top:10%;left:6%;width:18%;height:35%;background:radial-gradient(ellipse at 0% 50%,rgba(205,130,25,0.12) 0%,transparent 65%);"></div>
+    <div style="position:absolute;top:10%;right:6%;width:18%;height:35%;background:radial-gradient(ellipse at 100% 50%,rgba(205,130,25,0.10) 0%,transparent 65%);"></div>
+    <div style="position:absolute;top:15%;left:9%;width:1.4%;height:9%;background:#1a1005;border-radius:1px;"></div>
+    <div style="position:absolute;top:13%;left:8.7%;width:2%;height:3%;background:#160d04;border-radius:2px;"></div>
+    <div style="position:absolute;top:11.5%;left:9%;width:1.7%;height:2%;background:#f09020;border-radius:50%;box-shadow:0 0 14px 8px rgba(225,140,20,0.38);animation:cs-pulse 2.1s ease-in-out infinite;"></div>
+    <div style="position:absolute;top:15%;right:9%;width:1.4%;height:9%;background:#1a1005;border-radius:1px;"></div>
+    <div style="position:absolute;top:13%;right:8.7%;width:2%;height:3%;background:#160d04;border-radius:2px;"></div>
+    <div style="position:absolute;top:11.5%;right:9%;width:1.7%;height:2%;background:#f09020;border-radius:50%;box-shadow:0 0 14px 8px rgba(225,140,20,0.38);animation:cs-pulse 2.1s ease-in-out 0.45s infinite;"></div>
+    <div style="position:absolute;bottom:0;left:0;width:100%;height:28%;background:linear-gradient(0deg,#040404 0%,#080705 100%);"></div>
+    <div style="position:absolute;bottom:26%;left:12%;width:76%;height:4.5%;background:#111006;border-top:1px solid #201c08;border-radius:2px;box-shadow:0 6px 18px rgba(0,0,0,0.85);"></div>
+    <div style="position:absolute;bottom:22%;left:12%;width:76%;height:4%;background:#0e0d04;border-radius:0 0 2px 2px;"></div>
+    <svg style="position:absolute;bottom:29%;left:15%;width:4%;height:16%;" viewBox="0 0 38 72" fill="none"><ellipse cx="19" cy="7.5" rx="6.5" ry="7" fill="#09080a"/><path d="M13 14 Q10 44 9 70 L29 70 Q28 44 25 14Z" fill="#0b090c"/></svg>
+    <svg style="position:absolute;bottom:29%;left:27%;width:4%;height:16%;" viewBox="0 0 38 72" fill="none"><ellipse cx="19" cy="7.5" rx="6.5" ry="7" fill="#09080a"/><path d="M13 14 Q10 44 9 70 L29 70 Q28 44 25 14Z" fill="#0b090c"/></svg>
+    <svg style="position:absolute;bottom:29%;left:40%;width:4%;height:17%;" viewBox="0 0 38 76" fill="none"><rect x="13" y="0" width="12" height="10" rx="1" fill="#09080a"/><ellipse cx="19" cy="15" rx="7" ry="7.5" fill="#09080a"/><path d="M12 22 Q9 50 8 74 L30 74 Q29 50 26 22Z" fill="#0b090c"/></svg>
+    <svg style="position:absolute;bottom:29%;left:54%;width:4%;height:16%;" viewBox="0 0 38 72" fill="none"><ellipse cx="19" cy="7.5" rx="6.5" ry="7" fill="#09080a"/><path d="M13 14 Q10 44 9 70 L29 70 Q28 44 25 14Z" fill="#0b090c"/></svg>
+    <svg style="position:absolute;bottom:29%;left:67%;width:4%;height:16%;" viewBox="0 0 38 72" fill="none"><ellipse cx="19" cy="7.5" rx="6.5" ry="7" fill="#09080a"/><path d="M13 14 Q10 44 9 70 L29 70 Q28 44 25 14Z" fill="#0b090c"/></svg>
+    <div style="position:absolute;bottom:30%;left:36%;width:28%;height:2%;background:#1c1808;border-radius:1px;opacity:0.7;"></div>
+  </div>`,
+
+  // 2 — The Weight of One Ward: hospital, lanterns, beds, doctor
+  `<div style="position:absolute;inset:0;background:linear-gradient(180deg,#060507 0%,#0a0809 52%,#060506 100%);">
+    <div style="position:absolute;top:0;left:15%;width:70%;height:50%;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(175,108,18,0.09) 0%,transparent 65%);"></div>
+    <div style="position:absolute;top:7%;left:21%;width:1.4%;height:2.5%;background:#1a1205;border-radius:2px 2px 4px 4px;"></div>
+    <div style="position:absolute;top:4.5%;left:21.3%;width:0.8%;height:3%;background:radial-gradient(circle,#f0b030 0%,#d07010 55%,transparent 72%);border-radius:50%;box-shadow:0 0 12px 7px rgba(220,135,18,0.3);animation:cs-pulse 2.4s ease-in-out infinite;"></div>
+    <div style="position:absolute;top:7%;left:49%;width:1.4%;height:2.5%;background:#1a1205;border-radius:2px 2px 4px 4px;"></div>
+    <div style="position:absolute;top:4.5%;left:49.3%;width:0.8%;height:3%;background:radial-gradient(circle,#f0b030 0%,#d07010 55%,transparent 72%);border-radius:50%;box-shadow:0 0 12px 7px rgba(220,135,18,0.3);animation:cs-pulse 2.4s ease-in-out 0.7s infinite;"></div>
+    <div style="position:absolute;top:7%;left:77%;width:1.4%;height:2.5%;background:#1a1205;border-radius:2px 2px 4px 4px;"></div>
+    <div style="position:absolute;top:4.5%;left:77.3%;width:0.8%;height:3%;background:radial-gradient(circle,#f0b030 0%,#d07010 55%,transparent 72%);border-radius:50%;box-shadow:0 0 12px 7px rgba(220,135,18,0.3);animation:cs-pulse 2.4s ease-in-out 1.3s infinite;"></div>
+    <div style="position:absolute;bottom:0;left:0;width:100%;height:28%;background:linear-gradient(0deg,#050404 0%,#090807 100%);"></div>
+    <div style="position:absolute;bottom:26%;left:3%;width:20%;height:5%;background:#0e0c08;border-radius:1px;border:1px solid #18140a;"></div>
+    <div style="position:absolute;bottom:26%;left:26%;width:20%;height:5%;background:#0e0c08;border-radius:1px;border:1px solid #18140a;"></div>
+    <div style="position:absolute;bottom:26%;left:50%;width:20%;height:5%;background:#0e0c08;border-radius:1px;border:1px solid #18140a;"></div>
+    <div style="position:absolute;bottom:26%;left:73%;width:20%;height:5%;background:#0e0c08;border-radius:1px;border:1px solid #18140a;"></div>
+    <div style="position:absolute;bottom:30%;left:4%;width:16%;height:2%;background:#0c0a07;border-radius:2px;opacity:0.75;"></div>
+    <div style="position:absolute;bottom:30%;left:27%;width:16%;height:2%;background:#0c0a07;border-radius:2px;opacity:0.75;"></div>
+    <div style="position:absolute;bottom:30%;left:51%;width:16%;height:2%;background:#0c0a07;border-radius:2px;opacity:0.75;"></div>
+    <svg style="position:absolute;bottom:26%;left:93%;width:4%;height:20%;" viewBox="0 0 34 76" fill="none"><ellipse cx="17" cy="7" rx="6.5" ry="7" fill="#090a0d"/><path d="M10 13 Q7 42 6 74 L28 74 Q27 42 24 13Z" fill="#0b0d10"/><path d="M10 18 Q2 28 2 42" stroke="#090a0d" stroke-width="4" stroke-linecap="round"/><path d="M24 18 Q32 28 32 40" stroke="#090a0d" stroke-width="4" stroke-linecap="round"/></svg>
+  </div>`,
+
+  // 3 — The Weight of Prayers: two temple silhouettes, torches, crowd
+  `<div style="position:absolute;inset:0;background:linear-gradient(180deg,#050810 0%,#080e1c 52%,#050a12 100%);">
+    <div style="position:absolute;top:0;left:28%;width:44%;height:45%;background:radial-gradient(ellipse at 50% 0%,rgba(90,60,140,0.1) 0%,transparent 62%);"></div>
+    <div style="position:absolute;bottom:0;left:0;width:100%;height:22%;background:linear-gradient(0deg,#030508 0%,#060a12 100%);"></div>
+    <div style="position:absolute;bottom:20%;left:6%;width:24%;height:48%;background:#060810;"></div>
+    <div style="position:absolute;bottom:66%;left:4%;width:28%;height:8%;background:#060810;clip-path:polygon(0% 100%,50% 0%,100% 100%);"></div>
+    <div style="position:absolute;bottom:20%;left:7.5%;width:1.5%;height:38%;background:#080c12;"></div>
+    <div style="position:absolute;bottom:20%;left:12%;width:1.5%;height:38%;background:#080c12;"></div>
+    <div style="position:absolute;bottom:20%;left:16%;width:1.5%;height:38%;background:#080c12;"></div>
+    <div style="position:absolute;bottom:20%;left:20%;width:1.5%;height:38%;background:#080c12;"></div>
+    <div style="position:absolute;bottom:73%;left:16.5%;width:1.5%;height:1.5%;background:radial-gradient(circle,#f09020 0%,#c04010 55%,transparent 72%);border-radius:50%;box-shadow:0 0 10px 6px rgba(240,128,20,0.46);animation:cs-pulse 2s ease-in-out infinite;"></div>
+    <div style="position:absolute;bottom:20%;right:8%;width:15%;height:34%;background:#060710;"></div>
+    <div style="position:absolute;bottom:52%;right:7%;width:17%;height:6%;background:#060710;clip-path:polygon(0% 100%,50% 0%,100% 100%);"></div>
+    <div style="position:absolute;bottom:57%;right:14%;width:1%;height:1%;background:radial-gradient(circle,#e08018 0%,transparent 72%);border-radius:50%;box-shadow:0 0 6px 4px rgba(200,100,20,0.3);animation:cs-pulse 2.3s ease-in-out 0.5s infinite;"></div>
+    <div style="position:absolute;bottom:19%;left:30%;width:40%;height:6%;background:#040608;clip-path:ellipse(50% 80% at 50% 100%);opacity:0.8;"></div>
+    <div style="position:absolute;bottom:20%;left:32%;width:0.9%;height:11%;background:#040608;border-radius:50% 50% 0 0;"></div>
+    <div style="position:absolute;bottom:20%;left:36%;width:0.9%;height:13%;background:#040608;border-radius:50% 50% 0 0;"></div>
+    <div style="position:absolute;bottom:20%;left:40%;width:0.9%;height:10%;background:#040608;border-radius:50% 50% 0 0;"></div>
+    <div style="position:absolute;bottom:20%;left:44%;width:0.9%;height:14%;background:#040608;border-radius:50% 50% 0 0;"></div>
+    <div style="position:absolute;bottom:20%;left:48%;width:0.9%;height:11%;background:#040608;border-radius:50% 50% 0 0;"></div>
+    <div style="position:absolute;bottom:20%;left:52%;width:0.9%;height:12%;background:#040608;border-radius:50% 50% 0 0;"></div>
+    <div style="position:absolute;bottom:20%;left:56%;width:0.9%;height:9%;background:#040608;border-radius:50% 50% 0 0;"></div>
+    <div style="position:absolute;bottom:20%;left:60%;width:0.9%;height:13%;background:#040608;border-radius:50% 50% 0 0;"></div>
+    <div style="position:absolute;bottom:31%;left:50%;width:0.8%;height:0.8%;background:radial-gradient(circle,#f0a020 0%,transparent 72%);border-radius:50%;box-shadow:0 0 5px 3px rgba(225,138,18,0.32);animation:cs-pulse 2s ease-in-out 0.3s infinite;"></div>
+    <div style="position:absolute;bottom:29%;left:42%;width:0.7%;height:0.7%;background:radial-gradient(circle,#e09018 0%,transparent 72%);border-radius:50%;box-shadow:0 0 4px 3px rgba(210,118,18,0.28);animation:cs-pulse 2.2s ease-in-out 0.9s infinite;"></div>
+  </div>`,
+
+  // 4 — The Empire's Promise: sunset harbor, emissary ship with white flag
+  `<div style="position:absolute;inset:0;background:linear-gradient(190deg,#160808 0%,#3c1408 14%,#7a2a0a 28%,#b04015 42%,#c85020 52%,#a03810 62%,#3c1208 78%,#0a0608 100%);">
+    <div style="position:absolute;bottom:38%;left:0;width:100%;height:14%;background:linear-gradient(0deg,rgba(175,78,14,0.18) 0%,transparent 100%);"></div>
+    <div style="position:absolute;bottom:0;left:0;width:100%;height:40%;background:linear-gradient(0deg,#060a10 0%,#0a1018 45%,#10182a 70%,#12203a 100%);"></div>
+    <div class="cs-shimmer-layer cs-shimmer-warm" style="height:40%;opacity:0.45;"></div>
+    <div style="position:absolute;bottom:38%;left:10%;width:64%;height:3.5%;background:#07090e;"></div>
+    <div style="position:absolute;bottom:38%;left:16%;width:1.8%;height:7%;background:#06080c;"></div>
+    <div style="position:absolute;bottom:38%;left:26%;width:1.8%;height:6%;background:#06080c;"></div>
+    <div style="position:absolute;bottom:38%;left:36%;width:1.8%;height:8%;background:#060810;transform:rotate(-2deg);"></div>
+    <div style="position:absolute;bottom:38%;left:50%;width:1.8%;height:7%;background:#06080c;"></div>
+    <div style="position:absolute;bottom:38%;left:60%;width:1.8%;height:6%;background:#06080c;"></div>
+    <svg style="position:absolute;bottom:39%;left:24%;width:20%;" viewBox="0 0 200 90" fill="none"><path d="M8 58 Q100 70 192 58 L182 82 Q100 92 18 82Z" fill="#060a10"/><line x1="60" y1="58" x2="60" y2="10" stroke="#060a10" stroke-width="3.5"/><line x1="115" y1="58" x2="115" y2="3" stroke="#060a10" stroke-width="3.5"/><polygon points="60,12 90,27 60,56" fill="#0a1020"/><polygon points="115,5 152,23 115,56" fill="#0a1020"/><polygon points="60,12 88,18 60,27" fill="#ddd8c8" opacity="0.85"/><line x1="182" y1="60" x2="208" y2="44" stroke="#060a10" stroke-width="2.5"/></svg>
+    <div style="position:absolute;bottom:40%;left:62%;width:8%;height:16%;background:#07080c;opacity:0.6;"></div>
+    <div style="position:absolute;bottom:40%;left:71%;width:6%;height:11%;background:#06070b;opacity:0.45;"></div>
+    <div style="position:absolute;bottom:40%;left:78%;width:9%;height:14%;background:#07080d;opacity:0.38;"></div>
+  </div>`,
+
+  // 5 — Iron Water: blockade line, ships across harbor, cliff observer
+  `<div style="position:absolute;inset:0;background:linear-gradient(190deg,#040710 0%,#07101e 28%,#0c1830 55%,#0e1c38 68%,#0a1422 100%);">
+    <div style="position:absolute;bottom:40%;left:0;width:100%;height:8%;background:linear-gradient(0deg,rgba(38,56,100,0.14) 0%,transparent 100%);"></div>
+    <div style="position:absolute;bottom:0;left:0;width:100%;height:42%;background:linear-gradient(0deg,#030810 0%,#070e1c 48%,#0b1628 80%,#0e1c34 100%);"></div>
+    <div class="cs-shimmer-layer" style="height:42%;opacity:0.2;"></div>
+    <svg style="position:absolute;bottom:43%;left:2%;width:7%;opacity:0.48;" viewBox="0 0 88 50" fill="none"><path d="M3 30 Q44 40 85 30 L79 46 Q44 52 9 46Z" fill="#06091a"/><line x1="24" y1="30" x2="24" y2="5" stroke="#06091a" stroke-width="2.2"/><line x1="55" y1="30" x2="55" y2="2" stroke="#06091a" stroke-width="2.2"/><polygon points="24,7 42,16 24,28" fill="#090d1e"/><polygon points="55,4 76,14 55,28" fill="#090d1e"/></svg>
+    <svg style="position:absolute;bottom:43.5%;left:13%;width:9%;opacity:0.62;" viewBox="0 0 105 56" fill="none"><path d="M4 34 Q52 44 101 34 L94 50 Q52 56 10 50Z" fill="#050810"/><line x1="30" y1="34" x2="30" y2="6" stroke="#050810" stroke-width="2.5"/><line x1="62" y1="34" x2="62" y2="2" stroke="#050810" stroke-width="2.5"/><polygon points="30,8 50,18 30,32" fill="#090e1c"/><polygon points="62,4 86,16 62,32" fill="#090e1c"/><polygon points="30,8 48,13 30,19" fill="#560a0a" opacity="0.9"/></svg>
+    <svg style="position:absolute;bottom:43%;left:26%;width:13%;opacity:0.8;" viewBox="0 0 145 72" fill="none"><path d="M5 46 Q72 58 140 46 L130 66 Q72 76 15 66Z" fill="#050810"/><line x1="42" y1="46" x2="42" y2="8" stroke="#050810" stroke-width="3.2"/><line x1="86" y1="46" x2="86" y2="3" stroke="#050810" stroke-width="3.2"/><line x1="122" y1="44" x2="122" y2="15" stroke="#050810" stroke-width="2.8"/><polygon points="42,10 68,23 42,44" fill="#090e1c"/><polygon points="86,5 118,20 86,44" fill="#090e1c"/><polygon points="42,10 66,16 42,24" fill="#560a0a" opacity="0.9"/></svg>
+    <svg style="position:absolute;bottom:43%;left:43%;width:11%;opacity:0.9;" viewBox="0 0 130 65" fill="none"><path d="M5 42 Q65 53 125 42 L116 60 Q65 68 14 60Z" fill="#050810"/><line x1="38" y1="42" x2="38" y2="7" stroke="#050810" stroke-width="3"/><line x1="78" y1="42" x2="78" y2="2" stroke="#050810" stroke-width="3"/><polygon points="38,9 62,21 38,40" fill="#090e1c"/><polygon points="78,4 108,18 78,40" fill="#090e1c"/><polygon points="38,9 60,14 38,21" fill="#560a0a" opacity="0.9"/></svg>
+    <svg style="position:absolute;bottom:43.5%;left:58%;width:9%;opacity:0.68;" viewBox="0 0 105 56" fill="none"><path d="M4 34 Q52 44 101 34 L94 50 Q52 56 10 50Z" fill="#060a18"/><line x1="30" y1="34" x2="30" y2="6" stroke="#060a18" stroke-width="2.5"/><line x1="62" y1="34" x2="62" y2="2" stroke="#060a18" stroke-width="2.5"/><polygon points="30,8 50,18 30,32" fill="#0a0e1c"/><polygon points="62,4 86,16 62,32" fill="#0a0e1c"/></svg>
+    <svg style="position:absolute;bottom:44%;left:71%;width:7%;opacity:0.5;" viewBox="0 0 88 50" fill="none"><path d="M3 30 Q44 40 85 30 L79 46 Q44 52 9 46Z" fill="#07091e"/><line x1="24" y1="30" x2="24" y2="5" stroke="#07091e" stroke-width="2"/><line x1="55" y1="30" x2="55" y2="2" stroke="#07091e" stroke-width="2"/><polygon points="24,7 42,16 24,28" fill="#0a0e20"/><polygon points="55,4 76,14 55,28" fill="#0a0e20"/></svg>
+    <svg style="position:absolute;bottom:44.5%;left:81%;width:6%;opacity:0.32;" viewBox="0 0 78 44" fill="none"><path d="M2 26 Q39 34 76 26 L70 40 Q39 46 9 40Z" fill="#070a1e"/><line x1="22" y1="26" x2="22" y2="5" stroke="#070a1e" stroke-width="2"/><line x1="48" y1="26" x2="48" y2="2" stroke="#070a1e" stroke-width="2"/><polygon points="22,7 36,13 22,24" fill="#0b0f20"/><polygon points="48,4 65,11 48,24" fill="#0b0f20"/></svg>
+    <div style="position:absolute;bottom:0;left:0;width:26%;height:65%;background:#030408;clip-path:polygon(0% 100%,0% 30%,9% 18%,17% 13%,22% 22%,26% 100%);"></div>
+    <svg style="position:absolute;bottom:58%;left:12%;width:3%;height:18%;" viewBox="0 0 28 80" fill="none"><ellipse cx="14" cy="6.5" rx="6" ry="6.5" fill="#020308"/><path d="M8 12 Q5 42 4 78 L24 78 Q23 42 20 12Z" fill="#020408"/><path d="M8 17 Q0 26 0 40" stroke="#020308" stroke-width="3.5" stroke-linecap="round"/><path d="M20 17 Q28 26 28 36" stroke="#020308" stroke-width="3.5" stroke-linecap="round"/></svg>
+  </div>`,
+
+  // 6 — The Shape of Dominion: grand throne chamber, emperor, columns
+  `<div style="position:absolute;inset:0;background:radial-gradient(ellipse 78% 65% at 50% 58%,#120e08 0%,#070508 52%,#030304 100%);">
+    <div style="position:absolute;top:0;left:36%;width:28%;height:55%;background:radial-gradient(ellipse at 50% 0%,rgba(185,138,22,0.09) 0%,transparent 65%);"></div>
+    <div style="position:absolute;bottom:0;left:4%;width:3%;height:80%;background:#0b0905;border-right:1px solid #141008;"></div>
+    <div style="position:absolute;bottom:0;left:13%;width:3%;height:72%;background:#0b0905;border-right:1px solid #141008;"></div>
+    <div style="position:absolute;bottom:0;left:80%;width:3%;height:72%;background:#0b0905;border-right:1px solid #141008;"></div>
+    <div style="position:absolute;bottom:0;right:4%;width:3%;height:80%;background:#0b0905;border-right:1px solid #141008;"></div>
+    <div style="position:absolute;bottom:78%;left:3%;width:5%;height:2%;background:#0f0c06;"></div>
+    <div style="position:absolute;bottom:70%;left:12%;width:5%;height:2%;background:#0f0c06;"></div>
+    <div style="position:absolute;bottom:70%;left:79%;width:5%;height:2%;background:#0f0c06;"></div>
+    <div style="position:absolute;bottom:78%;right:3%;width:5%;height:2%;background:#0f0c06;"></div>
+    <div style="position:absolute;bottom:22%;left:34%;width:32%;height:5%;background:#0f0c06;border-top:1px solid #1c1808;border-radius:1px;"></div>
+    <div style="position:absolute;bottom:26%;left:36%;width:28%;height:4%;background:#120e08;border-top:1px solid #201a0a;"></div>
+    <svg style="position:absolute;bottom:30%;left:42%;width:16%;height:30%;" viewBox="0 0 84 126" fill="none"><rect x="6" y="0" width="72" height="76" rx="2" fill="#0e0b07"/><rect x="0" y="68" width="84" height="6" rx="1" fill="#0c0907"/><polygon points="18,0 42,-12 66,0" fill="#110e08"/><ellipse cx="42" cy="46" rx="11" ry="12" fill="#08080a"/><path d="M31 57 Q26 84 24 124 L60 124 Q58 84 53 57Z" fill="#09090c"/><polygon points="33,35 42,26 51,35" fill="#c9a020" opacity="0.6"/></svg>
+    <div style="position:absolute;bottom:0;left:0;width:100%;height:22%;background:linear-gradient(0deg,#040403 0%,#080705 100%);"></div>
+    <div style="position:absolute;bottom:0;left:0;width:100%;height:22%;background:linear-gradient(90deg,transparent 24.8%,rgba(255,255,255,0.01) 25%,transparent 25.2%) 0 0/25% 100%;"></div>
+    <div style="position:absolute;top:15%;left:20%;width:1.4%;height:9%;background:#1a1005;border-radius:1px;"></div>
+    <div style="position:absolute;top:13%;left:19.8%;width:1.8%;height:2.5%;background:#f09020;border-radius:50%;box-shadow:0 0 14px 8px rgba(225,135,20,0.34);animation:cs-pulse 2s ease-in-out infinite;"></div>
+    <div style="position:absolute;top:15%;right:20%;width:1.4%;height:9%;background:#1a1005;border-radius:1px;"></div>
+    <div style="position:absolute;top:13%;right:19.8%;width:1.8%;height:2.5%;background:#f09020;border-radius:50%;box-shadow:0 0 14px 8px rgba(225,135,20,0.34);animation:cs-pulse 2s ease-in-out 0.5s infinite;"></div>
+    <svg style="position:absolute;bottom:22%;left:22%;width:3.5%;height:22%;" viewBox="0 0 30 88" fill="none"><ellipse cx="15" cy="7" rx="6.5" ry="7" fill="#090808"/><path d="M9 13 Q6 46 5 86 L25 86 Q24 46 21 13Z" fill="#0b090a"/><path d="M9 19 Q1 28 1 42" stroke="#090808" stroke-width="4" stroke-linecap="round"/></svg>
+    <svg style="position:absolute;bottom:22%;right:22%;width:3.5%;height:20%;" viewBox="0 0 30 80" fill="none"><ellipse cx="15" cy="7" rx="6.5" ry="7" fill="#090808"/><path d="M9 13 Q6 44 5 78 L25 78 Q24 44 21 13Z" fill="#0b090a"/><path d="M21 19 Q29 28 29 42" stroke="#090808" stroke-width="4" stroke-linecap="round"/></svg>
+  </div>`,
+];
 
 // ─── GAME STATE ──────────────────────────────
 let gameState = {
@@ -477,7 +735,15 @@ function barColor(key, value) {
 function renderStats() {
   const list = document.getElementById('stats-list');
   list.innerHTML = '';
+  let currentGroup = null;
   STAT_DEFS.forEach(def => {
+    if (def.grapes !== currentGroup) {
+      currentGroup = def.grapes;
+      const gHdr = document.createElement('div');
+      gHdr.className = 'stat-group-header';
+      gHdr.innerHTML = `<span class="grapes-badge gb-${def.grapes.toLowerCase()}">${def.grapes}</span><span class="stat-group-name">${def.grapesLabel}</span>`;
+      list.appendChild(gHdr);
+    }
     const val = gameState.stats[def.key];
     const color = barColor(def.key, val);
     const item = document.createElement('div');
@@ -510,6 +776,8 @@ function animateStats(changes) {
     if (bar)     bar.style.width = newVal + '%';
     if (bar)     bar.className = 'bar-fill ' + barColor(def.key, newVal);
     if (valEl)   valEl.childNodes[0].textContent = newVal;
+    const itemEl = document.getElementById('stat-item-' + def.key);
+    if (itemEl) { itemEl.classList.remove('flashing'); void itemEl.offsetWidth; itemEl.classList.add('flashing'); }
     if (deltaEl) {
       deltaEl.textContent = (delta > 0 ? ' +' : ' ') + delta;
       deltaEl.className   = 'stat-delta show ' + (delta > 0 ? 'pos' : 'neg');
@@ -525,7 +793,6 @@ function renderScene() {
   const scene = SCENES[gameState.sceneIndex];
   const card  = document.getElementById('scene-card');
 
-  // Fade out then back in
   card.style.opacity = '0';
   card.style.transform = 'translateY(10px)';
 
@@ -533,9 +800,29 @@ function renderScene() {
     document.getElementById('scene-act').textContent   = scene.act;
     document.getElementById('scene-prog').textContent  = scene.progress;
     document.getElementById('scene-title').textContent = scene.title;
+    document.getElementById('scene-body').innerHTML    = scene.body.map(p => `<p>${p}</p>`).join('');
 
-    document.getElementById('scene-body').innerHTML =
-      scene.body.map(p => `<p>${p}</p>`).join('');
+    // Scene art panel
+    const artPanel = document.getElementById('scene-art');
+    artPanel.innerHTML = SCENE_ARTS[gameState.sceneIndex] || '';
+
+    // Lore section
+    const loreSection = document.getElementById('lore-section');
+    const loreContent = document.getElementById('lore-content');
+    const loreToggle  = document.getElementById('lore-toggle');
+    if (scene.lore && scene.lore.length) {
+      loreSection.classList.remove('hidden');
+      loreContent.classList.add('hidden');
+      loreToggle.classList.remove('open');
+      loreToggle.innerHTML = '&#8853; Imperial Context';
+      loreContent.innerHTML = scene.lore.map(item =>
+        `<div class="lore-item"><span class="lore-badge grapes-badge gb-${item.g.toLowerCase()}">${item.g}</span><span>${item.text}</span></div>`
+      ).join('');
+    } else {
+      loreSection.classList.add('hidden');
+    }
+
+    renderAdvisors(scene);
 
     document.getElementById('consequence').classList.add('hidden');
     document.getElementById('continue-btn').classList.add('hidden');
@@ -548,6 +835,49 @@ function renderScene() {
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, 180);
+}
+
+// ─── LORE TOGGLE ─────────────────────────────
+function toggleLore() {
+  const btn     = document.getElementById('lore-toggle');
+  const content = document.getElementById('lore-content');
+  if (!btn || !content) return;
+  const isOpen = !content.classList.contains('hidden');
+  if (isOpen) {
+    content.classList.add('hidden');
+    btn.classList.remove('open');
+    btn.innerHTML = '&#8853; Imperial Context';
+  } else {
+    content.classList.remove('hidden');
+    btn.classList.add('open');
+    btn.innerHTML = '&#8854; Imperial Context';
+  }
+}
+
+// ─── RENDER ADVISORS ─────────────────────────
+function renderAdvisors(scene) {
+  const section = document.getElementById('advisor-section');
+  const row     = document.getElementById('advisor-row');
+  if (!scene.advisors || !scene.advisors.length) {
+    section.classList.add('hidden');
+    return;
+  }
+  section.classList.remove('hidden');
+  row.innerHTML = '';
+  scene.advisors.forEach(adv => {
+    const card = document.createElement('div');
+    card.className = 'advisor-card';
+    card.innerHTML = `
+      <span class="advisor-badge grapes-badge gb-${adv.grapes.toLowerCase()}">${adv.grapes}</span>
+      <div class="advisor-portrait">${adv.icon}</div>
+      <div class="advisor-name">${adv.name}</div>
+      <div class="advisor-role">${adv.role}</div>
+      <button class="advisor-consult-btn">Consult &#9660;</button>
+      <div class="advisor-dialogue">"${adv.dialogue}"</div>
+    `;
+    card.addEventListener('click', () => card.classList.add('consulted'));
+    row.appendChild(card);
+  });
 }
 
 // ─── RENDER CHOICES ──────────────────────────
@@ -755,289 +1085,645 @@ function CS_SCENE(id) {
   const scenes = {
 
     'aurelion-night': `
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 90% 70% at 50% 100%, rgba(20,45,120,0.22) 0%, transparent 55%), linear-gradient(190deg, #020307 0%, #04071a 40%, #08102a 100%);"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(185deg,#010208 0%,#020616 38%,#050c22 70%,#07102c 100%);"></div>
       <div id="cs-sf" style="position:absolute;top:0;left:0;width:1px;height:1px;"></div>
-      <div style="position:absolute;bottom:26%;left:0;right:0;height:16%;background:radial-gradient(ellipse 65% 100% at 50% 100%, rgba(45,70,160,0.13) 0%, transparent 100%);"></div>
-      <div style="position:absolute;bottom:26%;left:5%;width:3%;height:20%;background:#050710;"></div>
-      <div style="position:absolute;bottom:26%;left:9%;width:5%;height:13%;background:#060810;"></div>
-      <div style="position:absolute;bottom:26%;left:15%;width:4%;height:26%;background:#050810;"></div>
-      <div style="position:absolute;bottom:26%;left:20%;width:6%;height:17%;background:#060910;"></div>
-      <div style="position:absolute;bottom:42%;left:34%;width:9%;height:9%;background:#050810;border-radius:50% 50% 0 0;"></div>
-      <div style="position:absolute;bottom:26%;left:33%;width:11%;height:16%;background:#050810;"></div>
-      <div style="position:absolute;bottom:50%;left:38.2%;width:0.9%;height:6%;background:#040710;"></div>
-      <div style="position:absolute;bottom:26%;left:45%;width:5%;height:22%;background:#050810;"></div>
-      <div style="position:absolute;bottom:26%;left:51%;width:4%;height:12%;background:#060910;"></div>
-      <div style="position:absolute;bottom:26%;left:56%;width:6%;height:21%;background:#050810;"></div>
-      <div style="position:absolute;bottom:26%;left:63%;width:3%;height:14%;background:#060910;"></div>
-      <div style="position:absolute;bottom:26%;left:67%;width:8%;height:12%;background:#060910;"></div>
-      <div style="position:absolute;bottom:26%;left:76%;width:4%;height:24%;background:#050810;"></div>
-      <div style="position:absolute;bottom:26%;left:81%;width:5%;height:15%;background:#060910;"></div>
-      <div style="position:absolute;bottom:26%;left:87%;width:5%;height:16%;background:#050810;"></div>
-      <div style="position:absolute;bottom:26%;left:93%;width:5%;height:11%;background:#060910;"></div>
-      <div style="position:absolute;bottom:30%;left:16%;width:3px;height:4px;background:#d4a020;opacity:0.65;box-shadow:0 0 4px rgba(212,160,32,0.5);"></div>
-      <div style="position:absolute;bottom:27%;left:21%;width:3px;height:4px;background:#c89018;opacity:0.5;box-shadow:0 0 4px rgba(200,144,24,0.4);"></div>
-      <div style="position:absolute;bottom:34%;left:35%;width:3px;height:4px;background:#d4a020;opacity:0.7;box-shadow:0 0 4px rgba(212,160,32,0.5);"></div>
-      <div style="position:absolute;bottom:30%;left:47%;width:3px;height:4px;background:#d0a020;opacity:0.6;box-shadow:0 0 4px rgba(208,160,32,0.45);"></div>
-      <div style="position:absolute;bottom:35%;left:58%;width:3px;height:4px;background:#d4a020;opacity:0.65;box-shadow:0 0 4px rgba(212,160,32,0.5);"></div>
-      <div style="position:absolute;bottom:32%;left:77%;width:3px;height:4px;background:#c89018;opacity:0.55;box-shadow:0 0 4px rgba(200,144,24,0.4);"></div>
-      <div style="position:absolute;bottom:36%;left:79%;width:3px;height:4px;background:#d4a020;opacity:0.6;box-shadow:0 0 4px rgba(212,160,32,0.45);"></div>
-      <div style="position:absolute;bottom:24%;left:0;width:100%;height:3.5%;background:#040710;border-top:1px solid #0c1230;"></div>
-      <div style="position:absolute;bottom:26%;left:2%;width:2%;height:32%;background:#040710;border-radius:1px 1px 0 0;"></div>
-      <div style="position:absolute;bottom:56%;left:1.5%;width:3%;height:4%;background:#040710;border-radius:3px 3px 0 0;"></div>
-      <div style="position:absolute;bottom:58.5%;left:2.1%;width:1.8%;height:2%;background:#e8d060;border-radius:50%;box-shadow:0 0 14px 7px rgba(230,205,70,0.35),0 0 28px 14px rgba(200,170,40,0.14);animation:cs-pulse 2.2s ease-in-out infinite;"></div>
-      <div class="cs-beam-anim" style="position:absolute;bottom:59.5%;left:3.9%;width:33%;height:1.8%;background:linear-gradient(to right,rgba(220,200,75,0.16),transparent);transform-origin:left center;border-radius:0 50% 50% 0;"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:26%;background:linear-gradient(180deg,#09132a 0%,#060c1e 50%,#040918 100%);"></div>
-      <div class="cs-shimmer-layer" style="height:26%;"></div>
-      <svg style="position:absolute;bottom:25%;right:11%;width:3.8%;height:24%;" viewBox="0 0 42 125" fill="none">
-        <ellipse cx="21" cy="10" rx="9" ry="10" fill="#030508"/>
-        <path d="M12 19 Q6 68 3 122 L39 122 Q36 68 30 19 Z" fill="#040610"/>
-        <path d="M12 19 Q0 48 0 78 L9 76 Q11 54 14 30 Z" fill="#030508"/>
-        <path d="M30 19 Q42 48 42 78 L33 76 Q31 54 28 30 Z" fill="#030508"/>
-        <path d="M14 40 Q4 54 3 65" stroke="#030508" stroke-width="5" stroke-linecap="round"/>
-        <path d="M28 40 Q38 54 39 65" stroke="#030508" stroke-width="5" stroke-linecap="round"/>
-        <rect x="0" y="61" width="9" height="11" rx="1" fill="#0c1328" opacity="0.85"/>
-      </svg>`,
+      <div style="position:absolute;top:6%;right:12%;width:3.5%;padding-top:3.5%;background:radial-gradient(circle at 35% 35%,#eee8d8,#d4cbb8);border-radius:50%;box-shadow:0 0 20px 10px rgba(215,205,175,0.25),0 0 55px 28px rgba(195,185,155,0.1);"></div>
+      <div style="position:absolute;top:4%;right:10%;width:7%;padding-top:7%;border-radius:50%;border:1px solid rgba(210,200,170,0.07);box-shadow:inset 0 0 18px rgba(210,200,170,0.04);"></div>
+      <div style="position:absolute;bottom:34%;left:22%;width:60%;height:11%;filter:blur(1px);opacity:0.4;">
+        <div style="position:absolute;bottom:0;left:3%;width:2.2%;height:55%;background:#050812;"></div>
+        <div style="position:absolute;bottom:0;left:8%;width:3.5%;height:35%;background:#040710;"></div>
+        <div style="position:absolute;bottom:0;left:14%;width:2.5%;height:72%;background:#050913;"></div>
+        <div style="position:absolute;bottom:0;left:20%;width:5%;height:42%;background:#04080f;"></div>
+        <div style="position:absolute;bottom:0;left:28%;width:7%;height:58%;background:#050912;border-radius:2px 2px 0 0;"></div>
+        <div style="position:absolute;bottom:0;left:37%;width:2.5%;height:75%;background:#040810;"></div>
+        <div style="position:absolute;bottom:0;left:42%;width:4%;height:40%;background:#050911;"></div>
+        <div style="position:absolute;bottom:0;left:49%;width:3%;height:62%;background:#050912;"></div>
+        <div style="position:absolute;bottom:0;left:55%;width:5%;height:44%;background:#040810;"></div>
+        <div style="position:absolute;bottom:0;left:63%;width:2.5%;height:68%;background:#050911;"></div>
+        <div style="position:absolute;bottom:0;left:69%;width:4%;height:38%;background:#04080f;"></div>
+        <div style="position:absolute;bottom:0;left:76%;width:3%;height:52%;background:#050912;"></div>
+        <div style="position:absolute;bottom:0;left:83%;width:5%;height:45%;background:#04080f;"></div>
+        <div style="position:absolute;top:16%;left:28.5%;width:3px;height:4px;background:#b08010;border-radius:1px;opacity:0.42;"></div>
+        <div style="position:absolute;top:9%;left:37.5%;width:3px;height:4px;background:#c49018;border-radius:1px;opacity:0.38;"></div>
+        <div style="position:absolute;top:24%;left:50%;width:3px;height:4px;background:#b08010;border-radius:1px;opacity:0.36;"></div>
+      </div>
+      <div style="position:absolute;bottom:34%;left:0;width:22%;height:16%;">
+        <div style="position:absolute;bottom:0;left:10%;width:3%;height:74%;background:#050a16;"></div>
+        <div style="position:absolute;bottom:0;left:17%;width:5%;height:52%;background:#040a12;"></div>
+        <div style="position:absolute;bottom:0;left:25%;width:4%;height:90%;background:#050b17;"></div>
+        <div style="position:absolute;bottom:0;left:33%;width:6%;height:58%;background:#040a13;"></div>
+        <div style="position:absolute;top:10%;left:25.5%;width:4px;height:5px;background:#d09018;border-radius:1px;opacity:0.62;box-shadow:0 0 5px 2px rgba(210,144,24,0.3);"></div>
+        <div style="position:absolute;top:28%;left:11%;width:4px;height:5px;background:#c08010;border-radius:1px;opacity:0.5;box-shadow:0 0 5px 2px rgba(192,128,16,0.25);"></div>
+      </div>
+      <div style="position:absolute;bottom:34%;right:0;width:20%;height:14%;">
+        <div style="position:absolute;bottom:0;right:10%;width:3.5%;height:68%;background:#050a15;"></div>
+        <div style="position:absolute;bottom:0;right:17%;width:4%;height:50%;background:#040910;"></div>
+        <div style="position:absolute;bottom:0;right:24%;width:5%;height:84%;background:#050b16;"></div>
+        <div style="position:absolute;bottom:0;right:32%;width:3%;height:44%;background:#040910;"></div>
+        <div style="position:absolute;top:12%;right:24.5%;width:4px;height:5px;background:#d09018;border-radius:1px;opacity:0.56;box-shadow:0 0 5px 2px rgba(210,144,24,0.28);"></div>
+      </div>
+      <div style="position:absolute;bottom:34%;left:3.5%;width:2.5%;height:44%;background:linear-gradient(90deg,#04080e,#06091c,#04080e);border-radius:2px 2px 0 0;"></div>
+      <div style="position:absolute;bottom:76%;left:3%;width:3.5%;height:5.5%;background:#050a16;border-radius:50% 50% 0 0;"></div>
+      <div style="position:absolute;bottom:79%;left:3.6%;width:2.2%;height:2%;background:radial-gradient(circle,#f5e898,#dbb828);border-radius:50%;box-shadow:0 0 18px 9px rgba(240,225,100,0.44),0 0 40px 20px rgba(210,185,50,0.18);animation:cs-pulse 2.3s ease-in-out infinite;"></div>
+      <div class="cs-beam-anim" style="position:absolute;bottom:80%;left:5.8%;width:40%;height:1.4%;background:linear-gradient(to right,rgba(240,225,100,0.12),transparent);transform-origin:left center;border-radius:0 50% 50% 0;"></div>
+      <div style="position:absolute;bottom:19%;left:0;width:100%;height:16%;background:linear-gradient(0deg,#040810 0%,#060a1a 55%,#070c1e 100%);border-top:1px solid #0d1530;"></div>
+      <div style="position:absolute;bottom:34%;left:26%;width:3.5%;height:4%;background:#040810;"></div>
+      <div style="position:absolute;bottom:34%;left:31%;width:3.5%;height:4%;background:#050913;"></div>
+      <div style="position:absolute;bottom:34%;left:36%;width:3.5%;height:4%;background:#040811;"></div>
+      <div style="position:absolute;bottom:34%;left:41%;width:3.5%;height:4%;background:#050912;"></div>
+      <div style="position:absolute;bottom:34%;left:46%;width:3.5%;height:4%;background:#040811;"></div>
+      <div style="position:absolute;bottom:34%;left:51%;width:3.5%;height:4%;background:#050913;"></div>
+      <div style="position:absolute;bottom:34%;left:56%;width:3.5%;height:4%;background:#040810;"></div>
+      <div style="position:absolute;bottom:34%;left:61%;width:3.5%;height:4%;background:#050912;"></div>
+      <div style="position:absolute;bottom:34%;left:66%;width:3.5%;height:4%;background:#040810;"></div>
+      <div style="position:absolute;bottom:34%;left:71%;width:3.5%;height:4%;background:#050913;"></div>
+      <div style="position:absolute;bottom:34%;left:76%;width:3.5%;height:4%;background:#040811;"></div>
+      <div style="position:absolute;bottom:34%;left:81%;width:3.5%;height:4%;background:#050912;"></div>
+      <div style="position:absolute;bottom:34%;left:86%;width:3.5%;height:4%;background:#040810;"></div>
+      <div style="position:absolute;bottom:0;left:0;width:100%;height:19%;background:linear-gradient(0deg,#020508 0%,#040a1c 55%,#060f2a 100%);"></div>
+      <div class="cs-shimmer-layer" style="height:19%;"></div>
+      <div style="position:absolute;bottom:1%;right:9%;width:5%;height:16%;background:radial-gradient(ellipse 50% 100% at 50% 100%,rgba(210,200,170,0.1) 0%,transparent 65%);"></div>
+      <svg style="position:absolute;bottom:19%;left:5%;width:9%;height:55%;animation:cs-breathe 5s ease-in-out infinite;" viewBox="0 0 90 210" fill="none">
+        <defs>
+          <linearGradient id="an-sk" x1="0.25" y1="0" x2="0.75" y2="1"><stop offset="0%" stop-color="#c0b8d8"/><stop offset="40%" stop-color="#908598"/><stop offset="100%" stop-color="#484058"/></linearGradient>
+          <linearGradient id="an-arm" x1="0" y1="0" x2="1" y2="0.5"><stop offset="0%" stop-color="#1e2848"/><stop offset="100%" stop-color="#0e1630"/></linearGradient>
+          <linearGradient id="an-hlm" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stop-color="#283554"/><stop offset="55%" stop-color="#18254a"/><stop offset="100%" stop-color="#0e1835"/></linearGradient>
+          <radialGradient id="an-rim" cx="0.15" cy="0.25" r="0.75"><stop offset="0%" stop-color="rgba(195,210,250,0.3)"/><stop offset="100%" stop-color="rgba(195,210,250,0)"/></radialGradient>
+        </defs>
+        <ellipse cx="45" cy="207" rx="26" ry="5" fill="rgba(0,0,0,0.65)"/>
+        <line x1="74" y1="4" x2="74" y2="207" stroke="#1a2438" stroke-width="2.8"/>
+        <polygon points="70,4 78,4 74,0" fill="#283a54"/>
+        <ellipse cx="34" cy="205" rx="13" ry="5.5" fill="#10101e"/>
+        <ellipse cx="58" cy="205" rx="13" ry="5.5" fill="#0e0e1a"/>
+        <rect x="26" y="145" width="17" height="62" rx="6" fill="#16203e"/>
+        <rect x="50" y="145" width="17" height="62" rx="6" fill="#121c38"/>
+        <rect x="27" y="165" width="15" height="9" rx="3" fill="#1e2c4e"/>
+        <rect x="51" y="165" width="15" height="9" rx="3" fill="#1a2848"/>
+        <path d="M18 76 Q14 145 16 205 L34 205 L34 145 L58 145 L58 205 L76 205 Q78 145 74 76 Z" fill="#16223c"/>
+        <path d="M24 76 Q22 112 24 142 L45 142 L68 142 Q70 112 68 76 Q45 70 24 76 Z" fill="#1e2e50"/>
+        <path d="M24 78 Q22 108 24 136" stroke="rgba(190,210,250,0.13)" stroke-width="3" fill="none"/>
+        <line x1="45" y1="76" x2="45" y2="140" stroke="rgba(30,50,80,0.85)" stroke-width="2"/>
+        <rect x="18" y="136" width="56" height="11" rx="2" fill="#141c32"/>
+        <rect x="39" y="135" width="14" height="13" rx="2" fill="#c4a028"/>
+        <path d="M24 78 Q6 105 4 155 Q18 150 24 136 Q20 112 26 84 Z" fill="#0e1832" opacity="0.92"/>
+        <ellipse cx="23" cy="80" rx="11" ry="6.5" fill="#1e2e52"/>
+        <ellipse cx="67" cy="80" rx="11" ry="6.5" fill="#1a2a48"/>
+        <path d="M12 80 Q23 73 34 80" stroke="#c4a028" stroke-width="1.4" fill="none"/>
+        <path d="M56 80 Q67 73 78 80" stroke="#c4a028" stroke-width="1.4" fill="none"/>
+        <path d="M20 82 Q10 116 12 144 L24 142 Q24 114 28 86 Z" fill="url(#an-arm)"/>
+        <path d="M70 82 Q80 116 78 144 L66 142 Q66 114 62 86 Z" fill="#121e38"/>
+        <ellipse cx="76" cy="144" rx="7.5" ry="5.5" fill="url(#an-sk)"/>
+        <ellipse cx="17" cy="144" rx="7.5" ry="5.5" fill="url(#an-sk)"/>
+        <rect x="39" y="58" width="13" height="20" rx="5" fill="url(#an-sk)"/>
+        <ellipse cx="45" cy="40" rx="21" ry="24" fill="url(#an-hlm)"/>
+        <path d="M34 20 Q45 12 56 20 L52 16 Q45 10 38 16 Z" fill="#1a2848"/>
+        <rect x="43" y="10" width="4" height="12" rx="2" fill="#c4a028"/>
+        <rect x="43" y="28" width="4" height="24" rx="2" fill="#18263e"/>
+        <path d="M25 36 Q23 56 25 68" stroke="#18263e" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M65 36 Q67 56 65 68" stroke="#18263e" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M24 38 Q45 30 66 38" stroke="#c4a028" stroke-width="1.3" fill="none"/>
+        <ellipse cx="45" cy="48" rx="14" ry="16" fill="url(#an-sk)"/>
+        <path d="M34 40 Q39 37 44 40" stroke="#2c2840" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+        <path d="M46 40 Q51 37 56 40" stroke="#2c2840" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+        <ellipse cx="39" cy="45" rx="4.5" ry="3.5" fill="#d8d0e8"/>
+        <ellipse cx="51" cy="45" rx="4.5" ry="3.5" fill="#d8d0e8"/>
+        <ellipse cx="39.5" cy="45" rx="2.6" ry="2.8" fill="#2a2840"/>
+        <ellipse cx="51.5" cy="45" rx="2.6" ry="2.8" fill="#2a2840"/>
+        <ellipse cx="40" cy="45" rx="1.3" ry="1.4" fill="#070610"/>
+        <ellipse cx="52" cy="45" rx="1.3" ry="1.4" fill="#070610"/>
+        <circle cx="41" cy="43.8" r="0.8" fill="rgba(255,255,255,0.7)"/>
+        <circle cx="53" cy="43.8" r="0.8" fill="rgba(255,255,255,0.7)"/>
+        <path d="M43 52 Q40 58 38 61 Q44 63 52 61 Q50 58 47 52 Z" fill="rgba(30,20,40,0.2)"/>
+        <path d="M38 61 Q44 63 52 61" stroke="rgba(60,40,70,0.5)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+        <path d="M38 66 Q45 64 52 66" stroke="#6c5875" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+        <ellipse cx="45" cy="48" rx="14" ry="16" fill="url(#an-rim)" opacity="0.55"/>
+        <path d="M24 34 Q22 54 26 68" stroke="rgba(195,210,250,0.18)" stroke-width="2.5" fill="none"/>
+      </svg>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 92% 88% at 50% 48%,transparent 42%,rgba(1,2,8,0.72) 100%);pointer-events:none;"></div>`,
 
     'storm-hits': `
-      <div style="position:absolute;inset:0;background:linear-gradient(190deg,#06020e 0%,#0e0514 25%,#180a1e 55%,#0c0410 100%);"></div>
-      <div style="position:absolute;top:0;left:0;width:100%;height:65%;background:radial-gradient(ellipse 130% 85% at 25% 0%,rgba(50,18,70,0.82) 0%,transparent 55%),radial-gradient(ellipse 90% 65% at 75% 5%,rgba(38,12,55,0.65) 0%,transparent 50%);"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(185deg,#030108 0%,#0a0412 25%,#16071c 52%,#0c0410 80%,#060208 100%);"></div>
+      <div style="position:absolute;top:0;left:0;width:100%;height:55%;background:radial-gradient(ellipse 150% 80% at 28% 0%,rgba(55,18,75,0.85) 0%,transparent 52%),radial-gradient(ellipse 100% 65% at 78% 8%,rgba(42,12,58,0.72) 0%,transparent 48%);"></div>
       <div class="cs-rain"></div>
-      <div class="cs-rain" style="opacity:0.5;animation-delay:-0.22s;transform:rotate(3deg) scale(1.08);"></div>
+      <div class="cs-rain" style="opacity:0.55;animation-delay:-0.28s;transform:rotate(4deg) scale(1.1);"></div>
       <div class="cs-lightning-overlay"></div>
-      <svg style="position:absolute;top:6%;left:46%;width:7%;height:32%;opacity:0.65;" viewBox="0 0 40 120" fill="none">
-        <polygon points="28,0 7,55 22,55 11,120 40,48 24,48" fill="white" opacity="0.55"/>
+      <svg style="position:absolute;top:4%;left:62%;width:5%;height:30%;opacity:0.68;" viewBox="0 0 40 125" fill="none"><polygon points="26,0 6,58 20,58 12,125 42,50 26,50" fill="rgba(200,200,255,0.6)"/></svg>
+      <div style="position:absolute;bottom:28%;left:0;width:100%;height:18%;">
+        <div style="position:absolute;bottom:0;left:5%;width:8%;height:62%;background:#06060c;"></div>
+        <div style="position:absolute;bottom:0;left:7%;width:3%;height:88%;background:#050508;transform:rotate(-3deg);transform-origin:bottom left;"></div>
+        <div style="position:absolute;bottom:0;left:18%;width:9%;height:52%;background:#060608;"></div>
+        <div style="position:absolute;bottom:0;left:30%;width:7%;height:75%;background:#05050a;"></div>
+        <div style="position:absolute;bottom:0;left:40%;width:12%;height:48%;background:#060608;border-radius:2px 2px 0 0;"></div>
+        <div style="position:absolute;bottom:0;left:55%;width:8%;height:65%;background:#05050a;"></div>
+        <div style="position:absolute;bottom:0;left:66%;width:5%;height:42%;background:#060608;"></div>
+        <div style="position:absolute;bottom:0;left:75%;width:9%;height:56%;background:#05050a;transform:rotate(2deg);transform-origin:bottom right;"></div>
+        <div style="position:absolute;bottom:0;left:86%;width:6%;height:70%;background:#050508;"></div>
+      </div>
+      <div style="position:absolute;bottom:0;left:0;width:100%;height:30%;background:linear-gradient(0deg,#050812 0%,#08101e 52%,#0c162a 80%,#10182e 100%);"></div>
+      <div class="cs-wave-band-fast" style="position:absolute;bottom:27%;left:0;width:200%;height:6%;background:repeating-linear-gradient(90deg,transparent 0,transparent 40px,rgba(90,110,160,0.07) 42px,transparent 44px);"></div>
+      <svg style="position:absolute;bottom:27%;left:20%;width:13%;height:54%;animation:cs-breathe 3.2s ease-in-out infinite;" viewBox="0 0 105 200" fill="none">
+        <defs>
+          <linearGradient id="st-sk" x1="0.25" y1="0" x2="0.75" y2="1"><stop offset="0%" stop-color="#a89070"/><stop offset="48%" stop-color="#887058"/><stop offset="100%" stop-color="#503828"/></linearGradient>
+          <linearGradient id="st-dr" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stop-color="#3c3028"/><stop offset="100%" stop-color="#1e1a12"/></linearGradient>
+          <radialGradient id="st-rim" cx="0.85" cy="0.2" r="0.65"><stop offset="0%" stop-color="rgba(200,180,255,0.2)"/><stop offset="100%" stop-color="rgba(200,180,255,0)"/></radialGradient>
+        </defs>
+        <ellipse cx="46" cy="197" rx="30" ry="5" fill="rgba(0,0,0,0.55)"/>
+        <path d="M35 95 Q21 148 17 196 L55 196 L59 178 L67 196 L90 196 Q82 148 73 98 Z" fill="url(#st-dr)"/>
+        <path d="M73 98 Q91 132 95 196 L90 196 Q82 148 73 98 Z" fill="#2e2820" opacity="0.75"/>
+        <path d="M35 65 Q29 98 35 98 L73 98 Q79 98 73 65 Z" fill="#2c2618"/>
+        <path d="M29 65 Q11 78 7 100 L19 106 Q23 88 35 74 Z" fill="#221e12" opacity="0.8"/>
+        <path d="M35 68 Q17 88 9 112 L19 118 Q29 96 39 78 Z" fill="#26201a"/>
+        <ellipse cx="14" cy="118" rx="8.5" ry="5.5" fill="url(#st-sk)" transform="rotate(-25 14 118)"/>
+        <path d="M71 68 Q81 85 79 108 L69 104 Q71 86 63 74 Z" fill="#201a14"/>
+        <ellipse cx="75" cy="112" rx="7.5" ry="5" fill="url(#st-sk)" transform="rotate(18 75 112)"/>
+        <rect x="45" y="49" width="11" height="18" rx="5" fill="url(#st-sk)"/>
+        <ellipse cx="53" cy="35" rx="17" ry="19" fill="url(#st-sk)"/>
+        <path d="M36 20 Q53 8 69 16 Q79 22 81 34 Q75 26 66 22 Q53 14 37 22 Z" fill="#180e05"/>
+        <path d="M37 22 Q23 14 13 20 Q19 27 13 36" stroke="#1a1006" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <path d="M39 20 Q29 12 21 18 Q26 26 19 34" stroke="#160d05" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+        <path d="M68 20 Q85 12 101 10 Q91 20 87 32" stroke="#1a1006" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <path d="M71 24 Q89 16 103 16 Q95 26 91 36" stroke="#160c04" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+        <path d="M65 18 Q81 8 97 6" stroke="#1a1006" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.85"/>
+        <ellipse cx="36" cy="35" rx="4" ry="5.5" fill="#80603a"/>
+        <path d="M43 24 Q50 19 57 22" stroke="#2a1408" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M58 22 Q64 19 69 24" stroke="#2a1408" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+        <ellipse cx="48" cy="31" rx="5.5" ry="5" fill="#d8c8a0"/>
+        <ellipse cx="48.5" cy="31" rx="3.5" ry="4" fill="#3c2010"/>
+        <ellipse cx="49" cy="31" rx="1.7" ry="2" fill="#060402"/>
+        <circle cx="50.2" cy="29.5" r="1.1" fill="rgba(255,255,255,0.8)"/>
+        <path d="M42.5 26.5 Q48 23 53.5 26.5" stroke="#2a1408" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+        <path d="M43 35.5 Q48 38 53 35.5" stroke="rgba(70,30,10,0.4)" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <ellipse cx="61" cy="31" rx="5.5" ry="5" fill="#d8c8a0"/>
+        <ellipse cx="61.5" cy="31" rx="3.5" ry="4" fill="#3c2010"/>
+        <ellipse cx="62" cy="31" rx="1.7" ry="2" fill="#060402"/>
+        <circle cx="63.2" cy="29.5" r="1.1" fill="rgba(255,255,255,0.8)"/>
+        <path d="M55.5 26.5 Q61 23 66.5 26.5" stroke="#2a1408" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+        <path d="M51 37 Q48 44 45 47 Q53 49 61 47 Q58 44 55 37 Z" fill="rgba(50,20,5,0.18)"/>
+        <path d="M45 47 Q53 49 61 47" stroke="rgba(80,35,10,0.52)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+        <path d="M46 53 Q54 49 62 53 Q59 59 54 61 Q49 59 46 53 Z" fill="#882015"/>
+        <path d="M48 55.5 L50 58 M53 54.5 L53 58 M57 55.5 L59 58" stroke="#ccc8b8" stroke-width="1.1" stroke-linecap="round"/>
+        <path d="M46 53 Q54 49 62 53" stroke="rgba(0,0,0,0.25)" stroke-width="1" fill="none"/>
+        <ellipse cx="53" cy="35" rx="17" ry="19" fill="url(#st-rim)" opacity="0.45"/>
+        <ellipse cx="53" cy="35" rx="17" ry="19" fill="rgba(55,35,75,0.2)"/>
       </svg>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:33%;background:linear-gradient(0deg,#05080e 0%,#08101e 55%,#0a1225 100%);"></div>
-      <div class="cs-wave-band-fast" style="position:absolute;bottom:30%;left:0;width:200%;height:8%;background:repeating-linear-gradient(90deg,transparent 0,transparent 35px,rgba(80,110,160,0.06) 37px,transparent 39px);"></div>
-      <div style="position:absolute;bottom:30%;left:10%;width:8%;height:26%;background:#060810;"></div>
-      <div style="position:absolute;bottom:54%;left:11%;width:6%;height:4.5%;background:#060810;border-radius:2px 2px 0 0;"></div>
-      <div style="position:absolute;bottom:30%;left:24%;width:7%;height:22%;background:#05070e;transform:rotate(-2.5deg);transform-origin:bottom left;"></div>
-      <div style="position:absolute;bottom:51%;left:27%;width:3%;height:2.5%;background:#05070e;transform:rotate(14deg);"></div>
-      <div style="position:absolute;bottom:30%;left:35%;width:9%;height:23%;background:#060810;"></div>
-      <div style="position:absolute;bottom:30%;left:48%;width:7%;height:19%;background:#050710;transform:rotate(3.5deg);transform-origin:bottom right;"></div>
-      <div style="position:absolute;bottom:30%;left:59%;width:30%;height:3.5%;background:#040610;"></div>
-      <div style="position:absolute;bottom:30%;left:61%;width:2%;height:10%;background:#040610;"></div>
-      <div style="position:absolute;bottom:30%;left:78%;width:2%;height:9%;background:#040610;transform:rotate(11deg);"></div>
-      <div style="position:absolute;bottom:30%;left:88%;width:2%;height:11%;background:#040610;"></div>`,
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 90% 85% at 50% 45%,transparent 38%,rgba(3,1,6,0.78) 100%);pointer-events:none;"></div>`,
 
     'veyra-ruins': `
-      <div style="position:absolute;inset:0;background:linear-gradient(190deg,#1a0c07 0%,#3e2008 18%,#702e0a 32%,#a86028 48%,#c48035 62%,#a06025 72%,#3d1e08 85%,#0d0808 100%);"></div>
-      <div style="position:absolute;top:42%;left:0;width:100%;height:22%;background:linear-gradient(180deg,transparent,rgba(130,75,20,0.07),transparent);"></div>
-      <div style="position:absolute;bottom:30%;left:0;width:100%;height:12%;background:linear-gradient(0deg,rgba(160,130,80,0.1) 0%,transparent 100%);"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:34%;background:linear-gradient(0deg,#060c14 0%,#0a1424 42%,#0d1a30 72%,#10203c 100%);"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:34%;background:linear-gradient(0deg,transparent,rgba(90,45,10,0.07) 60%,rgba(140,65,15,0.05) 100%);"></div>
-      <div class="cs-shimmer-layer" style="height:34%;"></div>
-      <div style="position:absolute;bottom:32%;left:7%;width:9%;height:24%;background:#0a0c12;"></div>
-      <div style="position:absolute;bottom:54%;left:8%;width:3%;height:9%;background:#090b11;"></div>
-      <div style="position:absolute;bottom:44%;left:9.5%;width:4%;height:5%;background:#050710;"></div>
-      <div style="position:absolute;bottom:32%;left:21%;width:6%;height:32%;background:#090c12;"></div>
-      <div style="position:absolute;bottom:48%;left:23%;width:0.8px;height:14%;background:#050810;transform:rotate(2deg);"></div>
-      <div style="position:absolute;bottom:32%;left:31%;width:14%;height:8%;background:#0a0c12;border-radius:3px 3px 0 0;clip-path:polygon(0% 0%,38% 0%,38% 100%,62% 100%,62% 0%,100% 0%,100% 55%,62% 100%,38% 100%,0% 55%);"></div>
-      <div style="position:absolute;bottom:32%;left:50%;width:7%;height:19%;background:#09090e;"></div>
-      <div style="position:absolute;bottom:32%;left:61%;width:1.5%;height:14%;background:#080a10;"></div>
-      <div style="position:absolute;bottom:32%;left:66%;width:1.5%;height:9%;background:#080a10;transform:rotate(5deg);"></div>
-      <div style="position:absolute;bottom:32%;left:71%;width:1.5%;height:16%;background:#080a10;"></div>
-      <div style="position:absolute;bottom:32%;left:79%;width:8%;height:13%;background:#0a0c14;opacity:0.65;"></div>
-      <div style="position:absolute;bottom:32%;left:88%;width:6%;height:17%;background:#090b12;opacity:0.55;"></div>
-      <div style="position:absolute;bottom:31.5%;left:0;width:25%;height:2.5%;background:#0a0c14;"></div>
-      <svg style="position:absolute;bottom:32%;left:16%;width:3.2%;height:22%;" viewBox="0 0 36 112" fill="none">
-        <ellipse cx="18" cy="9" rx="8.5" ry="9" fill="#07090e"/>
-        <path d="M10 17 Q6 62 4 110 L32 110 Q30 62 26 17 Z" fill="#080a12"/>
-        <path d="M11 25 Q1 40 0 56" stroke="#07090e" stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M25 25 Q35 40 36 56" stroke="#07090e" stroke-width="4.5" stroke-linecap="round"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1e1008 0%,#3c1c08 18%,#6e2c0a 34%,#a85e24 50%,#c87e32 62%,#a06026 72%,#3a1c08 85%,#0c0606 100%);"></div>
+      <div style="position:absolute;top:35%;left:0;width:100%;height:20%;background:linear-gradient(180deg,transparent,rgba(180,100,30,0.07),transparent);"></div>
+      <div style="position:absolute;bottom:34%;left:0;right:0;height:5%;background:linear-gradient(0deg,rgba(180,120,40,0.12) 0%,transparent 100%);"></div>
+      <div style="position:absolute;bottom:0;left:0;width:100%;height:36%;background:linear-gradient(0deg,#060c14 0%,#0a1424 42%,#0d1a30 72%,#101e3a 100%);"></div>
+      <div style="position:absolute;bottom:0;left:0;width:100%;height:36%;background:linear-gradient(0deg,transparent,rgba(130,70,15,0.07) 60%,rgba(160,80,20,0.05) 100%);"></div>
+      <div class="cs-shimmer-layer cs-shimmer-warm" style="height:36%;opacity:0.55;"></div>
+      <div style="position:absolute;bottom:34%;left:5%;width:10%;height:26%;background:#0a0c12;"></div>
+      <div style="position:absolute;bottom:58%;left:6%;width:3.5%;height:10%;background:#090b11;"></div>
+      <div style="position:absolute;bottom:50%;left:8%;width:5%;height:5%;background:#05070f;"></div>
+      <div style="position:absolute;bottom:34%;left:20%;width:7%;height:34%;background:#090c13;"></div>
+      <div style="position:absolute;bottom:50%;left:22%;width:0.8px;height:16%;background:#050810;transform:rotate(2.5deg);"></div>
+      <div style="position:absolute;bottom:34%;left:32%;width:16%;height:9%;background:#0a0c12;border-radius:3px 3px 0 0;clip-path:polygon(0% 0%,38% 0%,38% 100%,62% 100%,62% 0%,100% 0%,100% 55%,62% 100%,38% 100%,0% 55%);"></div>
+      <div style="position:absolute;bottom:34%;left:52%;width:8%;height:20%;background:#09090e;"></div>
+      <div style="position:absolute;bottom:34%;left:64%;width:1.6%;height:15%;background:#080a10;"></div>
+      <div style="position:absolute;bottom:34%;left:69%;width:1.6%;height:10%;background:#080a10;transform:rotate(5deg);"></div>
+      <div style="position:absolute;bottom:34%;left:74%;width:1.6%;height:17%;background:#080a10;"></div>
+      <div style="position:absolute;bottom:34%;left:82%;width:9%;height:14%;background:#0a0c14;opacity:0.7;"></div>
+      <div style="position:absolute;bottom:34%;left:93%;width:6%;height:18%;background:#090b12;opacity:0.58;"></div>
+      <svg style="position:absolute;bottom:34%;left:31%;width:12%;height:48%;animation:cs-breathe 6s ease-in-out infinite;" viewBox="0 0 105 185" fill="none">
+        <defs>
+          <linearGradient id="vr-sk" x1="0.8" y1="0" x2="0.2" y2="1"><stop offset="0%" stop-color="#c87840"/><stop offset="45%" stop-color="#a05828"/><stop offset="100%" stop-color="#5a2e12"/></linearGradient>
+          <linearGradient id="vr-ct" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#1e2640"/><stop offset="100%" stop-color="#0c1228"/></linearGradient>
+          <radialGradient id="vr-dawn" cx="0.9" cy="0.4" r="0.7"><stop offset="0%" stop-color="rgba(220,140,60,0.35)"/><stop offset="100%" stop-color="rgba(220,140,60,0)"/></radialGradient>
+        </defs>
+        <ellipse cx="52" cy="183" rx="28" ry="5" fill="rgba(0,0,0,0.5)"/>
+        <ellipse cx="32" cy="182" rx="13" ry="5" fill="#160e08"/>
+        <ellipse cx="56" cy="182" rx="13" ry="5" fill="#120c06"/>
+        <rect x="25" y="130" width="16" height="52" rx="6" fill="#16202c"/>
+        <rect x="48" y="130" width="16" height="52" rx="6" fill="#121a24"/>
+        <path d="M16 70 Q12 132 14 182 L32 182 L32 130 L56 130 L56 182 L74 182 Q76 132 72 70 Z" fill="url(#vr-ct)"/>
+        <path d="M22 70 Q20 106 22 128 L52 128 L72 128 Q74 106 72 70 Q52 64 22 70 Z" fill="#202e48"/>
+        <path d="M72 72 Q78 104 76 128" stroke="rgba(220,140,60,0.18)" stroke-width="3" fill="none"/>
+        <rect x="14" y="122" width="60" height="10" rx="2" fill="#12182a"/>
+        <path d="M22 72 Q4 100 2 148 Q16 144 22 128 Q18 106 24 78 Z" fill="#0e1828" opacity="0.9"/>
+        <ellipse cx="20" cy="74" rx="12" ry="6.5" fill="#1a2840"/>
+        <ellipse cx="68" cy="74" rx="12" ry="6.5" fill="#182440"/>
+        <path d="M18 76 Q8 112 10 132 L22 130 Q22 110 26 80 Z" fill="#121e36"/>
+        <path d="M70 76 Q80 112 78 132 L66 130 Q66 110 62 80 Z" fill="#0e1830"/>
+        <ellipse cx="14" cy="134" rx="8" ry="5.5" fill="url(#vr-sk)"/>
+        <ellipse cx="78" cy="134" rx="8" ry="5.5" fill="url(#vr-sk)"/>
+        <rect x="43" y="53" width="13" height="19" rx="5" fill="url(#vr-sk)"/>
+        <ellipse cx="52" cy="35" rx="17" ry="20" fill="url(#vr-sk)"/>
+        <path d="M35 18 Q52 10 68 18 Q65 22 52 20 Q39 22 35 18 Z" fill="#2a1a0a"/>
+        <path d="M35 20 Q28 26 28 35 Q28 24 34 20 Z" fill="#2a1a0a"/>
+        <path d="M68 20 Q74 26 74 35 Q74 24 68 20 Z" fill="#221608"/>
+        <path d="M35 22 Q30 30 30 40" stroke="#2a1a0a" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M68 22 Q72 30 72 40" stroke="#221608" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <ellipse cx="35" cy="36" rx="4" ry="5.5" fill="#8a5828"/>
+        <path d="M40 27 Q46 24 52 27" stroke="#2c1808" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M53 27 Q58 24 63 27" stroke="#2c1808" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+        <ellipse cx="44" cy="34" rx="4.5" ry="3.5" fill="#c8a880"/>
+        <ellipse cx="57" cy="34" rx="4.5" ry="3.5" fill="#c8a880"/>
+        <ellipse cx="44.5" cy="34" rx="2.6" ry="2.8" fill="#3a2010"/>
+        <ellipse cx="57.5" cy="34" rx="2.6" ry="2.8" fill="#3a2010"/>
+        <ellipse cx="45" cy="34" rx="1.3" ry="1.4" fill="#0a0605"/>
+        <ellipse cx="58" cy="34" rx="1.3" ry="1.4" fill="#0a0605"/>
+        <circle cx="46" cy="32.8" r="0.9" fill="rgba(255,255,255,0.72)"/>
+        <circle cx="59" cy="32.8" r="0.9" fill="rgba(255,255,255,0.72)"/>
+        <path d="M50 41 Q47 47 44 50 Q52 52 60 50 Q57 47 54 41 Z" fill="rgba(80,30,8,0.2)"/>
+        <path d="M44 50 Q52 52 60 50" stroke="rgba(100,45,12,0.5)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+        <path d="M44 57 Q52 55 60 57" stroke="#8a4820" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <ellipse cx="52" cy="35" rx="17" ry="20" fill="url(#vr-dawn)" opacity="0.6"/>
       </svg>
-      <div style="position:absolute;bottom:48%;left:7%;width:4%;height:12%;background:linear-gradient(0deg,rgba(90,60,30,0.07) 0%,transparent 100%);"></div>`,
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 94% 90% at 50% 50%,transparent 40%,rgba(4,2,2,0.65) 100%);pointer-events:none;"></div>`,
 
     'marenic-fleet': `
-      <div style="position:absolute;inset:0;background:linear-gradient(190deg,#080c14 0%,#0e162a 28%,#14203e 58%,#101828 78%,#0a1020 100%);"></div>
-      <div style="position:absolute;top:0;left:0;width:100%;height:58%;background:radial-gradient(ellipse 120% 80% at 18% 0%,rgba(20,30,58,0.68) 0%,transparent 55%),radial-gradient(ellipse 90% 68% at 82% 5%,rgba(15,24,48,0.55) 0%,transparent 50%);"></div>
-      <div style="position:absolute;top:46%;left:0;width:100%;height:7%;background:linear-gradient(0deg,transparent,rgba(28,42,80,0.18),transparent);"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:52%;background:linear-gradient(0deg,#050a14 0%,#09122a 42%,#0d1a3a 80%,#0f1e42 100%);"></div>
-      <div class="cs-shimmer-layer" style="height:52%;opacity:0.35;"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(185deg,#070c14 0%,#0d162a 28%,#12203e 58%,#101828 78%,#080e1c 100%);"></div>
+      <div id="cs-sf" style="position:absolute;top:0;left:0;width:1px;height:1px;"></div>
+      <div style="position:absolute;top:5%;left:10%;width:4%;padding-top:4%;background:radial-gradient(circle at 38% 38%,#d8d0c0,#b8b0a8);border-radius:50%;box-shadow:0 0 16px 8px rgba(210,200,170,0.2),0 0 45px 22px rgba(190,180,150,0.09);"></div>
+      <div style="position:absolute;top:42%;left:0;width:100%;height:8%;background:linear-gradient(0deg,transparent,rgba(28,42,80,0.16),transparent);"></div>
+      <div style="position:absolute;bottom:0;left:0;width:100%;height:52%;background:linear-gradient(0deg,#04080e 0%,#08102a 42%,#0c1838 80%,#0e1c42 100%);"></div>
+      <div class="cs-shimmer-layer" style="height:52%;opacity:0.32;"></div>
       <div class="cs-wave-band" style="position:absolute;bottom:49%;left:0;width:200%;height:6%;background:repeating-linear-gradient(90deg,transparent 0,transparent 42px,rgba(70,100,160,0.05) 44px,transparent 46px);"></div>
-      <svg style="position:absolute;bottom:52%;left:3%;width:9%;opacity:0.42;" viewBox="0 0 120 68" fill="none">
-        <path d="M5 44 Q60 53 115 44 L108 65 Q60 72 12 65 Z" fill="#080c18"/><line x1="36" y1="44" x2="36" y2="7" stroke="#080c18" stroke-width="2.5"/><line x1="70" y1="44" x2="70" y2="2" stroke="#080c18" stroke-width="2.5"/>
-        <polygon points="36,9 56,20 36,42" fill="#0d1430"/><polygon points="70,4 96,17 70,41" fill="#0d1430"/>
+      <svg style="position:absolute;bottom:53%;left:4%;width:8%;opacity:0.4;" viewBox="0 0 120 68" fill="none"><path d="M5 44 Q60 53 115 44 L108 65 Q60 72 12 65 Z" fill="#070c18"/><line x1="36" y1="44" x2="36" y2="7" stroke="#070c18" stroke-width="2.5"/><line x1="70" y1="44" x2="70" y2="2" stroke="#070c18" stroke-width="2.5"/><polygon points="36,9 56,20 36,42" fill="#0c1430"/><polygon points="70,4 96,17 70,41" fill="#0c1430"/></svg>
+      <svg style="position:absolute;bottom:53%;left:18%;width:10%;opacity:0.52;" viewBox="0 0 120 68" fill="none"><path d="M5 44 Q60 53 115 44 L108 65 Q60 72 12 65 Z" fill="#07090f"/><line x1="36" y1="44" x2="36" y2="7" stroke="#07090f" stroke-width="2.5"/><line x1="70" y1="44" x2="70" y2="2" stroke="#07090f" stroke-width="2.5"/><polygon points="36,9 56,20 36,42" fill="#0b1225"/><polygon points="70,4 96,17 70,41" fill="#0b1225"/></svg>
+      <svg style="position:absolute;bottom:52%;left:32%;width:13%;opacity:0.68;" viewBox="0 0 140 78" fill="none"><path d="M5 50 Q70 60 135 50 L126 74 Q70 82 14 74 Z" fill="#060910"/><line x1="40" y1="50" x2="40" y2="9" stroke="#060910" stroke-width="3"/><line x1="80" y1="50" x2="80" y2="3" stroke="#060910" stroke-width="3"/><polygon points="40,11 62,24 40,48" fill="#0a1322"/><polygon points="80,5 110,20 80,47" fill="#0a1322"/></svg>
+      <svg style="position:absolute;bottom:51%;left:50%;width:16%;opacity:0.82;" viewBox="0 0 170 88" fill="none"><path d="M6 56 Q85 68 164 56 L154 82 Q85 92 16 82 Z" fill="#050810"/><line x1="50" y1="56" x2="50" y2="10" stroke="#050810" stroke-width="3.5"/><line x1="98" y1="56" x2="98" y2="3" stroke="#050810" stroke-width="3.5"/><line x1="140" y1="54" x2="140" y2="17" stroke="#050810" stroke-width="3"/><polygon points="50,12 80,27 50,54" fill="#091020"/><polygon points="98,5 134,24 98,53" fill="#091020"/><polygon points="50,12 78,18 50,27" fill="#440a0a" opacity="0.95"/></svg>
+      <svg style="position:absolute;bottom:44%;left:68%;width:24%;" viewBox="0 0 240 110" fill="none"><path d="M8 74 Q120 90 232 74 L220 104 Q120 114 20 104 Z" fill="#040810"/><line x1="72" y1="74" x2="72" y2="16" stroke="#040810" stroke-width="4"/><line x1="138" y1="74" x2="138" y2="5" stroke="#040810" stroke-width="4"/><line x1="195" y1="72" x2="195" y2="26" stroke="#040810" stroke-width="3.5"/><polygon points="72,18 112,36 72,70" fill="#09101e"/><polygon points="138,7 186,30 138,71" fill="#09101e"/><polygon points="72,18 110,24 72,34" fill="#560c0c" opacity="0.92"/></svg>
+      <div style="position:absolute;bottom:0;left:0;width:22%;height:58%;background:#030408;clip-path:polygon(0% 100%,0% 35%,6% 25%,12% 20%,18% 30%,22% 100%);"></div>
+      <svg style="position:absolute;bottom:44%;left:12%;width:9%;height:38%;animation:cs-breathe 5.5s ease-in-out infinite;" viewBox="0 0 80 155" fill="none">
+        <defs>
+          <linearGradient id="mf-sk" x1="0.75" y1="0" x2="0.25" y2="1"><stop offset="0%" stop-color="#9898c0"/><stop offset="45%" stop-color="#787098"/><stop offset="100%" stop-color="#363054"/></linearGradient>
+          <linearGradient id="mf-cl" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0%" stop-color="#18243c"/><stop offset="100%" stop-color="#0a1028"/></linearGradient>
+          <radialGradient id="mf-moon" cx="0.2" cy="0.3" r="0.65"><stop offset="0%" stop-color="rgba(190,210,255,0.28)"/><stop offset="100%" stop-color="rgba(190,210,255,0)"/></radialGradient>
+        </defs>
+        <ellipse cx="40" cy="152" rx="22" ry="4.5" fill="rgba(0,0,0,0.6)"/>
+        <ellipse cx="28" cy="150" rx="11" ry="4.5" fill="#0e0e18"/>
+        <ellipse cx="52" cy="150" rx="11" ry="4.5" fill="#0c0c14"/>
+        <rect x="22" y="105" width="13" height="46" rx="5" fill="#12203a"/>
+        <rect x="44" y="105" width="13" height="46" rx="5" fill="#0e1c34"/>
+        <path d="M14 57 Q11 106 12 150 L28 150 L28 105 L52 105 L52 150 L68 150 Q69 106 66 57 Z" fill="url(#mf-cl)"/>
+        <path d="M20 57 Q18 90 20 104 L40 104 L62 104 Q64 90 62 57 Q40 52 20 57 Z" fill="#1a2848"/>
+        <path d="M62 59 Q67 88 66 102" stroke="rgba(190,210,255,0.15)" stroke-width="3" fill="none"/>
+        <rect x="12" y="98" width="56" height="9" rx="2" fill="#101828"/>
+        <path d="M20 59 Q2 80 0 115 Q12 112 20 100 Q16 82 22 64 Z" fill="#0c1830" opacity="0.92"/>
+        <ellipse cx="18" cy="62" rx="10" ry="5.5" fill="#162240"/>
+        <ellipse cx="62" cy="62" rx="10" ry="5.5" fill="#122040"/>
+        <path d="M14 64 Q4 92 6 106 L18 104 Q18 82 22 68 Z" fill="#10203a"/>
+        <path d="M64 64 Q74 92 72 106 L60 104 Q60 82 56 68 Z" fill="#0e1c36"/>
+        <ellipse cx="10" cy="108" rx="7" ry="5" fill="url(#mf-sk)"/>
+        <ellipse cx="70" cy="108" rx="7" ry="5" fill="url(#mf-sk)"/>
+        <rect x="35" y="42" width="11" height="17" rx="4" fill="url(#mf-sk)"/>
+        <ellipse cx="40" cy="28" rx="16" ry="18" fill="url(#mf-sk)"/>
+        <path d="M24 14 Q40 6 56 14 Q52 18 40 16 Q28 18 24 14 Z" fill="#16100a"/>
+        <path d="M24 15 Q20 23 20 30" stroke="#16100a" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+        <path d="M56 15 Q60 23 60 30" stroke="#14100a" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <ellipse cx="25" cy="29" rx="3.5" ry="5" fill="#706088"/>
+        <path d="M30 20 Q36 16 42 19" stroke="#201a28" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+        <path d="M43 19 Q48 16 53 20" stroke="#201a28" stroke-width="2.1" stroke-linecap="round" fill="none"/>
+        <ellipse cx="33" cy="27" rx="4.5" ry="3.5" fill="#c8c0d8"/>
+        <ellipse cx="47" cy="27" rx="4.5" ry="3.5" fill="#c8c0d8"/>
+        <ellipse cx="33.5" cy="27" rx="2.5" ry="2.7" fill="#24203c"/>
+        <ellipse cx="47.5" cy="27" rx="2.5" ry="2.7" fill="#24203c"/>
+        <ellipse cx="34" cy="27" rx="1.2" ry="1.3" fill="#060610"/>
+        <ellipse cx="48" cy="27" rx="1.2" ry="1.3" fill="#060610"/>
+        <circle cx="35" cy="26" r="0.8" fill="rgba(255,255,255,0.68)"/>
+        <circle cx="49" cy="26" r="0.8" fill="rgba(255,255,255,0.68)"/>
+        <path d="M38 33 Q35 39 32 42 Q40 44 48 42 Q45 39 42 33 Z" fill="rgba(30,20,45,0.2)"/>
+        <path d="M32 42 Q40 44 48 42" stroke="rgba(55,35,70,0.5)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <path d="M33 47 Q40 45 47 47" stroke="#5a5068" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <ellipse cx="40" cy="28" rx="16" ry="18" fill="url(#mf-moon)" opacity="0.55"/>
       </svg>
-      <svg style="position:absolute;bottom:52%;left:17%;width:10%;opacity:0.55;" viewBox="0 0 120 68" fill="none">
-        <path d="M5 44 Q60 53 115 44 L108 65 Q60 72 12 65 Z" fill="#07090f"/><line x1="36" y1="44" x2="36" y2="7" stroke="#07090f" stroke-width="2.5"/><line x1="70" y1="44" x2="70" y2="2" stroke="#07090f" stroke-width="2.5"/>
-        <polygon points="36,9 56,20 36,42" fill="#0b1225"/><polygon points="70,4 96,17 70,41" fill="#0b1225"/>
-      </svg>
-      <svg style="position:absolute;bottom:51%;left:32%;width:12%;opacity:0.7;" viewBox="0 0 140 78" fill="none">
-        <path d="M5 50 Q70 60 135 50 L126 74 Q70 82 14 74 Z" fill="#060910"/><line x1="40" y1="50" x2="40" y2="9" stroke="#060910" stroke-width="3"/><line x1="80" y1="50" x2="80" y2="3" stroke="#060910" stroke-width="3"/>
-        <polygon points="40,11 62,24 40,48" fill="#0a1322"/><polygon points="80,5 110,20 80,47" fill="#0a1322"/>
-        <line x1="126" y1="48" x2="148" y2="34" stroke="#060910" stroke-width="2"/>
-      </svg>
-      <svg style="position:absolute;bottom:50%;left:50%;width:15%;opacity:0.82;" viewBox="0 0 170 88" fill="none">
-        <path d="M6 56 Q85 68 164 56 L154 82 Q85 92 16 82 Z" fill="#050810"/><line x1="50" y1="56" x2="50" y2="10" stroke="#050810" stroke-width="3.5"/><line x1="98" y1="56" x2="98" y2="3" stroke="#050810" stroke-width="3.5"/><line x1="140" y1="54" x2="140" y2="17" stroke="#050810" stroke-width="3"/>
-        <polygon points="50,12 80,27 50,54" fill="#091020"/><polygon points="98,5 134,24 98,53" fill="#091020"/><polygon points="140,19 162,31 140,52" fill="#091020"/>
-        <polygon points="50,12 78,18 50,27" fill="#440a0a" opacity="0.95"/>
-        <line x1="154" y1="54" x2="178" y2="38" stroke="#050810" stroke-width="2.5"/>
-      </svg>
-      <svg style="position:absolute;bottom:43%;left:58%;width:28%;" viewBox="0 0 270 122" fill="none">
-        <path d="M8 78 Q135 96 262 78 L250 110 Q135 124 20 110 Z" fill="#040810"/>
-        <path d="M250 110 Q264 108 270 100 L262 78 Z" fill="#030710"/>
-        <line x1="82" y1="78" x2="82" y2="18" stroke="#040810" stroke-width="4"/><line x1="155" y1="78" x2="155" y2="7" stroke="#040810" stroke-width="4"/><line x1="215" y1="76" x2="215" y2="30" stroke="#040810" stroke-width="3"/>
-        <polygon points="82,20 126,40 82,75" fill="#09101e"/><polygon points="155,9 206,34 155,75" fill="#09101e"/><polygon points="215,32 246,48 215,73" fill="#09101e"/>
-        <polygon points="82,20 120,27 82,38" fill="#560c0c" opacity="0.95"/>
-        <line x1="8" y1="76" x2="-14" y2="55" stroke="#040810" stroke-width="3"/>
-        <ellipse cx="138" cy="72" rx="6" ry="6" fill="#03050e"/>
-        <rect x="133" y="77" width="10" height="20" rx="2" fill="#03050e"/>
-      </svg>`,
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 95% 90% at 52% 50%,transparent 42%,rgba(2,3,8,0.75) 100%);pointer-events:none;"></div>`,
 
     'council-chamber': `
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 75% 65% at 50% 48%,#13100a 0%,#070608 52%,#030304 100%);"></div>
-      <div style="position:absolute;top:12%;left:5%;width:22%;height:40%;background:radial-gradient(ellipse at 0% 50%,rgba(205,135,28,0.14) 0%,transparent 68%);"></div>
-      <div style="position:absolute;top:12%;right:5%;width:22%;height:40%;background:radial-gradient(ellipse at 100% 50%,rgba(205,135,28,0.11) 0%,transparent 68%);"></div>
-      <div style="position:absolute;top:4%;left:22%;width:56%;height:34%;background:radial-gradient(ellipse at 50% 0%,rgba(165,115,22,0.09) 0%,transparent 58%);"></div>
-      <div style="position:absolute;top:15%;left:8%;width:1.5%;height:9%;background:#1c1005;border-radius:1px;"></div>
-      <div style="position:absolute;top:13%;left:7.5%;width:2.2%;height:3.5%;background:#180d04;border-radius:2px;"></div>
-      <div style="position:absolute;top:11.5%;left:7.8%;width:1.8%;height:2.5%;background:#f09020;border-radius:50%;box-shadow:0 0 16px 9px rgba(225,145,20,0.38),0 0 32px 16px rgba(195,115,10,0.16);animation:cs-pulse 1.9s ease-in-out infinite;"></div>
-      <div style="position:absolute;top:15%;right:8%;width:1.5%;height:9%;background:#1c1005;border-radius:1px;"></div>
-      <div style="position:absolute;top:13%;right:7.5%;width:2.2%;height:3.5%;background:#180d04;border-radius:2px;"></div>
-      <div style="position:absolute;top:11.5%;right:7.8%;width:1.8%;height:2.5%;background:#f09020;border-radius:50%;box-shadow:0 0 16px 9px rgba(225,145,20,0.38),0 0 32px 16px rgba(195,115,10,0.16);animation:cs-pulse 1.9s ease-in-out 0.4s infinite;"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:26%;background:linear-gradient(0deg,#050404 0%,#090705 100%);"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:26%;background:linear-gradient(90deg,transparent 19.8%,rgba(255,255,255,0.015) 20%,transparent 20.2%) 0 0/20% 100%;"></div>
-      <div style="position:absolute;bottom:25%;left:11%;width:78%;height:4.5%;background:#111006;border-top:1px solid #221c08;border-radius:2px;box-shadow:0 6px 24px rgba(0,0,0,0.9);"></div>
-      <div style="position:absolute;bottom:21%;left:11%;width:78%;height:4%;background:#0e0d04;border-radius:0 0 2px 2px;"></div>
-      <svg style="position:absolute;bottom:28%;left:12%;width:5%;height:17%;" viewBox="0 0 48 88" fill="none"><ellipse cx="24" cy="9" rx="8" ry="9" fill="#0a0806"/><path d="M16 17 Q12 55 11 86 L37 86 Q36 55 32 17 Z" fill="#0c0a07"/><path d="M17 25 Q7 34 6 48" stroke="#0a0806" stroke-width="4.5"/><path d="M31 25 Q41 34 42 48" stroke="#0a0806" stroke-width="4.5"/></svg>
-      <svg style="position:absolute;bottom:28%;left:22%;width:5%;height:17%;" viewBox="0 0 48 88" fill="none"><ellipse cx="24" cy="9" rx="8" ry="9" fill="#090705"/><path d="M16 17 Q12 55 11 86 L37 86 Q36 55 32 17 Z" fill="#0b0906"/><path d="M17 25 Q9 32 11 44" stroke="#090705" stroke-width="4.5"/><path d="M31 25 Q39 32 37 44" stroke="#090705" stroke-width="4.5"/></svg>
-      <svg style="position:absolute;bottom:28%;left:33%;width:5%;height:16%;" viewBox="0 0 48 88" fill="none"><ellipse cx="24" cy="9" rx="8" ry="9" fill="#0a0806"/><path d="M16 17 Q12 55 11 86 L37 86 Q36 55 32 17 Z" fill="#0c0a07"/><path d="M17 25 Q3 33 1 48" stroke="#0a0806" stroke-width="4.5"/><path d="M31 25 Q45 33 47 48" stroke="#0a0806" stroke-width="4.5"/></svg>
-      <svg style="position:absolute;bottom:28%;left:44%;width:5%;height:17%;" viewBox="0 0 48 88" fill="none"><ellipse cx="24" cy="9" rx="8" ry="9" fill="#090705"/><path d="M16 17 Q12 55 11 86 L37 86 Q36 55 32 17 Z" fill="#0b0906"/><path d="M17 25 Q6 37 6 50" stroke="#090705" stroke-width="4.5"/><path d="M31 25 Q42 37 42 50" stroke="#090705" stroke-width="4.5"/></svg>
-      <svg style="position:absolute;bottom:28%;left:55%;width:5%;height:17%;" viewBox="0 0 48 88" fill="none"><ellipse cx="24" cy="9" rx="8" ry="9" fill="#0a0806"/><path d="M16 17 Q12 55 11 86 L37 86 Q36 55 32 17 Z" fill="#0c0a07"/><path d="M17 25 Q7 34 6 48" stroke="#0a0806" stroke-width="4.5"/><path d="M31 25 Q41 34 42 48" stroke="#0a0806" stroke-width="4.5"/></svg>
-      <svg style="position:absolute;bottom:28%;left:66%;width:5%;height:20%;" viewBox="0 0 48 100" fill="none"><rect x="16" y="0" width="16" height="12" rx="1" fill="#0a0806"/><ellipse cx="24" cy="17" rx="9" ry="9" fill="#0a0806"/><path d="M15 25 Q11 62 10 98 L38 98 Q37 62 33 25 Z" fill="#0c0a07"/><path d="M16 33 Q7 43 6 55" stroke="#0a0806" stroke-width="4.5"/><path d="M32 33 Q41 43 42 55" stroke="#0a0806" stroke-width="4.5"/></svg>
-      <div style="position:absolute;bottom:28%;left:38%;width:20%;height:1.5%;background:#17130a;border-radius:1px;opacity:0.8;"></div>
-      <svg style="position:absolute;bottom:24%;left:3%;width:6%;height:30%;" viewBox="0 0 56 148" fill="none">
-        <ellipse cx="28" cy="11" rx="11" ry="12" fill="#080a0e"/>
-        <path d="M17 22 Q10 80 7 145 L49 145 Q46 80 39 22 Z" fill="#0a0c12"/>
-        <path d="M18 34 Q3 52 0 72" stroke="#080a0e" stroke-width="6" stroke-linecap="round"/>
-        <path d="M38 34 Q53 52 56 72" stroke="#080a0e" stroke-width="6" stroke-linecap="round"/>
-        <path d="M38 34 Q54 40 58 37" stroke="#080a0e" stroke-width="5.5" stroke-linecap="round"/>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 46%,#141008 0%,#07070a 50%,#030305 100%);"></div>
+      <div style="position:absolute;top:10%;left:4%;width:24%;height:44%;background:radial-gradient(ellipse at 0% 50%,rgba(215,140,28,0.16) 0%,transparent 65%);"></div>
+      <div style="position:absolute;top:10%;right:4%;width:24%;height:44%;background:radial-gradient(ellipse at 100% 50%,rgba(215,140,28,0.13) 0%,transparent 65%);"></div>
+      <div style="position:absolute;top:0;left:24%;width:52%;height:35%;background:radial-gradient(ellipse at 50% 0%,rgba(170,120,24,0.1) 0%,transparent 55%);"></div>
+      <div style="position:absolute;top:14%;left:7%;width:1.6%;height:10%;background:#1c1005;border-radius:1px;"></div>
+      <div style="position:absolute;top:12%;left:6.5%;width:2.4%;height:3.8%;background:#180d04;border-radius:2px;"></div>
+      <div style="position:absolute;top:10.5%;left:6.8%;width:2%;height:2.8%;background:#f09020;border-radius:50%;box-shadow:0 0 18px 10px rgba(230,150,20,0.42),0 0 36px 18px rgba(200,120,10,0.18);animation:cs-pulse 1.9s ease-in-out infinite;"></div>
+      <div style="position:absolute;top:14%;right:7%;width:1.6%;height:10%;background:#1c1005;border-radius:1px;"></div>
+      <div style="position:absolute;top:12%;right:6.5%;width:2.4%;height:3.8%;background:#180d04;border-radius:2px;"></div>
+      <div style="position:absolute;top:10.5%;right:6.8%;width:2%;height:2.8%;background:#f09020;border-radius:50%;box-shadow:0 0 18px 10px rgba(230,150,20,0.42),0 0 36px 18px rgba(200,120,10,0.18);animation:cs-pulse 1.9s ease-in-out 0.45s infinite;"></div>
+      <div style="position:absolute;top:14%;left:20%;width:1.6%;height:10%;background:#1c1005;border-radius:1px;"></div>
+      <div style="position:absolute;top:12%;left:19.5%;width:2.4%;height:3.8%;background:#180d04;border-radius:2px;"></div>
+      <div style="position:absolute;top:10.5%;left:19.8%;width:2%;height:2.8%;background:#d07818;border-radius:50%;box-shadow:0 0 16px 9px rgba(215,140,18,0.38),0 0 32px 16px rgba(185,110,10,0.15);animation:cs-pulse 2.3s ease-in-out 0.9s infinite;"></div>
+      <div style="position:absolute;top:14%;right:20%;width:1.6%;height:10%;background:#1c1005;border-radius:1px;"></div>
+      <div style="position:absolute;top:12%;right:19.5%;width:2.4%;height:3.8%;background:#180d04;border-radius:2px;"></div>
+      <div style="position:absolute;top:10.5%;right:19.8%;width:2%;height:2.8%;background:#d07818;border-radius:50%;box-shadow:0 0 16px 9px rgba(215,140,18,0.38),0 0 32px 16px rgba(185,110,10,0.15);animation:cs-pulse 2.3s ease-in-out 1.3s infinite;"></div>
+      <div style="position:absolute;top:4%;left:36%;width:28%;height:28%;background:radial-gradient(ellipse at 50% 100%,rgba(90,65,14,0.08) 0%,transparent 62%);border:1px solid rgba(90,65,14,0.09);border-radius:50%;"></div>
+      <div style="position:absolute;bottom:0;left:0;width:100%;height:30%;overflow:hidden;">
+        <div style="position:absolute;bottom:0;left:-10%;width:120%;height:150%;background:repeating-linear-gradient(90deg,rgba(18,14,6,0.7) 0,rgba(18,14,6,0.7) 1px,transparent 1px,transparent 90px),repeating-linear-gradient(0deg,rgba(18,14,6,0.7) 0,rgba(18,14,6,0.7) 1px,transparent 1px,transparent 90px),#0a0806;transform:perspective(480px) rotateX(64deg);transform-origin:50% 100%;"></div>
+      </div>
+      <div style="position:absolute;bottom:8%;left:8%;width:84%;height:46%;overflow:hidden;border-radius:30px 30px 0 0;">
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1a1508 0%,#120e04 38%,#0c0a02 100%);transform:perspective(460px) rotateX(58deg);transform-origin:50% 100%;box-shadow:0 -8px 30px rgba(0,0,0,0.85);border-radius:30px 30px 0 0;"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,0),rgba(200,160,30,0.04) 60%,rgba(200,160,30,0.07) 100%);pointer-events:none;"></div>
+      </div>
+      <svg style="position:absolute;bottom:22%;left:8%;width:6%;height:20%;" viewBox="0 0 52 95" fill="none">
+        <defs><linearGradient id="cc-sk1" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stop-color="#c88040"/><stop offset="45%" stop-color="#a06028"/><stop offset="100%" stop-color="#5a3010"/></linearGradient></defs>
+        <ellipse cx="26" cy="93" rx="16" ry="4" fill="rgba(0,0,0,0.55)"/>
+        <rect x="16" y="58" width="10" height="34" rx="4" fill="#12182a"/>
+        <rect x="28" y="58" width="10" height="34" rx="4" fill="#0e1424"/>
+        <path d="M10 28 Q8 60 10 92 L20 92 L20 58 L34 58 L34 92 L44 92 Q46 60 44 28 Z" fill="#161e34"/>
+        <path d="M14 28 Q12 44 14 56 L26 56 L40 56 Q42 44 40 28 Q26 24 14 28 Z" fill="#1e2a48"/>
+        <path d="M40 30 Q44 44 43 54" stroke="rgba(220,150,30,0.22)" stroke-width="2.5" fill="none"/>
+        <ellipse cx="12" cy="58" rx="6" ry="4.5" fill="url(#cc-sk1)"/>
+        <ellipse cx="40" cy="58" rx="6" ry="4.5" fill="url(#cc-sk1)"/>
+        <rect x="22" y="19" width="8" height="11" rx="3" fill="url(#cc-sk1)"/>
+        <ellipse cx="26" cy="12" rx="11" ry="12" fill="url(#cc-sk1)"/>
+        <path d="M15 3 Q26 -2 37 3 Q34 7 26 5 Q18 7 15 3 Z" fill="#1c1008"/>
+        <path d="M15 4 Q12 10 12 15" stroke="#1c1008" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M37 4 Q40 10 40 15" stroke="#181008" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <path d="M18 7 Q22 5 26 7" stroke="#2a1808" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <path d="M26 7 Q30 5 34 7" stroke="#2a1808" stroke-width="1.7" stroke-linecap="round" fill="none"/>
+        <ellipse cx="20" cy="11" rx="3.8" ry="3" fill="#d8c890"/>
+        <ellipse cx="32" cy="11" rx="3.8" ry="3" fill="#d8c890"/>
+        <ellipse cx="20.5" cy="11" rx="2.2" ry="2.4" fill="#3c2810"/>
+        <ellipse cx="32.5" cy="11" rx="2.2" ry="2.4" fill="#3c2810"/>
+        <ellipse cx="21" cy="11" rx="1.1" ry="1.2" fill="#080504"/>
+        <ellipse cx="33" cy="11" rx="1.1" ry="1.2" fill="#080504"/>
+        <circle cx="22" cy="10.2" r="0.7" fill="rgba(255,255,255,0.7)"/>
+        <circle cx="34" cy="10.2" r="0.7" fill="rgba(255,255,255,0.7)"/>
+        <path d="M37 14 Q34 18 30 21 Q26 23 22 21 Q18 18 15 14" fill="rgba(50,20,5,0.22)"/>
+        <path d="M19 21 Q26 23 33 21" stroke="rgba(100,45,12,0.48)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <path d="M20 25 Q26 23 32 25" stroke="#8a4820" stroke-width="1.7" fill="none" stroke-linecap="round"/>
       </svg>
-      <div style="position:absolute;top:8%;left:40%;width:20%;height:22%;background:radial-gradient(circle,rgba(90,65,14,0.07) 0%,transparent 68%);border:1px solid rgba(90,65,14,0.1);border-radius:50%;"></div>`,
+      <svg style="position:absolute;bottom:22%;right:6%;width:5.5%;height:18%;" viewBox="0 0 48 88" fill="none">
+        <defs><linearGradient id="cc-sk2" x1="0.8" y1="0" x2="0.2" y2="1"><stop offset="0%" stop-color="#c07838"/><stop offset="45%" stop-color="#985820"/><stop offset="100%" stop-color="#542c0e"/></linearGradient></defs>
+        <ellipse cx="24" cy="86" rx="14" ry="3.5" fill="rgba(0,0,0,0.5)"/>
+        <rect x="14" y="54" width="9" height="31" rx="3.5" fill="#101828"/>
+        <rect x="25" y="54" width="9" height="31" rx="3.5" fill="#0c1422"/>
+        <path d="M8 26 Q6 56 8 84 L18 84 L18 54 L32 54 L32 84 L42 84 Q44 56 42 26 Z" fill="#141e34"/>
+        <path d="M12 26 Q10 40 12 52 L24 52 L38 52 Q40 40 38 26 Q24 22 12 26 Z" fill="#1c2844"/>
+        <rect x="8" y="46" width="34" height="8" rx="2" fill="#10182e"/>
+        <ellipse cx="8" cy="54" rx="5.5" ry="4" fill="url(#cc-sk2)"/>
+        <ellipse cx="38" cy="54" rx="5.5" ry="4" fill="url(#cc-sk2)"/>
+        <rect x="20" y="18" width="7" height="10" rx="3" fill="url(#cc-sk2)"/>
+        <ellipse cx="24" cy="11" rx="10" ry="11" fill="url(#cc-sk2)"/>
+        <path d="M14 3 Q24 -2 34 3 Q31 7 24 5 Q17 7 14 3 Z" fill="#181008"/>
+        <path d="M14 4 Q11 9 11 14" stroke="#181008" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <path d="M34 4 Q37 9 37 14" stroke="#141008" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <path d="M16 7 Q20 5 24 6" stroke="#281408" stroke-width="1.7" stroke-linecap="round" fill="none"/>
+        <path d="M24 6 Q28 5 32 7" stroke="#281408" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        <ellipse cx="18" cy="10" rx="3.5" ry="2.8" fill="#d4c888"/>
+        <ellipse cx="30" cy="10" rx="3.5" ry="2.8" fill="#d4c888"/>
+        <ellipse cx="18.5" cy="10" rx="2" ry="2.2" fill="#38240e"/>
+        <ellipse cx="30.5" cy="10" rx="2" ry="2.2" fill="#38240e"/>
+        <ellipse cx="19" cy="10" rx="1" ry="1.1" fill="#060403"/>
+        <ellipse cx="31" cy="10" rx="1" ry="1.1" fill="#060403"/>
+        <circle cx="20" cy="9.2" r="0.7" fill="rgba(255,255,255,0.68)"/>
+        <circle cx="32" cy="9.2" r="0.7" fill="rgba(255,255,255,0.68)"/>
+        <path d="M18 19 Q24 21 30 19" stroke="rgba(95,42,10,0.45)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+        <path d="M19 22 Q24 20 29 22" stroke="#8a4620" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      </svg>
+      <svg style="position:absolute;bottom:22%;left:26%;width:4.8%;height:16%;" viewBox="0 0 44 82" fill="none"><ellipse cx="22" cy="9" rx="9" ry="9.5" fill="#090806"/><path d="M14 18 Q10 56 9 80 L35 80 Q34 56 30 18 Z" fill="#0b0a07"/><path d="M15 26 Q6 34 5 48" stroke="#090806" stroke-width="4.5" stroke-linecap="round"/><path d="M29 26 Q38 34 39 48" stroke="#090806" stroke-width="4.5" stroke-linecap="round"/></svg>
+      <svg style="position:absolute;bottom:22%;left:38%;width:4.5%;height:15%;" viewBox="0 0 42 78" fill="none"><ellipse cx="21" cy="8.5" rx="8.5" ry="9" fill="#080705"/><path d="M13 17 Q9 52 8 76 L34 76 Q33 52 29 17 Z" fill="#0a0906"/><path d="M13 24 Q1 36 1 50" stroke="#080705" stroke-width="4" stroke-linecap="round"/><path d="M29 24 Q41 36 41 50" stroke="#080705" stroke-width="4" stroke-linecap="round"/></svg>
+      <svg style="position:absolute;bottom:22%;left:52%;width:5%;height:17%;" viewBox="0 0 46 84" fill="none"><ellipse cx="23" cy="9" rx="9.5" ry="10" fill="#090806"/><rect x="18" y="0" width="10" height="10" rx="2" fill="#0a0806"/><path d="M14 18 Q10 58 9 82 L37 82 Q36 58 32 18 Z" fill="#0c0a07"/><path d="M15 26 Q4 36 3 52" stroke="#090806" stroke-width="4.5" stroke-linecap="round"/><path d="M31 26 Q42 36 43 52" stroke="#090806" stroke-width="4.5" stroke-linecap="round"/></svg>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 90% 85% at 50% 46%,transparent 38%,rgba(2,1,2,0.8) 100%);pointer-events:none;"></div>`,
 
     'emissary-dock': `
-      <div style="position:absolute;inset:0;background:linear-gradient(190deg,#080410 0%,#180608 15%,#3c1008 28%,#721e0a 42%,#a83010 55%,#721e0a 66%,#3c1008 78%,#0a0510 100%);"></div>
-      <div style="position:absolute;bottom:36%;left:42%;width:16%;height:10%;background:radial-gradient(circle,rgba(225,125,18,0.85) 0%,rgba(200,85,10,0.5) 38%,transparent 68%);"></div>
-      <div style="position:absolute;bottom:33%;left:0;width:100%;height:11%;background:linear-gradient(0deg,rgba(185,82,14,0.22) 0%,rgba(205,100,18,0.14) 50%,transparent 100%);"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(185deg,#060210 0%,#150508 14%,#380e06 28%,#6e1a08 42%,#a02c0e 55%,#6e1a08 65%,#380e06 78%,#080410 100%);"></div>
+      <div style="position:absolute;bottom:36%;left:40%;width:20%;height:12%;background:radial-gradient(circle,rgba(230,130,20,0.88) 0%,rgba(205,90,12,0.52) 38%,transparent 68%);"></div>
+      <div style="position:absolute;bottom:33%;left:0;width:100%;height:12%;background:linear-gradient(0deg,rgba(190,86,16,0.22) 0%,rgba(210,105,20,0.14) 52%,transparent 100%);"></div>
       <div style="position:absolute;bottom:0;left:0;width:100%;height:36%;background:linear-gradient(0deg,#060a10 0%,#0a1018 42%,#10182c 70%,#14203c 100%);"></div>
-      <div style="position:absolute;bottom:0;left:28%;width:38%;height:36%;background:linear-gradient(0deg,transparent,rgba(125,52,10,0.1) 58%,rgba(185,82,14,0.07) 100%);"></div>
-      <div class="cs-shimmer-layer cs-shimmer-warm" style="height:36%;opacity:0.5;"></div>
-      <div style="position:absolute;bottom:34%;left:18%;width:58%;height:4%;background:#07090e;"></div>
-      <div style="position:absolute;bottom:34%;left:22%;width:1.8%;height:8%;background:#05070c;"></div>
-      <div style="position:absolute;bottom:34%;left:30%;width:1.8%;height:7%;background:#05070c;"></div>
-      <div style="position:absolute;bottom:34%;left:38%;width:1.8%;height:9%;background:#05070c;transform:rotate(-2.5deg);"></div>
-      <div style="position:absolute;bottom:34%;left:52%;width:1.8%;height:8%;background:#05070c;"></div>
-      <div style="position:absolute;bottom:34%;left:60%;width:1.8%;height:7%;background:#05070c;"></div>
-      <div style="position:absolute;bottom:34%;left:68%;width:1.8%;height:9%;background:#05070c;"></div>
-      <div style="position:absolute;bottom:28%;left:43%;width:2.5%;height:7%;background:#07090e;transform:rotate(-42deg);transform-origin:top right;"></div>
-      <div style="position:absolute;bottom:36%;left:64%;width:8%;height:14%;background:#07080c;opacity:0.78;"></div>
-      <div style="position:absolute;bottom:36%;left:73%;width:5%;height:9%;background:#060710;opacity:0.58;"></div>
-      <div style="position:absolute;bottom:36%;left:79%;width:7%;height:12%;background:#07080c;opacity:0.48;"></div>
-      <svg style="position:absolute;bottom:35%;left:3%;width:15%;height:11%;" viewBox="0 0 165 58" fill="none">
-        <path d="M4 36 Q82 46 161 36 L152 54 Q82 61 13 54 Z" fill="#050609"/><line x1="54" y1="36" x2="54" y2="6" stroke="#050609" stroke-width="3"/><line x1="94" y1="36" x2="94" y2="1" stroke="#050609" stroke-width="3"/>
-        <polygon points="54,8 78,18 54,34" fill="#0a1020"/><polygon points="94,3 122,16 94,34" fill="#0a1020"/>
-        <polygon points="54,8 80,14 54,20" fill="#ddd8c0" opacity="0.82"/>
+      <div style="position:absolute;bottom:0;left:26%;width:42%;height:36%;background:linear-gradient(0deg,transparent,rgba(130,55,12,0.1) 58%,rgba(190,86,16,0.07) 100%);"></div>
+      <div class="cs-shimmer-layer cs-shimmer-warm" style="height:36%;opacity:0.52;"></div>
+      <svg style="position:absolute;bottom:36%;left:2%;width:14%;height:10%;" viewBox="0 0 155 58" fill="none"><path d="M4 36 Q77 46 151 36 L142 54 Q77 61 13 54 Z" fill="#050609"/><line x1="50" y1="36" x2="50" y2="6" stroke="#050609" stroke-width="3"/><line x1="90" y1="36" x2="90" y2="1" stroke="#050609" stroke-width="3"/><polygon points="50,8 74,18 50,34" fill="#0a1020"/><polygon points="90,3 118,16 90,34" fill="#0a1020"/><polygon points="50,8 76,14 50,20" fill="#e8e0c0" opacity="0.78"/></svg>
+      <div style="position:absolute;bottom:34%;left:16%;width:62%;height:4.2%;background:#07090e;"></div>
+      <div style="position:absolute;bottom:34%;left:20%;width:2%;height:9%;background:#05070c;"></div>
+      <div style="position:absolute;bottom:34%;left:28%;width:2%;height:8%;background:#05070c;"></div>
+      <div style="position:absolute;bottom:34%;left:36%;width:2%;height:10%;background:#05070c;transform:rotate(-2deg);"></div>
+      <div style="position:absolute;bottom:34%;left:50%;width:2%;height:9%;background:#05070c;"></div>
+      <div style="position:absolute;bottom:34%;left:58%;width:2%;height:8%;background:#05070c;"></div>
+      <div style="position:absolute;bottom:34%;left:66%;width:2%;height:10%;background:#05070c;"></div>
+      <div style="position:absolute;bottom:28%;left:41%;width:2.8%;height:7.5%;background:#07090e;transform:rotate(-44deg);transform-origin:top right;"></div>
+      <div style="position:absolute;bottom:36%;left:63%;width:9%;height:15%;background:#07080c;opacity:0.8;"></div>
+      <div style="position:absolute;bottom:36%;left:74%;width:6%;height:10%;background:#06070f;opacity:0.62;"></div>
+      <div style="position:absolute;bottom:36%;left:82%;width:8%;height:13%;background:#07080c;opacity:0.5;"></div>
+      <svg style="position:absolute;bottom:34%;left:38%;width:13%;height:50%;animation:cs-breathe 5s ease-in-out infinite;" viewBox="0 0 110 190" fill="none">
+        <defs>
+          <linearGradient id="ed-sk" x1="0.75" y1="0" x2="0.25" y2="1"><stop offset="0%" stop-color="#d87840"/><stop offset="45%" stop-color="#b05822"/><stop offset="100%" stop-color="#682e0e"/></linearGradient>
+          <linearGradient id="ed-cl" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#1c1430"/><stop offset="100%" stop-color="#0c0818"/></linearGradient>
+          <radialGradient id="ed-sun" cx="0.85" cy="0.3" r="0.65"><stop offset="0%" stop-color="rgba(230,130,30,0.38)"/><stop offset="100%" stop-color="rgba(230,130,30,0)"/></radialGradient>
+        </defs>
+        <ellipse cx="55" cy="188" rx="28" ry="5" fill="rgba(0,0,0,0.55)"/>
+        <ellipse cx="36" cy="186" rx="12" ry="5" fill="#14100c"/>
+        <ellipse cx="60" cy="186" rx="12" ry="5" fill="#100c08"/>
+        <rect x="28" y="138" width="16" height="50" rx="6" fill="#181028"/>
+        <rect x="52" y="138" width="16" height="50" rx="6" fill="#140e22"/>
+        <path d="M18 78 Q14 140 16 186 L34 186 L34 138 L58 138 L58 186 L76 186 Q78 140 74 78 Z" fill="url(#ed-cl)"/>
+        <path d="M24 78 Q22 112 24 136 L55 136 L78 136 Q80 112 78 78 Q55 72 24 78 Z" fill="#24184a"/>
+        <path d="M78 80 Q84 112 82 132" stroke="rgba(230,130,30,0.22)" stroke-width="3" fill="none"/>
+        <path d="M24 80 Q22 110 24 128" stroke="rgba(255,255,255,0.05)" stroke-width="2.5" fill="none"/>
+        <rect x="14" y="128" width="64" height="11" rx="2" fill="#16102e"/>
+        <rect x="40" y="127" width="16" height="13" rx="2" fill="#c0940c"/>
+        <path d="M24 80 Q6 105 4 155 Q18 150 24 134 Q20 112 26 86 Z" fill="#140e28" opacity="0.92"/>
+        <ellipse cx="22" cy="82" rx="12" ry="6.5" fill="#201840"/>
+        <ellipse cx="70" cy="82" rx="12" ry="6.5" fill="#1c1438"/>
+        <path d="M10 82 Q22 75 34 82" stroke="#c0940c" stroke-width="1.5" fill="none"/>
+        <path d="M58 82 Q70 75 82 82" stroke="#c0940c" stroke-width="1.5" fill="none"/>
+        <path d="M20 84 Q10 116 12 136 L24 134 Q24 112 28 88 Z" fill="#161030"/>
+        <path d="M72 84 Q82 116 80 136 L68 134 Q68 112 64 88 Z" fill="#12102c"/>
+        <path d="M80 88 Q92 96 96 92" stroke="#1c1838" stroke-width="6" stroke-linecap="round"/>
+        <ellipse cx="96" cy="93" rx="7.5" ry="5" fill="url(#ed-sk)"/>
+        <rect x="90" y="90" width="14" height="22" rx="2.5" fill="#22180c" opacity="0.9"/>
+        <rect x="92" y="96" width="10" height="1.5" rx="1" fill="#4a3818" opacity="0.8"/>
+        <rect x="92" y="100" width="10" height="1.5" rx="1" fill="#4a3818" opacity="0.7"/>
+        <rect x="92" y="104" width="8" height="1.5" rx="1" fill="#4a3818" opacity="0.6"/>
+        <ellipse cx="16" cy="138" rx="7.5" ry="5" fill="url(#ed-sk)"/>
+        <rect x="43" y="59" width="12" height="21" rx="5" fill="url(#ed-sk)"/>
+        <ellipse cx="55" cy="42" rx="18" ry="20" fill="url(#ed-sk)"/>
+        <path d="M37 26 Q55 16 73 26 Q69 30 55 28 Q41 30 37 26 Z" fill="#1a1008"/>
+        <path d="M37 28 Q30 34 30 44" stroke="#1a1008" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+        <path d="M73 28 Q80 34 80 44" stroke="#181008" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M38 30 Q44 32 50 31" stroke="#241408" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <ellipse cx="45" cy="38" rx="5" ry="3.8" fill="#d0c090"/>
+        <ellipse cx="65" cy="38" rx="5" ry="3.8" fill="#d0c090"/>
+        <ellipse cx="45.5" cy="38" rx="2.9" ry="3.2" fill="#3a2010"/>
+        <ellipse cx="65.5" cy="38" rx="2.9" ry="3.2" fill="#3a2010"/>
+        <ellipse cx="46" cy="38" rx="1.4" ry="1.6" fill="#080404"/>
+        <ellipse cx="66" cy="38" rx="1.4" ry="1.6" fill="#080404"/>
+        <circle cx="47" cy="36.5" r="0.9" fill="rgba(255,255,255,0.72)"/>
+        <circle cx="67" cy="36.5" r="0.9" fill="rgba(255,255,255,0.72)"/>
+        <ellipse cx="37" cy="43" rx="4" ry="5.5" fill="#a05828"/>
+        <path d="M41 30 Q47 27 53 29" stroke="#2c1608" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+        <path d="M57 29 Q62 27 67 30" stroke="#2c1608" stroke-width="2.1" stroke-linecap="round" fill="none"/>
+        <path d="M52 46 Q48 52 45 55 Q55 57 65 55 Q62 52 58 46 Z" fill="rgba(80,30,8,0.18)"/>
+        <path d="M45 55 Q55 57 65 55" stroke="rgba(105,45,12,0.5)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+        <path d="M47 61 Q55 64 63 61" stroke="#c87850" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M48 63 Q55 65.5 62 63" stroke="rgba(0,0,0,0.12)" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <ellipse cx="55" cy="42" rx="18" ry="20" fill="url(#ed-sun)" opacity="0.6"/>
       </svg>
-      <svg style="position:absolute;bottom:36%;left:36%;width:4.5%;height:24%;" viewBox="0 0 46 115" fill="none">
-        <ellipse cx="23" cy="10" rx="9" ry="10" fill="#05060a"/>
-        <path d="M14 19 Q9 64 7 112 L39 112 Q37 64 32 19 Z" fill="#06070c"/>
-        <path d="M14 19 Q3 48 2 73 L10 74 Q12 54 16 30 Z" fill="#04050a"/>
-        <path d="M32 19 Q43 48 44 73 L36 74 Q34 54 30 30 Z" fill="#04050a"/>
-        <path d="M32 32 Q48 37 52 33" stroke="#05060a" stroke-width="4.5" stroke-linecap="round"/>
-        <rect x="48" y="29" width="11" height="14" rx="2" fill="#110f08" opacity="0.92"/>
-        <path d="M16 98 L13 112" stroke="#05060a" stroke-width="5" stroke-linecap="round"/>
-        <path d="M28 97 L32 112" stroke="#05060a" stroke-width="5" stroke-linecap="round"/>
-      </svg>
-      <svg style="position:absolute;bottom:36%;left:62%;width:3.2%;height:21%;" viewBox="0 0 36 105" fill="none">
-        <ellipse cx="18" cy="9" rx="7.5" ry="8.5" fill="#06080d"/>
-        <path d="M11 16 Q7 57 6 102 L30 102 Q29 57 25 16 Z" fill="#07090e"/>
-        <path d="M11 23 Q2 35 2 50" stroke="#06080d" stroke-width="4" stroke-linecap="round"/>
-        <path d="M25 23 Q34 35 34 50" stroke="#06080d" stroke-width="4" stroke-linecap="round"/>
-        <line x1="33" y1="6" x2="35" y2="102" stroke="#06080d" stroke-width="2.8"/>
-        <polygon points="31,6 35,6 33,1" fill="#06080d"/>
-      </svg>`,
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 92% 88% at 50% 50%,transparent 40%,rgba(2,1,4,0.72) 100%);pointer-events:none;"></div>`,
 
     'secret-meeting': `
-      <div style="position:absolute;inset:0;background:#020205;"></div>
-      <div style="position:absolute;top:28%;left:42%;width:16%;height:20%;background:radial-gradient(ellipse,rgba(225,170,28,0.92) 0%,rgba(200,135,18,0.58) 18%,rgba(165,95,10,0.22) 42%,rgba(105,58,5,0.07) 62%,transparent 78%);animation:cs-pulse 2.8s ease-in-out infinite;"></div>
-      <div style="position:absolute;bottom:22%;left:28%;width:44%;height:20%;background:radial-gradient(ellipse at 50% 0%,rgba(145,95,14,0.13) 0%,transparent 68%);"></div>
-      <div style="position:absolute;top:0;left:30%;width:40%;height:28%;background:radial-gradient(ellipse at 50% 100%,rgba(120,82,10,0.07) 0%,transparent 58%);"></div>
-      <div style="position:absolute;top:0;left:0;width:9%;height:100%;background:linear-gradient(90deg,#010103,transparent);"></div>
-      <div style="position:absolute;top:0;right:0;width:9%;height:100%;background:linear-gradient(270deg,#010103,transparent);"></div>
-      <div style="position:absolute;top:28%;left:46.5%;width:7%;height:9%;background:#1c1205;border:1px solid #2e1e08;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.8);"></div>
-      <div style="position:absolute;top:29.5%;left:48.5%;width:3%;height:4.5%;background:radial-gradient(circle,#f8d040 0%,#e89020 52%,transparent 72%);border-radius:50% 50% 30% 30%;animation:cs-flicker 0.9s ease-in-out infinite;"></div>
-      <div style="position:absolute;top:20%;left:49.7%;width:0.5%;height:9.5%;background:#100a04;"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:28%;background:linear-gradient(0deg,#020204 0%,#050406 100%);"></div>
-      <div style="position:absolute;bottom:24%;left:30%;width:40%;height:3.5%;background:#0e0b06;border-top:1px solid #1a1408;"></div>
-      <div style="position:absolute;bottom:21%;left:30%;width:40%;height:3%;background:#0a0804;"></div>
-      <div style="position:absolute;bottom:25.5%;left:46%;width:2.5%;height:3.5%;background:#0c0a06;border-radius:1px;"></div>
-      <svg style="position:absolute;bottom:23%;left:13%;width:8%;height:33%;" viewBox="0 0 72 155" fill="none">
-        <path d="M14 0 Q36 6 58 0 Q63 26 58 37 Q46 44 36 44 Q26 44 14 37 Q9 26 14 0 Z" fill="#09090e"/>
-        <ellipse cx="36" cy="26" rx="13" ry="14" fill="#050810"/>
-        <path d="M14 40 Q7 94 5 152 L67 152 Q65 94 58 40 Z" fill="#080a0f"/>
-        <path d="M14 40 Q0 72 0 104 L13 102 Q16 76 19 54 Z" fill="#070910"/>
-        <path d="M58 56 Q83 70 92 72" stroke="#080a0f" stroke-width="7.5" stroke-linecap="round"/>
-        <ellipse cx="93" cy="74" rx="7" ry="4.5" fill="#080a0f"/>
+      <div style="position:absolute;inset:0;background:#010104;"></div>
+      <div style="position:absolute;top:24%;left:40%;width:20%;height:24%;background:radial-gradient(ellipse,rgba(232,175,30,0.95) 0%,rgba(208,140,20,0.6) 16%,rgba(170,100,12,0.24) 40%,rgba(110,62,6,0.08) 62%,transparent 78%);animation:cs-pulse 2.8s ease-in-out infinite;"></div>
+      <div style="position:absolute;bottom:20%;left:26%;width:48%;height:22%;background:radial-gradient(ellipse at 50% 0%,rgba(150,98,16,0.14) 0%,transparent 68%);"></div>
+      <div style="position:absolute;top:0;left:28%;width:44%;height:28%;background:radial-gradient(ellipse at 50% 100%,rgba(125,85,12,0.08) 0%,transparent 58%);"></div>
+      <div style="position:absolute;top:0;left:0;width:10%;height:100%;background:linear-gradient(90deg,#010103,transparent);"></div>
+      <div style="position:absolute;top:0;right:0;width:10%;height:100%;background:linear-gradient(270deg,#010103,transparent);"></div>
+      <div style="position:absolute;top:0;left:0;right:0;height:12%;background:linear-gradient(180deg,#010104,transparent);"></div>
+      <div style="position:absolute;top:24%;left:45.5%;width:9%;height:10%;background:#1e1408;border:1px solid #302008;border-radius:5px;box-shadow:0 3px 10px rgba(0,0,0,0.9);"></div>
+      <div style="position:absolute;top:25.5%;left:48.5%;width:4%;height:5.5%;background:radial-gradient(circle,#fad848 0%,#eca025 52%,transparent 72%);border-radius:50% 50% 32% 32%;animation:cs-flicker 0.9s ease-in-out infinite;"></div>
+      <div style="position:absolute;top:18%;left:50%;width:0.6%;height:8%;background:#100a04;"></div>
+      <div style="position:absolute;bottom:0;left:0;width:100%;height:28%;background:linear-gradient(0deg,#020206 0%,#050408 100%);"></div>
+      <div style="position:absolute;bottom:22%;left:28%;width:44%;height:4%;background:#100e08;border-top:1px solid #1c1810;"></div>
+      <div style="position:absolute;bottom:18%;left:28%;width:44%;height:3.5%;background:#0c0a06;"></div>
+      <div style="position:absolute;bottom:23.5%;left:45%;width:3%;height:4%;background:#0e0c08;border-radius:1px;"></div>
+      <svg style="position:absolute;bottom:21%;left:8%;width:16%;height:48%;animation:cs-breathe 4.5s ease-in-out infinite;" viewBox="0 0 130 175" fill="none">
+        <defs>
+          <radialGradient id="sm-sk1" cx="0.6" cy="0.3" r="0.7"><stop offset="0%" stop-color="#d4904a"/><stop offset="45%" stop-color="#a86830"/><stop offset="100%" stop-color="#6a3818"/></radialGradient>
+          <linearGradient id="sm-cl1" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#1a2038"/><stop offset="100%" stop-color="#0a0e1c"/></linearGradient>
+          <radialGradient id="sm-lntrn1" cx="0.55" cy="0.8" r="0.65"><stop offset="0%" stop-color="rgba(230,160,30,0.42)"/><stop offset="100%" stop-color="rgba(230,160,30,0)"/></radialGradient>
+        </defs>
+        <ellipse cx="64" cy="173" rx="30" ry="5" fill="rgba(0,0,0,0.55)"/>
+        <rect x="38" y="130" width="14" height="42" rx="5" fill="#131a2c"/>
+        <rect x="60" y="130" width="14" height="42" rx="5" fill="#0f1626"/>
+        <path d="M22 72 Q18 132 20 172 L38 172 L38 130 L62 130 L62 172 L80 172 Q82 132 80 72 Z" fill="url(#sm-cl1)"/>
+        <path d="M28 72 Q26 106 28 128 L50 128 L74 128 Q76 106 74 72 Q50 66 28 72 Z" fill="#1e2840"/>
+        <path d="M74 74 Q80 106 78 124" stroke="rgba(220,155,30,0.2)" stroke-width="3" fill="none"/>
+        <path d="M74 80 Q94 95 102 100" stroke="#1a2038" stroke-width="8" stroke-linecap="round"/>
+        <ellipse cx="103" cy="104" rx="9" ry="6" fill="url(#sm-sk1)"/>
+        <rect x="14" y="122" width="64" height="10" rx="2" fill="#10162a"/>
+        <path d="M26 74 Q8 98 6 140 Q20 136 26 122 Q22 104 28 80 Z" fill="#0e1628" opacity="0.9"/>
+        <ellipse cx="24" cy="76" rx="12" ry="6" fill="#182038"/>
+        <ellipse cx="72" cy="76" rx="12" ry="6" fill="#14182e"/>
+        <path d="M14 78 Q6 106 8 124 L20 122 Q20 104 24 82 Z" fill="#12203a"/>
+        <ellipse cx="14" cy="126" rx="7" ry="5" fill="url(#sm-sk1)"/>
+        <rect x="44" y="54" width="12" height="20" rx="5" fill="url(#sm-sk1)"/>
+        <ellipse cx="52" cy="36" rx="18" ry="20" fill="url(#sm-sk1)"/>
+        <path d="M34 19 Q52 10 70 19 Q66 24 52 22 Q38 24 34 19 Z" fill="#180e06"/>
+        <path d="M34 21 Q28 28 28 36" stroke="#180e06" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M70 21 Q76 28 76 36" stroke="#160e06" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+        <ellipse cx="34" cy="37" rx="4" ry="5.5" fill="#9a6030"/>
+        <path d="M40 24 Q47 20 54 23" stroke="#2a1608" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+        <path d="M55 23 Q61 20 66 24" stroke="#2a1608" stroke-width="2.3" stroke-linecap="round" fill="none"/>
+        <ellipse cx="44" cy="31" rx="5" ry="4" fill="#d8b880"/>
+        <ellipse cx="60" cy="31" rx="5" ry="4" fill="#d8b880"/>
+        <ellipse cx="44.5" cy="31" rx="2.8" ry="3.2" fill="#3c2010"/>
+        <ellipse cx="60.5" cy="31" rx="2.8" ry="3.2" fill="#3c2010"/>
+        <ellipse cx="45" cy="31" rx="1.4" ry="1.6" fill="#060404"/>
+        <ellipse cx="61" cy="31" rx="1.4" ry="1.6" fill="#060404"/>
+        <circle cx="46.2" cy="29.5" r="1" fill="rgba(255,255,255,0.72)"/>
+        <circle cx="62.2" cy="29.5" r="1" fill="rgba(255,255,255,0.72)"/>
+        <path d="M50 39 Q46 45 43 48 Q52 50 61 48 Q58 45 54 39 Z" fill="rgba(60,25,5,0.2)"/>
+        <path d="M43 48 Q52 50 61 48" stroke="rgba(100,45,12,0.48)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+        <path d="M44 54 Q52 52 60 54" stroke="#a06030" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+        <ellipse cx="52" cy="36" rx="18" ry="20" fill="url(#sm-lntrn1)" opacity="0.52"/>
+        <ellipse cx="52" cy="36" rx="18" ry="20" fill="rgba(5,3,8,0.25)"/>
       </svg>
-      <svg style="position:absolute;bottom:23%;right:11%;width:8%;height:35%;" viewBox="0 0 72 160" fill="none">
-        <ellipse cx="36" cy="12" rx="13" ry="14" fill="#07080c"/>
-        <path d="M23 25 Q17 94 14 158 L58 158 Q55 94 49 25 Z" fill="#07080c"/>
-        <path d="M36 25 L26 44 L36 40 Z" fill="#050810" opacity="0.85"/>
-        <path d="M36 25 L46 44 L36 40 Z" fill="#050810" opacity="0.85"/>
-        <path d="M23 36 Q10 50 8 65" stroke="#07080c" stroke-width="6.5" stroke-linecap="round"/>
-        <path d="M49 36 Q60 50 60 65" stroke="#07080c" stroke-width="6.5" stroke-linecap="round"/>
-        <rect x="55" y="57" width="13" height="19" rx="2" fill="#120f08"/>
-        <line x1="57" y1="62" x2="66" y2="62" stroke="#1e1a0e" stroke-width="1.2"/>
-        <line x1="57" y1="66" x2="66" y2="66" stroke="#1e1a0e" stroke-width="1.2"/>
+      <svg style="position:absolute;bottom:21%;right:6%;width:14%;height:46%;animation:cs-breathe 5.2s ease-in-out 0.6s infinite;" viewBox="0 0 115 165" fill="none">
+        <defs>
+          <radialGradient id="sm-sk2" cx="0.45" cy="0.3" r="0.7"><stop offset="0%" stop-color="#c8804a"/><stop offset="45%" stop-color="#9c5c2e"/><stop offset="100%" stop-color="#5e2e12"/></radialGradient>
+          <linearGradient id="sm-cl2" x1="0.5" y1="0" x2="0.1" y2="1"><stop offset="0%" stop-color="#2a1c38"/><stop offset="100%" stop-color="#14101e"/></linearGradient>
+          <radialGradient id="sm-lntrn2" cx="0.45" cy="0.75" r="0.6"><stop offset="0%" stop-color="rgba(230,160,30,0.38)"/><stop offset="100%" stop-color="rgba(230,160,30,0)"/></radialGradient>
+        </defs>
+        <ellipse cx="57" cy="163" rx="28" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+        <rect x="36" y="122" width="13" height="40" rx="5" fill="#14101c"/>
+        <rect x="56" y="122" width="13" height="40" rx="5" fill="#100e18"/>
+        <path d="M20 66 Q16 124 18 162 L36 162 L36 122 L58 122 L58 162 L76 162 Q78 124 76 66 Z" fill="url(#sm-cl2)"/>
+        <path d="M26 66 Q24 98 26 120 L48 120 L72 120 Q74 98 72 66 Q48 60 26 66 Z" fill="#32203a"/>
+        <path d="M26 68 Q22 98 24 116" stroke="rgba(230,160,30,0.18)" stroke-width="3" fill="none"/>
+        <rect x="16" y="114" width="60" height="10" rx="2" fill="#12101a"/>
+        <path d="M72 68 Q90 90 96 104" stroke="#2a1c38" stroke-width="7" stroke-linecap="round"/>
+        <ellipse cx="98" cy="108" rx="8" ry="5.5" fill="url(#sm-sk2)"/>
+        <path d="M20 70 Q2 92 0 130 Q14 126 20 114 Q16 96 22 76 Z" fill="#1a1028" opacity="0.9"/>
+        <ellipse cx="20" cy="72" rx="11" ry="6" fill="#241840"/>
+        <ellipse cx="72" cy="72" rx="11" ry="6" fill="#20163c"/>
+        <path d="M16 74 Q6 100 8 116 L20 114 Q20 96 24 78 Z" fill="#18163a"/>
+        <ellipse cx="12" cy="118" rx="7" ry="5" fill="url(#sm-sk2)"/>
+        <rect x="43" y="50" width="11" height="18" rx="4.5" fill="url(#sm-sk2)"/>
+        <ellipse cx="50" cy="33" rx="17" ry="19" fill="url(#sm-sk2)"/>
+        <path d="M33 18 Q50 10 67 18 Q63 22 50 20 Q37 22 33 18 Z" fill="#1c0e08"/>
+        <path d="M33 20 Q27 27 27 34" stroke="#1c0e08" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M67 20 Q73 27 73 34" stroke="#180e08" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+        <path d="M33 20 Q24 18 16 22 Q22 25 17 30" stroke="#1c0e08" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <ellipse cx="67" cy="34" rx="4" ry="5.5" fill="#906030"/>
+        <path d="M38 22 Q44 19 50 21" stroke="#2a1408" stroke-width="2.3" stroke-linecap="round" fill="none"/>
+        <path d="M51 21 Q57 19 62 22" stroke="#2a1408" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+        <ellipse cx="42" cy="29" rx="5" ry="3.8" fill="#d4bc88"/>
+        <ellipse cx="58" cy="29" rx="5" ry="3.8" fill="#d4bc88"/>
+        <ellipse cx="42.5" cy="29" rx="2.8" ry="3.1" fill="#38200e"/>
+        <ellipse cx="58.5" cy="29" rx="2.8" ry="3.1" fill="#38200e"/>
+        <ellipse cx="43" cy="29" rx="1.4" ry="1.5" fill="#060404"/>
+        <ellipse cx="59" cy="29" rx="1.4" ry="1.5" fill="#060404"/>
+        <circle cx="44.2" cy="27.8" r="0.9" fill="rgba(255,255,255,0.7)"/>
+        <circle cx="60.2" cy="27.8" r="0.9" fill="rgba(255,255,255,0.7)"/>
+        <path d="M48 37 Q44 43 41 46 Q50 48 59 46 Q56 43 52 37 Z" fill="rgba(50,20,5,0.2)"/>
+        <path d="M41 46 Q50 48 59 46" stroke="rgba(95,40,10,0.48)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+        <path d="M43 51 Q50 49 57 51" stroke="#984830" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <ellipse cx="50" cy="33" rx="17" ry="19" fill="url(#sm-lntrn2)" opacity="0.5"/>
       </svg>
-      <div style="position:absolute;bottom:0;left:8%;width:20%;height:23%;background:linear-gradient(135deg,rgba(0,0,0,0.45) 0%,transparent 58%);transform:skewX(-18deg);"></div>
-      <div style="position:absolute;bottom:0;right:8%;width:20%;height:23%;background:linear-gradient(225deg,rgba(0,0,0,0.45) 0%,transparent 58%);transform:skewX(18deg);"></div>`,
+      <div style="position:absolute;bottom:0;left:7%;width:22%;height:25%;background:linear-gradient(135deg,rgba(0,0,0,0.55) 0%,transparent 60%);transform:skewX(-18deg);"></div>
+      <div style="position:absolute;bottom:0;right:7%;width:22%;height:25%;background:linear-gradient(225deg,rgba(0,0,0,0.55) 0%,transparent 60%);transform:skewX(18deg);"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 85% 80% at 50% 46%,transparent 32%,rgba(1,1,4,0.88) 100%);pointer-events:none;"></div>`,
 
     'blockade-shore': `
-      <div style="position:absolute;inset:0;background:linear-gradient(190deg,#040710 0%,#070c18 22%,#0c1630 48%,#101a38 62%,#0c1428 78%,#07101e 100%);"></div>
-      <div style="position:absolute;bottom:38%;right:0;width:45%;height:22%;background:radial-gradient(ellipse 80% 50% at 100% 50%,rgba(26,46,105,0.18) 0%,transparent 68%);"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(185deg,#030610 0%,#060b18 22%,#0a1430 48%,#0e1a3c 62%,#0a1228 78%,#060e1e 100%);"></div>
       <div id="cs-sf" style="position:absolute;top:0;left:0;width:1px;height:1px;opacity:0.45;"></div>
-      <div style="position:absolute;bottom:37%;left:0;width:100%;height:10%;background:linear-gradient(0deg,rgba(38,58,105,0.14) 0%,transparent 100%);"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:40%;background:linear-gradient(0deg,#040810 0%,#080e1c 46%,#0c1428 80%,#0e1a32 100%);"></div>
-      <div class="cs-shimmer-layer" style="height:40%;opacity:0.28;"></div>
-      <div style="position:absolute;bottom:0;left:0;width:30%;height:62%;background:#030408;clip-path:polygon(0% 100%,0% 28%,9% 18%,18% 13%,24% 22%,29% 16%,30% 100%);"></div>
-      <div style="position:absolute;bottom:38%;left:5%;width:22%;height:16%;background:linear-gradient(135deg,rgba(12,16,24,0.55) 0%,transparent 50%);"></div>
-      <svg style="position:absolute;bottom:56%;left:16%;width:4%;height:20%;" viewBox="0 0 40 98" fill="none">
-        <ellipse cx="20" cy="9" rx="8.5" ry="9" fill="#030408"/>
-        <path d="M12 17 Q8 57 7 96 L33 96 Q32 57 28 17 Z" fill="#030408"/>
-        <path d="M12 17 Q-7 42 -9 67 L4 65 Q8 46 14 30 Z" fill="#020307"/>
-        <path d="M28 17 Q42 36 43 57 L34 56 Q32 42 29 30 Z" fill="#020307"/>
-        <path d="M12 29 Q1 39 -1 52" stroke="#030408" stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M28 26 Q38 21 40 19" stroke="#030408" stroke-width="4" stroke-linecap="round"/>
-        <path d="M38 19 Q44 18 46 19" stroke="#030408" stroke-width="3" stroke-linecap="round"/>
+      <div style="position:absolute;top:5%;right:15%;width:3.2%;padding-top:3.2%;background:radial-gradient(circle at 38% 38%,#dcdad0,#c0b8b0);border-radius:50%;box-shadow:0 0 15px 7px rgba(208,200,175,0.2),0 0 40px 20px rgba(188,180,155,0.09);"></div>
+      <div style="position:absolute;bottom:38%;right:0;width:48%;height:22%;background:radial-gradient(ellipse 80% 50% at 100% 50%,rgba(26,46,105,0.16) 0%,transparent 68%);"></div>
+      <div style="position:absolute;bottom:36%;left:0;width:100%;height:10%;background:linear-gradient(0deg,rgba(38,58,105,0.12) 0%,transparent 100%);"></div>
+      <div style="position:absolute;bottom:0;left:0;width:100%;height:40%;background:linear-gradient(0deg,#030708 0%,#070c1c 46%,#0a1226 80%,#0c1630 100%);"></div>
+      <div class="cs-shimmer-layer" style="height:40%;opacity:0.25;"></div>
+      <div style="position:absolute;bottom:1%;right:12%;width:4.5%;height:28%;background:radial-gradient(ellipse 50% 100% at 50% 100%,rgba(200,192,168,0.09) 0%,transparent 65%);"></div>
+      <div style="position:absolute;bottom:0;left:0;width:34%;height:65%;background:#020308;clip-path:polygon(0% 100%,0% 30%,8% 18%,16% 12%,22% 18%,28% 10%,34% 100%);"></div>
+      <div style="position:absolute;bottom:38%;left:4%;width:24%;height:18%;background:linear-gradient(135deg,rgba(10,14,24,0.55) 0%,transparent 50%);"></div>
+      <svg style="position:absolute;bottom:39%;left:20%;width:8%;opacity:0.58;" viewBox="0 0 105 58" fill="none"><path d="M3 36 Q52 46 102 36 L95 54 Q52 60 10 54 Z" fill="#06090e"/><line x1="28" y1="36" x2="28" y2="8" stroke="#06090e" stroke-width="2.5"/><line x1="60" y1="36" x2="60" y2="3" stroke="#06090e" stroke-width="2.5"/><polygon points="28,10 47,20 28,34" fill="#0a1020"/><polygon points="60,5 84,17 60,34" fill="#0a1020"/></svg>
+      <svg style="position:absolute;bottom:39%;left:32%;width:9%;opacity:0.68;" viewBox="0 0 115 62" fill="none"><path d="M4 42 Q57 52 110 42 L103 59 Q57 66 11 59 Z" fill="#050810"/><line x1="32" y1="42" x2="32" y2="8" stroke="#050810" stroke-width="3"/><line x1="68" y1="42" x2="68" y2="3" stroke="#050810" stroke-width="3"/><polygon points="32,10 53,22 32,40" fill="#090e1c"/><polygon points="68,5 92,20 68,40" fill="#090e1c"/></svg>
+      <svg style="position:absolute;bottom:38.5%;left:44%;width:14%;opacity:0.82;" viewBox="0 0 155 74" fill="none"><path d="M5 52 Q77 63 150 52 L140 70 Q77 78 15 70 Z" fill="#050810"/><line x1="46" y1="52" x2="46" y2="10" stroke="#050810" stroke-width="3.5"/><line x1="92" y1="52" x2="92" y2="3" stroke="#050810" stroke-width="3.5"/><line x1="130" y1="52" x2="130" y2="18" stroke="#050810" stroke-width="3"/><polygon points="46,12 72,26 46,50" fill="#090e1c"/><polygon points="92,5 124,22 92,50" fill="#090e1c"/><polygon points="46,12 72,18 46,26" fill="#440a0a" opacity="0.92"/></svg>
+      <svg style="position:absolute;bottom:39%;left:61%;width:9%;opacity:0.65;" viewBox="0 0 115 62" fill="none"><path d="M4 42 Q57 52 110 42 L103 59 Q57 66 11 59 Z" fill="#050810"/><line x1="32" y1="42" x2="32" y2="8" stroke="#050810" stroke-width="3"/><line x1="68" y1="42" x2="68" y2="3" stroke="#050810" stroke-width="3"/><polygon points="32,10 53,22 32,40" fill="#090e1c"/><polygon points="68,5 92,20 68,40" fill="#090e1c"/></svg>
+      <svg style="position:absolute;bottom:39.5%;left:73%;width:8%;opacity:0.5;" viewBox="0 0 105 58" fill="none"><path d="M3 36 Q52 46 102 36 L95 54 Q52 60 10 54 Z" fill="#06090e"/><line x1="28" y1="36" x2="28" y2="8" stroke="#06090e" stroke-width="2.5"/><line x1="60" y1="36" x2="60" y2="3" stroke="#06090e" stroke-width="2.5"/><polygon points="28,10 47,20 28,34" fill="#0a1020"/><polygon points="60,5 84,17 60,34" fill="#0a1020"/></svg>
+      <svg style="position:absolute;bottom:40%;left:84%;width:7%;opacity:0.36;" viewBox="0 0 95 54" fill="none"><path d="M3 34 Q47 42 92 34 L86 50 Q47 56 9 50 Z" fill="#07090e"/><line x1="26" y1="34" x2="26" y2="8" stroke="#07090e" stroke-width="2"/><line x1="55" y1="34" x2="55" y2="3" stroke="#07090e" stroke-width="2"/><polygon points="26,10 42,18 26,32" fill="#0b1020"/><polygon points="55,5 74,15 55,32" fill="#0b1020"/></svg>
+      <div style="position:absolute;bottom:37%;left:2%;width:30%;height:1.2%;background:#040710;"></div>
+      <svg style="position:absolute;bottom:38%;left:11%;width:10%;height:40%;animation:cs-breathe 5.8s ease-in-out infinite;" viewBox="0 0 88 155" fill="none">
+        <defs>
+          <linearGradient id="bs-sk" x1="0.7" y1="0" x2="0.3" y2="1"><stop offset="0%" stop-color="#9898b8"/><stop offset="45%" stop-color="#707090"/><stop offset="100%" stop-color="#303050"/></linearGradient>
+          <linearGradient id="bs-cl" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0%" stop-color="#242c1e"/><stop offset="100%" stop-color="#14180c"/></linearGradient>
+          <radialGradient id="bs-moon" cx="0.75" cy="0.25" r="0.65"><stop offset="0%" stop-color="rgba(192,204,240,0.28)"/><stop offset="100%" stop-color="rgba(192,204,240,0)"/></radialGradient>
+        </defs>
+        <ellipse cx="44" cy="153" rx="26" ry="4.5" fill="rgba(0,0,0,0.6)"/>
+        <ellipse cx="28" cy="151" rx="12" ry="5" fill="#10100c"/>
+        <ellipse cx="54" cy="151" rx="12" ry="5" fill="#0c0c08"/>
+        <rect x="22" y="110" width="14" height="42" rx="5" fill="#1e1c10"/>
+        <rect x="46" y="110" width="14" height="42" rx="5" fill="#1a1810"/>
+        <path d="M14 64 Q10 112 12 152 L28 152 L28 110 L52 110 L52 152 L68 152 Q70 112 66 64 Z" fill="url(#bs-cl)"/>
+        <path d="M20 64 Q18 96 20 108 L44 108 L66 108 Q68 96 66 64 Q44 58 20 64 Z" fill="#2c2a1c"/>
+        <path d="M20 66 Q18 94 20 106" stroke="rgba(192,204,240,0.12)" stroke-width="2.5" fill="none"/>
+        <rect x="12" y="102" width="56" height="10" rx="2" fill="#181810"/>
+        <path d="M14 66 Q0 88 -2 120 Q10 116 14 104 Q10 86 16 72 Z" fill="#181606" opacity="0.88"/>
+        <ellipse cx="14" cy="68" rx="10" ry="5.5" fill="#22201a"/>
+        <ellipse cx="62" cy="68" rx="10" ry="5.5" fill="#201e16"/>
+        <path d="M10 70 Q2 96 4 108 L16 106 Q16 88 20 74 Z" fill="#1c1a14"/>
+        <path d="M62 70 Q72 96 70 108 L58 106 Q58 88 54 74 Z" fill="#18160e"/>
+        <ellipse cx="8" cy="110" rx="7" ry="5" fill="url(#bs-sk)"/>
+        <ellipse cx="68" cy="110" rx="7" ry="5" fill="url(#bs-sk)"/>
+        <rect x="38" y="48" width="11" height="18" rx="4.5" fill="url(#bs-sk)"/>
+        <ellipse cx="44" cy="32" rx="16" ry="18" fill="url(#bs-sk)"/>
+        <path d="M28 16 Q44 8 60 16 Q56 20 44 18 Q32 20 28 16 Z" fill="#18120a"/>
+        <path d="M28 18 Q22 25 22 32" stroke="#18120a" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+        <path d="M60 18 Q66 25 66 32" stroke="#140e08" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M30 18 Q24 15 18 18" stroke="#18120a" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <ellipse cx="60" cy="33" rx="3.5" ry="5" fill="#606074"/>
+        <path d="M32 21 Q38 17 44 20" stroke="#201808" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+        <path d="M45 20 Q51 17 56 21" stroke="#201808" stroke-width="2.3" stroke-linecap="round" fill="none"/>
+        <path d="M30 24 Q27 26 26 30 Q24 34 26 36" stroke="#201808" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <ellipse cx="37" cy="27" rx="4.5" ry="3.5" fill="#c0b8cc"/>
+        <ellipse cx="51" cy="27" rx="4.5" ry="3.5" fill="#c0b8cc"/>
+        <ellipse cx="37.5" cy="27" rx="2.6" ry="2.8" fill="#22203a"/>
+        <ellipse cx="51.5" cy="27" rx="2.6" ry="2.8" fill="#22203a"/>
+        <ellipse cx="38" cy="27" rx="1.3" ry="1.4" fill="#060610"/>
+        <ellipse cx="52" cy="27" rx="1.3" ry="1.4" fill="#060610"/>
+        <circle cx="39" cy="25.8" r="0.8" fill="rgba(255,255,255,0.68)"/>
+        <circle cx="53" cy="25.8" r="0.8" fill="rgba(255,255,255,0.68)"/>
+        <path d="M26 30 Q30 28 33 32 Q30 36 26 36 Z" fill="rgba(40,35,60,0.5)"/>
+        <path d="M41 34 Q38 40 34 43 Q44 45 54 43 Q50 40 47 34 Z" fill="rgba(30,20,45,0.2)"/>
+        <path d="M34 43 Q44 45 54 43" stroke="rgba(55,40,70,0.48)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <path d="M36 48 Q44 46 52 48" stroke="#5a5570" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <ellipse cx="44" cy="32" rx="16" ry="18" fill="url(#bs-moon)" opacity="0.52"/>
       </svg>
-      <div style="position:absolute;bottom:57%;left:0;width:30%;height:1.2%;background:#050810;"></div>
-      <svg style="position:absolute;bottom:40.5%;left:20%;width:8%;opacity:0.6;" viewBox="0 0 105 58" fill="none">
-        <path d="M3 36 Q52 46 102 36 L95 54 Q52 60 10 54 Z" fill="#06090e"/><line x1="28" y1="36" x2="28" y2="8" stroke="#06090e" stroke-width="2.5"/><line x1="60" y1="36" x2="60" y2="3" stroke="#06090e" stroke-width="2.5"/>
-        <polygon points="28,10 47,20 28,34" fill="#0a1020"/><polygon points="60,5 84,17 60,34" fill="#0a1020"/>
-      </svg>
-      <svg style="position:absolute;bottom:40%;left:32%;width:9%;opacity:0.7;" viewBox="0 0 115 62" fill="none">
-        <path d="M4 42 Q57 52 110 42 L103 59 Q57 66 11 59 Z" fill="#050810"/><line x1="32" y1="42" x2="32" y2="8" stroke="#050810" stroke-width="3"/><line x1="68" y1="42" x2="68" y2="3" stroke="#050810" stroke-width="3"/>
-        <polygon points="32,10 53,22 32,40" fill="#090e1c"/><polygon points="68,5 92,20 68,40" fill="#090e1c"/>
-      </svg>
-      <svg style="position:absolute;bottom:39.5%;left:44%;width:13%;opacity:0.82;" viewBox="0 0 155 74" fill="none">
-        <path d="M5 52 Q77 63 150 52 L140 70 Q77 78 15 70 Z" fill="#050810"/><line x1="46" y1="52" x2="46" y2="10" stroke="#050810" stroke-width="3.5"/><line x1="92" y1="52" x2="92" y2="3" stroke="#050810" stroke-width="3.5"/><line x1="130" y1="52" x2="130" y2="18" stroke="#050810" stroke-width="3"/>
-        <polygon points="46,12 72,26 46,50" fill="#090e1c"/><polygon points="92,5 124,22 92,50" fill="#090e1c"/>
-        <polygon points="46,12 72,18 46,26" fill="#440a0a" opacity="0.92"/>
-      </svg>
-      <svg style="position:absolute;bottom:40%;left:60%;width:9%;opacity:0.68;" viewBox="0 0 115 62" fill="none">
-        <path d="M4 42 Q57 52 110 42 L103 59 Q57 66 11 59 Z" fill="#050810"/><line x1="32" y1="42" x2="32" y2="8" stroke="#050810" stroke-width="3"/><line x1="68" y1="42" x2="68" y2="3" stroke="#050810" stroke-width="3"/>
-        <polygon points="32,10 53,22 32,40" fill="#090e1c"/><polygon points="68,5 92,20 68,40" fill="#090e1c"/>
-      </svg>
-      <svg style="position:absolute;bottom:40.5%;left:72%;width:8%;opacity:0.52;" viewBox="0 0 105 58" fill="none">
-        <path d="M3 36 Q52 46 102 36 L95 54 Q52 60 10 54 Z" fill="#06090e"/><line x1="28" y1="36" x2="28" y2="8" stroke="#06090e" stroke-width="2.5"/><line x1="60" y1="36" x2="60" y2="3" stroke="#06090e" stroke-width="2.5"/>
-        <polygon points="28,10 47,20 28,34" fill="#0a1020"/><polygon points="60,5 84,17 60,34" fill="#0a1020"/>
-      </svg>
-      <svg style="position:absolute;bottom:41%;left:83%;width:7%;opacity:0.38;" viewBox="0 0 95 54" fill="none">
-        <path d="M3 34 Q47 42 92 34 L86 50 Q47 56 9 50 Z" fill="#07090e"/><line x1="26" y1="34" x2="26" y2="8" stroke="#07090e" stroke-width="2"/><line x1="55" y1="34" x2="55" y2="3" stroke="#07090e" stroke-width="2"/>
-        <polygon points="26,10 42,18 26,32" fill="#0b1020"/><polygon points="55,5 74,15 55,32" fill="#0b1020"/>
-      </svg>`,
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 95% 90% at 50% 50%,transparent 42%,rgba(2,3,8,0.78) 100%);pointer-events:none;"></div>`,
+
   };
 
   return scenes[id] || '<div style="position:absolute;inset:0;background:#030507;"></div>';
@@ -1052,6 +1738,69 @@ let csState = {
   typeTimer: null,
   ready:     false,
 };
+
+// ─── CUTSCENE PARALLAX ───────────────────────
+function csParallax(e) {
+  if (!csState.active) return;
+  const art = document.getElementById('cs-art');
+  if (!art || art.classList.contains('cs-fading') || art.classList.contains('cs-entering')) return;
+  const rx = (e.clientX / window.innerWidth  - 0.5);
+  const ry = (e.clientY / window.innerHeight - 0.5);
+  art.style.transform = `translate(${rx * -9}px, ${ry * -4}px)`;
+}
+
+// ─── CUTSCENE ART ENHANCEMENT ────────────────
+function csEnhanceArt(sceneId, artEl) {
+  // Brightness reveal entrance
+  artEl.classList.remove('cs-entering');
+  void artEl.offsetWidth;
+  artEl.classList.add('cs-entering');
+  setTimeout(() => artEl.classList.remove('cs-entering'), 950);
+
+  // Atmospheric fog for naval/night scenes
+  if (['aurelion-night', 'marenic-fleet', 'blockade-shore'].includes(sceneId)) {
+    const f1 = document.createElement('div');
+    f1.className = 'cs-fog-layer';
+    artEl.appendChild(f1);
+    const f2 = document.createElement('div');
+    f2.className = 'cs-fog-layer cs-fog-layer-2';
+    artEl.appendChild(f2);
+  }
+
+  // Rising embers for fire / ruin scenes
+  if (['veyra-ruins', 'emissary-dock'].includes(sceneId)) {
+    for (let i = 0; i < 16; i++) {
+      const em = document.createElement('div');
+      em.className = 'cs-ember';
+      const xDrift = (Math.random() - 0.5) * 52;
+      em.style.cssText = [
+        `left:${6 + Math.random() * 78}%`,
+        `bottom:${26 + Math.random() * 44}%`,
+        `width:${1.5 + Math.random() * 3}px`,
+        `height:${1.5 + Math.random() * 3}px`,
+        `--dur:${1.3 + Math.random() * 1.9}s`,
+        `--delay:${Math.random() * 2.8}s`,
+        `--x:${xDrift}px`,
+      ].join(';');
+      artEl.appendChild(em);
+    }
+  }
+
+  // Ambient warm glow pulse for interior torch scenes
+  if (['council-chamber', 'secret-meeting'].includes(sceneId)) {
+    const amb = document.createElement('div');
+    amb.className = 'cs-ambient-pulse';
+    artEl.appendChild(amb);
+  }
+
+  // Ship rocking for naval scenes
+  if (['marenic-fleet', 'blockade-shore'].includes(sceneId)) {
+    artEl.querySelectorAll('svg').forEach((svg, i) => {
+      svg.style.animation = `ship-drift ${3.2 + i * 0.55}s ease-in-out ${i * 0.3}s infinite`;
+      svg.style.transformOrigin = 'center 90%';
+    });
+  }
+}
 
 function showCutscene(id, onComplete) {
   const panels = CUTSCENE_DATA[id];
@@ -1068,6 +1817,7 @@ function showCutscene(id, onComplete) {
   };
 
   document.getElementById('cs-art').addEventListener('click', handleCSClick);
+  document.addEventListener('mousemove', csParallax);
 
   csLoadPanel(0);
 }
@@ -1102,6 +1852,8 @@ function csLoadPanel(idx) {
   hideCSHint();
 
   const art = document.getElementById('cs-art');
+  art.style.transform = '';           // reset parallax position
+  art.style.transition = 'none';
   art.classList.add('cs-fading');
 
   csDots(panels.length, idx);
@@ -1113,22 +1865,29 @@ function csLoadPanel(idx) {
     const sf = art.querySelector('#cs-sf');
     if (sf) {
       const stars = [];
-      for (let i = 0; i < 72; i++) {
+      for (let i = 0; i < 85; i++) {
         const x   = Math.random() * window.innerWidth;
-        const y   = Math.random() * (window.innerHeight * 0.44);
-        const op  = Math.random() > 0.62 ? 0.9 : 0.5;
-        const sz  = Math.random() > 0.88 ? 2 : 1;
+        const y   = Math.random() * (window.innerHeight * 0.46);
+        const op  = Math.random() > 0.6 ? 0.92 : 0.52;
+        const sz  = Math.random() > 0.85 ? 2 : 1;
+        const tw  = (0.8 + Math.random() * 2.4).toFixed(1);
         stars.push(`${Math.round(x)}px ${Math.round(y)}px 0 ${sz}px rgba(255,255,255,${op})`);
       }
-      sf.style.cssText += ';position:absolute;width:1px;height:1px;box-shadow:' + stars.join(',');
+      sf.style.cssText += ';position:absolute;width:1px;height:1px;box-shadow:' + stars.join(',') +
+        ';animation:star-twinkle ' + (2.5 + Math.random()) + 's ease-in-out infinite';
     }
 
     art.classList.remove('cs-fading');
+    void art.offsetWidth;
+    art.style.transition = '';         // restore transition for parallax
+
+    // Apply atmosphere effects + entrance animation
+    csEnhanceArt(panel.scene, art);
 
     document.getElementById('cs-location').textContent  = panel.location;
     document.getElementById('cs-narration').textContent = '';
 
-    csTypeText(panel.text, 28, () => {
+    csTypeText(panel.text, 26, () => {
       csState.ready = true;
       showCSHint();
     });
@@ -1162,9 +1921,11 @@ function hideCSHint() { document.getElementById('cs-hint').classList.remove('sho
 
 function endCutscene() {
   clearTimeout(csState.typeTimer);
-  const el = document.getElementById('cutscene');
-  el.classList.add('hidden');
-  document.getElementById('cs-art').removeEventListener('click', handleCSClick);
+  const art = document.getElementById('cs-art');
+  art.style.transform = '';
+  art.removeEventListener('click', handleCSClick);
+  document.removeEventListener('mousemove', csParallax);
+  document.getElementById('cutscene').classList.add('hidden');
   csState.active = false;
   csState.onComplete && csState.onComplete();
 }
