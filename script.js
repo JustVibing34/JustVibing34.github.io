@@ -1,1946 +1,1900 @@
-/* =============================================
-   THE WAR OF THE BLACK TIDE — GAME SCRIPT
-   ============================================= */
+/* ============================================================
+   VOICES OF ILIATANIA — Game Script (Society & Merit Edition)
+   ============================================================ */
 
-// ─── STAT DEFINITIONS ───────────────────────
+// ─── STATS ──────────────────────────────────────────────────
+
 const STAT_DEFS = [
-  // G — Geography (coastal routes, naval position)
-  { key: 'militaryReadiness',   label: 'Coastal Defense',      grapes: 'G', grapesLabel: 'Geography',   type: 'good' },
-  { key: 'foreignThreat',       label: 'Foreign Threat',       grapes: 'G', grapesLabel: 'Geography',   type: 'bad'  },
-  // R — Religion (faith tensions, marginalized communities)
-  { key: 'religiousTension',    label: 'Religious Tension',    grapes: 'R', grapesLabel: 'Religion',    type: 'bad'  },
-  // A — Achievement (medical corps, hospitals)
-  { key: 'medicalCapacity',     label: 'Medical Capacity',     grapes: 'A', grapesLabel: 'Achievement', type: 'good' },
-  // P — Politics (centralized government, council, colonies)
-  { key: 'capitalStability',    label: 'Capital Stability',    grapes: 'P', grapesLabel: 'Politics',    type: 'good' },
-  { key: 'councilSupport',      label: 'Council Support',      grapes: 'P', grapesLabel: 'Politics',    type: 'good' },
-  { key: 'colonyLoyalty',       label: 'Colony Loyalty',       grapes: 'P', grapesLabel: 'Politics',    type: 'good' },
-  // E — Economics (trade goods, tribute, harbor revenue)
-  { key: 'economicBalance',     label: 'Economic Balance',     grapes: 'E', grapesLabel: 'Economics',   type: 'good' },
-  // S — Social (merit class, public trust, radicalization)
-  { key: 'publicTrust',         label: 'Public Trust',         grapes: 'S', grapesLabel: 'Social',      type: 'good' },
-  { key: 'rebelRadicalization', label: 'Rebel Radicalization', grapes: 'S', grapesLabel: 'Social',      type: 'bad'  },
+  { key: 'rank',      label: 'Rank Progress',  icon: '◈', color: '#c8a850', type: 'good',
+    desc: 'Your progress toward earning a higher civic rank in Iliatanian society.' },
+  { key: 'trust',     label: 'Public Trust',   icon: '◉', color: '#4a88cc', type: 'good',
+    desc: 'How much citizens and officials trust you to act fairly and honestly.' },
+  { key: 'equality',  label: 'Social Equality',icon: '⊕', color: '#5aad8a', type: 'good',
+    desc: 'Whether your choices strengthen equality across Iliatanian society.' },
+  { key: 'stability', label: 'Civic Stability', icon: '◫', color: '#9070c8', type: 'good',
+    desc: 'How stable and resilient Iliatania\'s civic institutions remain.' },
 ];
 
-const INITIAL_STATS = {
-  capitalStability:    65,
-  colonyLoyalty:       55,
-  militaryReadiness:   60,
-  economicBalance:     60,
-  religiousTension:    45,
-  publicTrust:         60,
-  medicalCapacity:     55,
-  foreignThreat:       50,
-  councilSupport:      60,
-  rebelRadicalization: 30,
-};
+// ─── RANK TIERS ─────────────────────────────────────────────
 
-// ─── SCENE DATA ─────────────────────────────
-const SCENES = [
-  // ── SCENE 1 ──────────────────────────────
-  {
-    act:      'ACT I — THE BREAKING',
-    progress: '1 / 7',
-    title:    "The Storm's Legacy",
-    body: [
-      'Three weeks since the Black Tide Storm made landfall at Veyra. The harbor district is submerged. Grain stores are gone. Sixty percent of the colony\'s olive groves — the primary tribute commodity — are destroyed. Governor Dresh Fael sends word: <strong>Veyra cannot pay tribute</strong>. Not this season. Perhaps not next.',
-      'From the watchtower at Cape Dros, signal fires burn red: thirty Marenic warships hold position on the horizon. They are not attacking. They are <em>waiting</em>. The council meets in emergency session. They are watching you — the Strategist who rose without noble blood. Prove them wrong.',
-    ],
-    lore: [
-      { g: 'G', text: 'Veyra\'s deep-water harbor is the empire\'s only large port in a 300-league coastal stretch. The watchtower relay at Cape Dros transmits signals to Aurelion in under two hours via signal-fire chains.' },
-      { g: 'E', text: 'Iliatania\'s trade exports include sugarcane, olive oil, leather, weapons, medicine, and timber. Veyra\'s olive harvest alone accounts for 18% of southern tribute revenue.' },
-      { g: 'A', text: 'Before the storm, Veyra housed the empire\'s second-largest hospital complex — part of a state-funded medical system established after the Great Fever of 312.' },
-    ],
-    choices: [
-      {
-        letter: 'A',
-        label:  'Dispatch an imperial envoy and medical teams to Veyra immediately.',
-        tip:    'Project stability and good faith. The empire cares for its colonies.',
-        consequence: 'The envoy reaches Veyra in three days. Governor Fael weeps publicly when imperial doctors enter the flooded hospital. For now, Veyra\'s leaders hold back the most radical voices. Maren watches — but does not move.',
-        changes: { colonyLoyalty: 10, publicTrust: 8, medicalCapacity: -5, militaryReadiness: -5, councilSupport: -5 },
-      },
-      {
-        letter: 'B',
-        label:  'Mobilize the imperial fleet — show Maren these waters are not negotiable.',
-        tip:    'Strength first. An empire that hesitates invites invasion.',
-        consequence: 'Imperial warships move out of Aurelion\'s harbor in formation. The Marenic fleet holds position but does not retreat. In Veyra, word of the fleet spreads fear and anger in equal measure. The colonists wonder if the ships are coming to help them — or to collect.',
-        changes: { militaryReadiness: 12, foreignThreat: -8, economicBalance: -8, councilSupport: 8, colonyLoyalty: -8 },
-      },
-      {
-        letter: 'C',
-        label:  'Issue an Imperial Emergency Decree — suspend Veyra\'s tribute pending full assessment.',
-        tip:    'Protect Veyra\'s loyalty before Maren can offer what you refuse to.',
-        consequence: 'The decree is read aloud in Veyra\'s central square and met with cautious relief. Two northern colonies immediately send letters requesting similar suspensions for minor grievances. The council is displeased.',
-        changes: { colonyLoyalty: 15, publicTrust: 10, economicBalance: -12, councilSupport: -10, rebelRadicalization: -8 },
-      },
-      {
-        letter: 'D',
-        label:  'Dispatch an audit commission. Verify Veyra\'s claims before committing imperial resources.',
-        tip:    'Due diligence. Generosity without verification invites exploitation.',
-        consequence: 'The commission departs. In Veyra, the wait is read as cold indifference. Governor Fael\'s moderating influence weakens as radical voices ask why the empire sends accountants instead of food. The Marenic ships are still on the horizon.',
-        changes: { councilSupport: 8, colonyLoyalty: -12, religiousTension: 8, rebelRadicalization: 10, publicTrust: -5 },
-      },
-      {
-        letter: 'E',
-        label:  'Use the highland supply routes — send aid through the interior roads, invisible to Marenic naval observation.',
-        tip:    'Strategic. Veyra receives help without revealing imperial movement to the watching fleet.',
-        consequence: 'The highland route is slower but invisible to Marenic scouts. When the first supply wagon arrives in Veyra three days late, it carries more than food — it carries proof that Iliatania knows how to move without being seen. Maren\'s fleet holds position, uncertain what just happened.',
-        changes: { colonyLoyalty: 12, publicTrust: 7, medicalCapacity: 6, foreignThreat: -4, economicBalance: -7 },
-      },
-    ],
-    advisors: [
-      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Thirty warships do not wait — they position. Show Maren that entering Iliatanian waters carries a price. Every hour we delay is an hour they read as permission.' },
-      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'Verify the damage before committing treasury resources. Every coin dispatched without audit is a coin the council cannot trace. Compassion is not the enemy — unverified compassion is.' },
-      { name: 'High Priest Orryn',  role: 'Dominant Faith',    icon: '✦', grapes: 'R', dialogue: 'The Temple of the Meridian Sun supports a measured gesture of care for Veyra\'s faithful. But do not let Savra Olan use our mercy as a stage for her movement.' },
-    ],
-  },
-
-  // ── SCENE 2 ──────────────────────────────
-  {
-    act:      'ACT I — THE BREAKING',
-    progress: '2 / 7',
-    title:    'Accounting for Ruin',
-    body: [
-      'The reports are in: 60% of the harvest gone, three hospitals flooded, fourteen thousand displaced. Governor Fael requests a <strong>two-year tribute postponement</strong> — measured, deferential. His deputy Savra Olan, a firebrand of the marginalized faith, was not at the meeting. <em>That absence worries your analysts.</em>',
-      'The council is split. Finance Minister Caeldris warns of precedent. Admiral Vath says the harbor is too vital to alienate. High Priest Orryn says nothing — and his silence costs something too. You have the emperor\'s ear. What you recommend will be implemented.',
-    ],
-    lore: [
-      { g: 'P', text: 'The Imperial Council operates by centralized consensus — the emperor holds final authority, but no major policy survives without council majority. Finance, War, and the High Priest hold the most influence.' },
-      { g: 'S', text: 'Iliatania\'s merit system allows talented civilians to rise across class lines. You, the Crisis Strategist, are its product — selected over noble-born candidates by the emperor\'s own hand.' },
-      { g: 'E', text: 'Emergency tribute suspensions historically take 2-3 seasons before neighboring colonies request similar treatment. Finance Minister Caeldris has refused three such requests in the past decade.' },
-    ],
-    choices: [
-      {
-        letter: 'A',
-        label:  'Grant the full postponement and send emergency grain, timber, and medicine.',
-        tip:    'Compassionate and costly. It buys genuine loyalty rather than grudging compliance.',
-        consequence: 'The shipments arrive ahead of schedule. Savra Olan helps distribute supplies alongside imperial doctors — the image is noticed by every Veyran who witnesses it. Governor Fael sends a personal letter of gratitude. Minister Caeldris demands emergency budget cuts elsewhere.',
-        changes: { colonyLoyalty: 18, publicTrust: 12, rebelRadicalization: -12, economicBalance: -15, medicalCapacity: -8, councilSupport: -8 },
-      },
-      {
-        letter: 'B',
-        label:  'Reduce tribute by 60% for two years. Require Veyra to host an imperial garrison in return.',
-        tip:    'A negotiated compromise. Keeps both leverage and goodwill — imperfectly.',
-        consequence: 'Fael accepts reluctantly. The garrison is resented by locals but tolerated. Savra Olan calls it an occupation wrapped in charity. The council approves — the arrangement at least preserves imperial presence in the harbor.',
-        changes: { colonyLoyalty: 5, militaryReadiness: 8, councilSupport: 12, religiousTension: 8, rebelRadicalization: 5, economicBalance: -6 },
-      },
-      {
-        letter: 'C',
-        label:  "Maintain the quota. Grant a three-month extension — but the empire's coffers are not a charity.",
-        tip:    'Hard line. Signals strength to the council and other colonies, but at great cost to Veyra.',
-        consequence: 'Fael\'s response arrives within a week. It is not an acknowledgment. It is a warning: the people of Veyra are beginning to listen to voices that promise what the empire will not give. Savra Olan\'s following doubles in ten days.',
-        changes: { councilSupport: 15, economicBalance: 5, colonyLoyalty: -20, rebelRadicalization: 20, religiousTension: 12, publicTrust: -10 },
-      },
-      {
-        letter: 'D',
-        label:  'Offer Veyra a new long-term colonial compact — reduced tribute permanently in exchange for expanded imperial investment.',
-        tip:    'Systemic reform. Transform the relationship, not just the moment.',
-        consequence: 'The proposal takes weeks to draft. In the interim, Maren moves two ships closer to shore. But when the compact is announced, it is welcomed across half the empire\'s colonies. Minister Caeldris resigns in protest. You must now manage the council without her.',
-        changes: { colonyLoyalty: 20, publicTrust: 15, economicBalance: -10, councilSupport: -15, rebelRadicalization: -10, foreignThreat: 5 },
-      },
-      {
-        letter: 'E',
-        label:  'Accept the postponement, but require Veyra to provide sailors and harbor labor — turning maritime skill into imperial military value instead of coin.',
-        tip:    'Creative compromise. Uses what Veyra has rather than what it lacks.',
-        consequence: 'Veyra\'s fishermen — with nothing else to offer — receive imperial commissions and rank. Governor Fael calls it the most inventive proposal the empire has ever sent. The arrangement costs tribute but builds the fleet. Minister Caeldris calls it dangerous precedent. Admiral Vath calls it a gift.',
-        changes: { colonyLoyalty: 15, militaryReadiness: 10, economicBalance: -8, councilSupport: -5, publicTrust: 8 },
-      },
-    ],
-    advisors: [
-      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Veyra\'s harbor is not a line item. Lose it to Maren\'s offer and we spend a decade trying to reclaim what we handed away. What you spend on the colony now, you recover in strategic positioning.' },
-      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'A full postponement enters every colony\'s ledger within a week. I can find relief — I cannot find a structure that does not set precedent. Whatever we offer must be bounded, named, and time-limited.' },
-      { name: 'High Priest Orryn',  role: 'Dominant Faith',    icon: '✦', grapes: 'R', dialogue: 'Savra Olan\'s absence from this meeting is the most important fact in that report. Whatever you decide today, she is watching and will act on it. Factor her into the calculus.' },
-    ],
-  },
-
-  // ── SCENE 3 ──────────────────────────────
-  {
-    act:      'ACT II — THE RATION',
-    progress: '3 / 7',
-    title:    'The Weight of One Ward',
-    body: [
-      'Veyra\'s central hospital holds 400 beds. It now holds 1,100 people. Fever spreads through the outer wards. The imperial medical team has medicine for perhaps 300 serious cases. Soldiers, administrators, civilians, and marginalized-faith priests all wait in the same queue.',
-      'Healer Tessyn approaches your envoy. She has <strong>120 trained healers</strong> ready to work — with mortality rates comparable to your surgeons. She asks to be integrated. She also asks for <em>official recognition of her guild\'s medical authority</em>. The imperial doctors are uncomfortable. The council will be watching.',
-    ],
-    lore: [
-      { g: 'A', text: 'The Imperial Medical Corps was founded after the Great Fever of 312 and expanded under the current emperor\'s grandmother, who made physician training state-funded. Iliatania\'s epidemic mortality rates are among the lowest in the known world.' },
-      { g: 'R', text: 'There is one dominant state faith — the Temple of the Meridian Sun. At least four other communities exist within the empire, granted nominal tolerance but no official status or legal protection.' },
-      { g: 'S', text: 'Healer Tessyn\'s guild practices a tradition older than the empire — plant-based, community-embedded, patient-paced. Its documented success in fever cases matches imperial surgery. It simply has no seal.' },
-    ],
-    choices: [
-      {
-        letter: 'A',
-        label:  "Distribute supplies only through imperial medical teams. Tessyn's healers may assist but receive no formal recognition.",
-        tip:    'Maintain the imperial standard. Efficiency and consistency over politics.',
-        consequence: 'The hospital is more organized but still overwhelmed. Tessyn\'s healers work in the margins — quiet, effective, excluded. A pamphlet begins circulating: <em>The empire treats our bodies but not our dignity.</em>',
-        changes: { medicalCapacity: 8, religiousTension: 15, colonyLoyalty: -8, rebelRadicalization: 10, councilSupport: 5 },
-      },
-      {
-        letter: 'B',
-        label:  "Formally integrate Tessyn's healers and grant provisional guild recognition.",
-        tip:    'Pragmatic and symbolic. Save more lives. Build more goodwill.',
-        consequence: 'The combined team saves 47 additional lives in the first week by the triage coordinator\'s estimate. High Priest Orryn in Aurelion lodges a formal complaint. The council is divided. In Veyra, Tessyn quietly becomes the most trusted voice in the colony.',
-        changes: { medicalCapacity: 18, colonyLoyalty: 15, religiousTension: -10, rebelRadicalization: -12, councilSupport: -10, publicTrust: 10 },
-      },
-      {
-        letter: 'C',
-        label:  'Triage by military rank and imperial status first — then civilians.',
-        tip:    'Protect imperial assets and fighting capacity. Cold, but strategically defensible.',
-        consequence: 'Your garrison recovers faster. But imperial officials are seen cutting past dying civilians in the queue. The story reaches Aurelion within a week. Public outrage is swift. Savra Olan reads the dispatches aloud in the market square.',
-        changes: { militaryReadiness: 10, medicalCapacity: 5, publicTrust: -18, colonyLoyalty: -15, rebelRadicalization: 18, religiousTension: 10 },
-      },
-      {
-        letter: 'D',
-        label:  'Strict medical triage — treat by severity only, regardless of faith, rank, or origin.',
-        tip:    'Ethically neutral. No favoritism. Full transparency.',
-        consequence: 'A Veyran elder, a Marenic trader, and an imperial soldier are treated in the same ward on the same day. The symbolic power is not lost on anyone. It is the least controversial decision you have made — but the council demands to know why you did not prioritize the garrison.',
-        changes: { publicTrust: 15, colonyLoyalty: 10, medicalCapacity: 10, religiousTension: -5, councilSupport: -5, militaryReadiness: -3 },
-      },
-      {
-        letter: 'E',
-        label:  'Designate Veyra\'s hospital an Imperial Medical Center — request reinforcement surgeons from the northern cities and formally expand resources to the crisis.',
-        tip:    'Institutional. Elevates the colony\'s status and resources without the religious question.',
-        consequence: 'The designation arrives ahead of the surgeons. In Veyra, it is read as a signal that the empire considers the colony worth preserving, not just administering. Tessyn is not invited to the ceremony — but she is working in the wards when the new team arrives, and no one stops her.',
-        changes: { medicalCapacity: 20, colonyLoyalty: 12, publicTrust: 10, economicBalance: -10, councilSupport: 5 },
-      },
-    ],
-    advisors: [
-      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Treat the garrison first. A recovered army protects everyone else — including the civilians in the queue. Without military capacity, the hospital becomes irrelevant to the outcome.' },
-      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'The imperial medical standard exists because consistency saves lives and prevents liability. Integrating outside practitioners without protocol creates chaos in conditions that already have too much of it.' },
-      { name: 'Healer Tessyn',      role: 'Guild Leader',      icon: '✚', grapes: 'A', dialogue: 'I am not asking for a monument. I am asking to save the people already dying in the outer ward. My healers are already here. You need only say yes — and the dying stops faster.' },
-    ],
-  },
-
-  // ── SCENE 4 ──────────────────────────────
-  {
-    act:      'ACT II — THE RATION',
-    progress: '4 / 7',
-    title:    'The Weight of Prayers',
-    body: [
-      'Savra Olan holds a public assembly. Her claim — backed by documentation — is that imperial aid has consistently favored communities of the dominant faith. Her numbers are not invented. They are not wrong.',
-      'High Priest Orryn calls it <em>"sedition dressed in theology"</em> and demands arrests. Three skirmishes have broken out in Veyra\'s temple district. No deaths yet. The Marenic emissary has reportedly attended one of Tessyn\'s open ceremonies.',
-    ],
-    lore: [
-      { g: 'R', text: 'The dominant faith controls 42% of charitable institutions in the empire\'s southern colonies. Three historically marginalized faiths — including Tessyn\'s — operate without legal protection in seven of twelve colonies.' },
-      { g: 'S', text: 'Savra Olan represents what the merit system was supposed to produce: a gifted organizer who rose through competence. The difference is she was never offered the path upward — so she built her own.' },
-      { g: 'G', text: 'Veyra\'s temple district occupies the colony\'s highest ground — built before the harbor, the market, or the garrison. Both faiths built their first structures there. The land itself is disputed history.' },
-    ],
-    choices: [
-      {
-        letter: 'A',
-        label:  'Suppress the Veyran religious movement — arrest Savra Olan on charges of sedition.',
-        tip:    'Satisfy the dominant faith. Silence the immediate crisis. Create a martyr.',
-        consequence: 'Olan is arrested at dawn. By noon, the crowds outside the jail are larger than any assembly she ever called. Governor Fael requests emergency military reinforcement. Every moderate voice in Veyra goes quiet.',
-        changes: { councilSupport: 15, religiousTension: 25, rebelRadicalization: 25, colonyLoyalty: -20, publicTrust: -12, capitalStability: -8 },
-      },
-      {
-        letter: 'B',
-        label:  'Issue an Imperial Edict protecting the rights of all recognized religions in Iliatania.',
-        tip:    'Structural reform. Long overdue. Will infuriate the dominant faith\'s hierarchy.',
-        consequence: 'The Edict is signed. High Priest Orryn refuses to attend the next three council sessions. In Veyra, Tessyn reads the edict aloud in the central square. It is the first time in her memory an imperial document has named her faith without calling it a deviation. Olan drops the sharpest edges of her rhetoric — for now.',
-        changes: { religiousTension: -20, colonyLoyalty: 15, rebelRadicalization: -15, publicTrust: 12, councilSupport: -18, capitalStability: 5 },
-      },
-      {
-        letter: 'C',
-        label:  'Negotiate privately with both Orryn and Olan — make no public statement.',
-        tip:    'Buy time without commitment. Keep both sides partially satisfied and fully suspicious.',
-        consequence: 'Both leaders leave the private meetings claiming partial victory. Neither trusts you. The edict is delayed. Olan continues her assemblies. Orryn continues his complaints. The situation neither improves nor collapses — yet.',
-        changes: { religiousTension: -5, councilSupport: 5, colonyLoyalty: 5, rebelRadicalization: 5, publicTrust: -5 },
-      },
-      {
-        letter: 'D',
-        label:  'Commission a public imperial inquiry into equal aid distribution across religious communities.',
-        tip:    'Acknowledge the problem formally. Take the political risk of truth.',
-        consequence: 'The inquiry is welcomed by Olan and condemned by Orryn. The process takes forty days. Its preliminary findings confirm unequal distribution. In Veyra, the crisis stabilizes slightly — people tend to trust a system that examines itself.',
-        changes: { publicTrust: 18, religiousTension: -12, colonyLoyalty: 12, rebelRadicalization: -10, councilSupport: -12, economicBalance: -5 },
-      },
-      {
-        letter: 'E',
-        label:  'Release the preliminary aid distribution data yourself — publicly — before Olan can weaponize it. Take control of the narrative through transparency.',
-        tip:    'Bold. Removes Olan\'s most powerful tool: the revelation.',
-        consequence: 'By publishing the figures first, you transform a scandal into a disclosure. The data is still damning, but it comes from the empire, not its critics. High Priest Orryn calls you naive. Olan calls you late. The public calls it a beginning. For now, that is enough.',
-        changes: { publicTrust: 15, religiousTension: -8, rebelRadicalization: -12, colonyLoyalty: 10, councilSupport: -8 },
-      },
-    ],
-    advisors: [
-      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Religious tensions become military problems faster than anyone anticipates. I have seen it in the eastern colonies. Resolve this before someone turns a torch into a siege, because sieges are expensive.' },
-      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'Whatever this is, contain it quickly and quietly. Public inquiries cost time and resources we do not have. A private settlement between Orryn and Olan costs far less.' },
-      { name: 'High Priest Orryn',  role: 'Dominant Faith',    icon: '✦', grapes: 'R', dialogue: 'Olan\'s assembly is sedition wearing a theological mask. The Temple has served this empire faithfully for generations. That record deserves protection — not scrutiny from an inquiry board.' },
-    ],
-  },
-
-  // ── SCENE 5 ──────────────────────────────
-  {
-    act:      "ACT III — THE OFFER",
-    progress: '5 / 7',
-    title:    "The Empire's Promise",
-    body: [
-      "Ambassador Crevath arrives in Veyra's half-flooded port. His offer is sealed — but the letter reaches you before Fael opens it. Your intelligence network, at least, still functions.",
-      "Maren offers: no tribute, full religious freedom, and immediate reconstruction funding worth more than Iliatania has sent in three years. In exchange: <strong>Veyra's harbor becomes a Marenic naval base</strong>. You have seventy-two hours. Savra Olan has already granted Crevath a private audience.",
-    ],
-    lore: [
-      { g: 'P', text: 'The Marenic Empire governs colonies through appointed satraps, not governors — stronger central control but no colonial consultation. Maren can offer more because it has fewer constraints on its treasury.' },
-      { g: 'G', text: 'The Meridian Sea\'s southern corridor — Veyra\'s position — controls access to three regional trade routes. Whoever holds the harbor holds the key to the region\'s maritime economy for the next century.' },
-      { g: 'E', text: 'Without Veyra\'s harbor, Iliatanian trade vessels traveling between northern and southern colonies must reroute inland, adding 4-6 days of sailing time per voyage across hundreds of shipments annually.' },
-    ],
-    choices: [
-      {
-        letter: 'A',
-        label:  "Intercept and expel Crevath. Declare Maren's presence in Veyra an act of aggression.",
-        tip:    'Draw the line. Risk war. Remove the option of capitulation.',
-        consequence: 'Crevath is escorted out under armed guard. The Marenic fleet moves four leagues closer to shore. The declaration of aggression is read across the empire: bold, decisive, possibly premature. Governor Fael privately calls it a death sentence for diplomacy.',
-        changes: { foreignThreat: 20, militaryReadiness: 5, councilSupport: 10, colonyLoyalty: -10, economicBalance: -8, capitalStability: -5 },
-      },
-      {
-        letter: 'B',
-        label:  "Allow the negotiations — monitor them and use what you learn to prepare a counter-strategy.",
-        tip:    'Gather intelligence. Buy time. Let Maren reveal the depth of their ambition.',
-        consequence: "Crevath and Fael meet three times. Your embedded agent records everything. The offer is real and fully funded. Maren wants the harbor more than they want war — which means they might accept the right counter-offer. Time is running short.",
-        changes: { foreignThreat: 5, councilSupport: -8, colonyLoyalty: 5, militaryReadiness: 5, capitalStability: -3 },
-      },
-      {
-        letter: 'C',
-        label:  "Make Veyra a counter-offer: meet all their demands if they publicly reject Maren.",
-        tip:    'Outbid the enemy. It will cost the empire — but so will losing the harbor.',
-        consequence: "The counter-offer reaches Fael hours before his deadline with Crevath. He takes twelve hours to respond. He accepts — with conditions. Veyra will reject Maren if the empire guarantees the religious edict, the tribute reform, and a new hospital within two years. Your credibility is now on the line.",
-        changes: { colonyLoyalty: 20, foreignThreat: -10, economicBalance: -18, councilSupport: -12, publicTrust: 10, rebelRadicalization: -8 },
-      },
-      {
-        letter: 'D',
-        label:  "Warn Governor Fael: accepting Maren's offer constitutes treason. Veyra will be treated accordingly.",
-        tip:    'The blunt instrument. Destroys goodwill, but may prevent defection.',
-        consequence: "Fael does not respond for four days. When he does, it is not to you — it is to the emperor directly. He says the Crisis Strategist has offered Veyra a choice between starvation and war, while Maren offers reconstruction. He asks whether Iliatania's loyalty runs both directions.",
-        changes: { colonyLoyalty: -25, councilSupport: 8, rebelRadicalization: 20, foreignThreat: 8, publicTrust: -15, religiousTension: 10 },
-      },
-      {
-        letter: 'E',
-        label:  'Brief Governor Fael directly on Crevath\'s intelligence-gathering activities — show him that Maren wants a harbor, not a people.',
-        tip:    'Undercuts Maren without military escalation. Uses truth as the weapon.',
-        consequence: 'Fael spends six hours reviewing the intelligence before responding. His reply is careful: "The empire has shown me that Maren wants a harbor, not a people. I will need something in return for turning him away." A door has opened. It will cost something to walk through it — but it is open.',
-        changes: { foreignThreat: -8, colonyLoyalty: 8, councilSupport: 8, militaryReadiness: 3, publicTrust: 5, economicBalance: -5 },
-      },
-    ],
-    advisors: [
-      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Crevath is not an ambassador — he is a surveyor. Every meeting he holds in Veyra is a map of our vulnerabilities being sent back to Maren. Stop the access or accept the consequences.' },
-      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'Whatever Iliatania counter-offers must be immediate and concrete. Governor Fael is pragmatic — he will choose whoever makes the better real promise, not the better speech. Substance, not sentiment.' },
-      { name: 'High Priest Orryn',  role: 'Dominant Faith',    icon: '✦', grapes: 'R', dialogue: 'Formal religious protections for Veyra\'s communities undercuts Maren\'s strongest argument without costing us the harbor. It may be the least expensive strategic investment available to us right now.' },
-    ],
-  },
-
-  // ── SCENE 6 ──────────────────────────────
-  {
-    act:      'ACT III — THE OFFER',
-    progress: '6 / 7',
-    title:    'Iron Water',
-    body: [
-      "Sixteen Marenic warships form a loose blockade across Veyra's harbor mouth. Trade vessels are turned back without violence — for now. The fishing fleet hasn't left port in eleven days. The harbor economy is dying by degrees.",
-      "Admiral Vath says the choice is simple: <em>break the blockade by force or accept that Maren controls Veyra's lifeline.</em> The council is split between war and surrender. Your secret supply routes through the interior are still open — barely. Savra Olan is meeting with Crevath again.",
-    ],
-    lore: [
-      { g: 'G', text: 'Iliatania\'s highland interior roads — built during the Colonization Period — can move goods between Aurelion and Veyra without passing through any harbor. They are slower, less efficient, and invisible to naval blockades.' },
-      { g: 'E', text: 'Veyra\'s diversified economy includes timber, salt processing, olive oil, fishing, and harbor service fees. The blockade kills harbor revenue but does not destroy all sectors immediately — the interior routes buy time.' },
-      { g: 'A', text: 'Iliatania\'s naval engineers built the watchtower signal-fire relay system enabling rapid coastal communication. Maren appears to have obtained intelligence about these routes through informants inside the colony.' },
-    ],
-    choices: [
-      {
-        letter: 'A',
-        label:  'Launch a full naval assault. Break the blockade by force and drive Maren from Veyran waters.',
-        tip:    'Decisive. Expensive. If it succeeds, imperial dominance is reasserted. If it fails, the harbor is lost.',
-        consequence: 'The battle lasts six hours. Imperial ships are faster, but Maren\'s are better armed. The blockade breaks — at the cost of four imperial vessels and 340 sailors. Maren retreats but does not withdraw from the region. The harbor is open but scorched.',
-        changes: { militaryReadiness: -15, foreignThreat: -15, economicBalance: -15, capitalStability: 5, councilSupport: 10, colonyLoyalty: 8 },
-      },
-      {
-        letter: 'B',
-        label:  'Negotiate a joint maritime agreement — cede partial patrol rights to Maren in exchange for lifting the blockade.',
-        tip:    'Diplomacy at a cost. Maren gains a foothold, but the harbor survives and trade resumes.',
-        consequence: 'The agreement is signed in private. The blockade lifts. Maren now patrols a zone outside the harbor under an "anti-piracy" provision. The council calls it a humiliation. Admiral Vath resigns. The harbor reopens tentatively.',
-        changes: { foreignThreat: -5, economicBalance: 10, councilSupport: -18, militaryReadiness: -8, colonyLoyalty: 8, capitalStability: -8 },
-      },
-      {
-        letter: 'C',
-        label:  'Maintain the secret supply routes and hold position — sustain Veyra while diplomatic pressure builds.',
-        tip:    'Neither escalate nor concede. Buy time. Hope Maren blinks first.',
-        consequence: 'The supply routes hold for eleven days before Maren scouts discover one and close it. Veyra endures, but barely. The time bought no breakthrough. The blockade continues. Olan\'s meetings with Crevath are now nightly.',
-        changes: { colonyLoyalty: -5, economicBalance: -10, foreignThreat: 5, rebelRadicalization: 10, militaryReadiness: 3 },
-      },
-      {
-        letter: 'D',
-        label:  'Arm and commission Veyran fishermen as an irregular militia — let Veyra resist the blockade itself.',
-        tip:    'Local resistance. Builds Veyran pride and fighting capacity. Consequences are unpredictable.',
-        consequence: 'The Veyran militia intercepts two Marenic patrol boats at night. Both sides suffer casualties. Maren lodges a formal protest, calling it piracy. In Veyra, the resistance becomes a symbol — but it places every Veyran sailor in the line of fire.',
-        changes: { colonyLoyalty: 15, militaryReadiness: 5, foreignThreat: 10, rebelRadicalization: -5, economicBalance: -8, publicTrust: 8 },
-      },
-      {
-        letter: 'E',
-        label:  'Close Iliatanian ports to Marenic merchants — impose economic pressure and signal that the blockade will cost Maren commercially, not just militarily.',
-        tip:    'Economic warfare without naval confrontation. Leverages the empire\'s trade network.',
-        consequence: 'Three Marenic merchant vessels are turned back from Aurelion\'s harbor within the week. Maren\'s trade council sends a formal protest. Within two weeks, Maren begins signaling willingness to negotiate blockade terms. It is not a victory — but it is leverage, and it costs no ships.',
-        changes: { economicBalance: -8, foreignThreat: -12, councilSupport: 5, militaryReadiness: 5, colonyLoyalty: 3, publicTrust: 5 },
-      },
-    ],
-    advisors: [
-      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Every day that blockade holds is a day Maren practices controlling our supply lines. I do not recommend patience. I recommend engagement before they grow comfortable in our waters.' },
-      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'The harbor generates more annual value than any fleet action we could afford. Think about what you are protecting before deciding how to protect it. Destroy the harbor and you win a battle and lose the war.' },
-      { name: 'High Priest Orryn',  role: 'Dominant Faith',    icon: '✦', grapes: 'R', dialogue: 'Olan is meeting Crevath nightly. If the blockade continues, you will lose Veyra politically before you lose it militarily. The clock runs in Maren\'s favor, not ours.' },
-    ],
-  },
-
-  // ── SCENE 7 (FINAL) ─────────────────────
-  {
-    act:      'ACT IV — THE SHAPE OF DOMINION',
-    progress: '7 / 7',
-    title:    'The Shape of Dominion',
-    isFinal:  true,
-    body: [
-      "It has come to this. Maren's fleet holds outside Veyra's harbor. Governor Fael has not slept in three days. Savra Olan is preparing a statement. The council has given you one hour to present your recommendation to the emperor.",
-      "Veyra's loyalty is fractured. The economy is strained. The dominant faith presses for order. The marginalized faith presses for recognition. The military wants engagement. And the harbor — <em>Veyra's harbor</em> — sits at the center of everything. This decision will be recorded. It will be judged.",
-    ],
-    lore: [
-      { g: 'P', text: 'Iliatania has held its colonial system for 180 years by making loyalty appear inevitable. The moment one colony breaks the norm without consequence, others observe — and begin calculating.' },
-      { g: 'S', text: 'Savra Olan\'s movement is not only about religion. It argues that talent and loyalty in the colonies are rewarded only when convenient for the empire — and withheld when they become threatening.' },
-      { g: 'E', text: 'Military force creates compliance but generates resentment that compounds for decades. Reform reduces short-term revenue but may stabilize a system that otherwise requires constant garrison maintenance.' },
-    ],
-    choices: [
-      {
-        letter: 'A',
-        label:  'Crush the resistance. Send the full imperial army. Reassert complete control over Veyra by force.',
-        tip:    'The iron solution. Veyra obeys. Everything else adjusts accordingly.',
-        consequence: 'The order is given. Veyra is occupied within ten days. Fael is removed. Olan is imprisoned. The empire holds — through fear. The harbor is secured. The cost in blood and trust will be tallied for years.',
-        changes: { militaryReadiness: 15, capitalStability: 10, colonyLoyalty: -30, rebelRadicalization: -20, religiousTension: 20, publicTrust: -20, councilSupport: 15 },
-        flag: 'crush',
-      },
-      {
-        letter: 'B',
-        label:  'Reform the system. Announce a new colonial compact — no tribute during disaster years, religious equality guaranteed, imperial investment in exchange for continued sovereignty.',
-        tip:    'The long game. If it holds, Veyra becomes a model. If the council fractures, it collapses.',
-        consequence: 'The emperor approves the compact. The council splinters. Olan does not call it enough — but stops calling for independence. Fael signs. The Marenic emissary returns home without a deal. The harbor stays Iliatanian.',
-        changes: { colonyLoyalty: 25, publicTrust: 20, religiousTension: -20, economicBalance: -12, councilSupport: -15, foreignThreat: -12, rebelRadicalization: -20 },
-        flag: 'reform',
-      },
-      {
-        letter: 'C',
-        label:  "Military defense without reform. Drive out Maren, then enforce the old system once the threat is gone.",
-        tip:    'Security first, politics later. Assumes the colony stabilizes once the external threat is removed.',
-        consequence: 'The fleet engages. Maren withdraws — their gamble failed. The old system is restored. But Olan\'s followers remain, and the conditions that drove them are unchanged. The harbor is secured. The underlying crisis is deferred.',
-        changes: { militaryReadiness: -15, foreignThreat: -20, colonyLoyalty: -10, rebelRadicalization: 10, economicBalance: -12, councilSupport: 12 },
-        flag: 'defend',
-      },
-      {
-        letter: 'D',
-        label:  "Grant Veyra partial autonomy — special colonial status, self-governance, no tribute. An ally, not a subject.",
-        tip:    'Transform the relationship. Veyra chooses Iliatania freely — or not at all.',
-        consequence: 'The declaration is read in Veyra\'s square. Fael embraces it. Olan calls it insufficient — but concedes it is a beginning. Maren withdraws, their offer undercut. Three minor colonies immediately petition for similar status.',
-        changes: { colonyLoyalty: 30, foreignThreat: -15, religiousTension: -15, councilSupport: -25, economicBalance: -10, publicTrust: 15, rebelRadicalization: -25 },
-        flag: 'autonomy',
-      },
-      {
-        letter: 'E',
-        label:  "Sabotage Veyra's harbor. Deny it to Maren entirely. Accept the strategic loss — destroy what cannot be held.",
-        tip:    'The scorched-earth calculation. Maren gains nothing. Veyra loses everything. The empire survives this crisis and earns a new one.',
-        consequence: 'Imperial engineers work through the night. By morning, the harbor\'s deep-water channels are blocked, the docks partially destroyed. Maren\'s fleet has nowhere to berth. Veyra\'s economy collapses overnight. It will take a decade to rebuild.',
-        changes: { foreignThreat: -25, economicBalance: -25, colonyLoyalty: -35, rebelRadicalization: 30, publicTrust: -25, militaryReadiness: 5, capitalStability: -10 },
-        flag: 'sabotage',
-      },
-    ],
-    advisors: [
-      { name: 'Admiral Vath',       role: 'Fleet Commander',   icon: '⚓', grapes: 'G', dialogue: 'Whatever you decide — decide now. Delay is the one option that guarantees Maren wins without a fight. I can execute any of these orders. I cannot execute hesitation.' },
-      { name: 'Min. Caeldris',      role: 'Finance Minister',  icon: '◈', grapes: 'E', dialogue: 'The empire\'s long-term financial survival requires a functioning harbor at Veyra. Everything else on this table is negotiable. The harbor is not. Keep that truth central to whatever you decide.' },
-      { name: 'High Priest Orryn',  role: 'Dominant Faith',    icon: '✦', grapes: 'R', dialogue: 'History judges decisions by their results, not their intentions. The empire has endured for 180 years by being willing to do what is necessary. Whatever is necessary — be willing.' },
-    ],
-  },
+const RANKS = [
+  { min: 88, name: 'Imperial Representative' },
+  { min: 76, name: 'Council Candidate'       },
+  { min: 64, name: 'Public Officer'          },
+  { min: 52, name: 'Civic Contributor'       },
+  { min: 38, name: 'Certified Worker'        },
+  { min: 24, name: 'Apprentice'              },
+  { min: 0,  name: 'Common Citizen'          },
 ];
 
-// ─── ENDING DATA ─────────────────────────────
+const INITIAL_STATS = { rank: 18, trust: 50, equality: 45, stability: 55 };
+
+// ─── SCENE ART ──────────────────────────────────────────────
+
+const SCENE_ART = {
+
+'council': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#08050f 0%,#12091e 55%,#1a0f10 100%)">
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="210" width="600" height="110" fill="#0d0916"/>
+    <rect x="0" y="208" width="600" height="4" fill="#2a1f3a"/>
+    <rect x="60" y="60" width="18" height="155" fill="#1e1630" rx="2"/>
+    <rect x="60" y="55" width="22" height="10" fill="#2a2040" rx="1"/>
+    <rect x="522" y="60" width="18" height="155" fill="#1e1630" rx="2"/>
+    <rect x="518" y="55" width="22" height="10" fill="#2a2040" rx="1"/>
+    <rect x="130" y="80" width="14" height="135" fill="#1a1328" rx="2"/>
+    <rect x="456" y="80" width="14" height="135" fill="#1a1328" rx="2"/>
+    <path d="M180 215 Q300 80 420 215 Z" fill="none" stroke="#2a1f40" stroke-width="2"/>
+    <rect x="180" y="180" width="240" height="36" fill="#130e22"/>
+    <circle cx="300" cy="135" r="38" fill="none" stroke="#2a1f40" stroke-width="1.5"/>
+    <circle cx="300" cy="135" r="26" fill="none" stroke="#2a1f40" stroke-width="1"/>
+    <polygon points="300,100 308,127 337,127 314,144 322,171 300,154 278,171 286,144 263,127 292,127" fill="none" stroke="#3a2f50" stroke-width="1"/>
+    <rect x="88" y="100" width="6" height="22" fill="#2a1f30" rx="1"/>
+    <ellipse cx="91" cy="98" rx="5" ry="7" fill="#c06020" opacity="0.9"><animate attributeName="opacity" values="0.9;0.6;0.85;0.5;0.9" dur="1.8s" repeatCount="indefinite"/></ellipse>
+    <ellipse cx="91" cy="96" rx="3" ry="5" fill="#f0a030" opacity="0.8"><animate attributeName="opacity" values="0.8;0.4;0.75;0.3;0.8" dur="1.8s" repeatCount="indefinite"/></ellipse>
+    <rect x="506" y="100" width="6" height="22" fill="#2a1f30" rx="1"/>
+    <ellipse cx="509" cy="98" rx="5" ry="7" fill="#c06020" opacity="0.9"><animate attributeName="opacity" values="0.7;0.95;0.5;0.9;0.7" dur="2.1s" repeatCount="indefinite"/></ellipse>
+    <ellipse cx="509" cy="96" rx="3" ry="5" fill="#f0a030" opacity="0.8"><animate attributeName="opacity" values="0.6;0.9;0.4;0.85;0.6" dur="2.1s" repeatCount="indefinite"/></ellipse>
+    <radialGradient id="tg1" cx="50%" cy="50%"><stop offset="0%" stop-color="#c06020" stop-opacity="0.18"/><stop offset="100%" stop-color="#c06020" stop-opacity="0"/></radialGradient>
+    <ellipse cx="91" cy="115" rx="40" ry="30" fill="url(#tg1)"/>
+    <ellipse cx="509" cy="115" rx="40" ry="30" fill="url(#tg1)"/>
+    <ellipse cx="300" cy="222" rx="100" ry="18" fill="#130e1c" stroke="#241a34" stroke-width="1.5"/>
+    <ellipse cx="210" cy="205" rx="10" ry="14" fill="#0e0b18"/>
+    <rect x="202" y="204" width="16" height="20" fill="#0e0b18" rx="3"/>
+    <ellipse cx="300" cy="202" rx="11" ry="15" fill="#0d0a16"/>
+    <rect x="292" y="200" width="18" height="22" fill="#0d0a16" rx="3"/>
+    <ellipse cx="390" cy="205" rx="10" ry="14" fill="#0e0b18"/>
+    <rect x="382" y="204" width="16" height="20" fill="#0e0b18" rx="3"/>
+    <radialGradient id="shaft" cx="50%" cy="0%"><stop offset="0%" stop-color="#c8a050" stop-opacity="0.08"/><stop offset="100%" stop-color="#c8a050" stop-opacity="0"/></radialGradient>
+    <ellipse cx="300" cy="100" rx="80" ry="120" fill="url(#shaft)"/>
+  </svg>
+</div>`,
+
+'corridor': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#060408 0%,#100b18 60%,#160f0c 100%)">
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
+    <polygon points="0,320 600,320 420,190 180,190" fill="#0c0814"/>
+    <rect x="0" y="0" width="180" height="320" fill="#090610"/>
+    <rect x="420" y="0" width="180" height="320" fill="#090610"/>
+    <polygon points="0,0 600,0 420,190 180,190" fill="#06040d"/>
+    <polygon points="180,190 420,190 380,130 220,130" fill="#0a0715"/>
+    <polygon points="220,130 380,130 360,90 240,90" fill="#08060f"/>
+    <polygon points="240,90 360,90 348,65 252,65" fill="#060410"/>
+    <line x1="180" y1="0" x2="180" y2="320" stroke="#1e1630" stroke-width="2"/>
+    <line x1="420" y1="0" x2="420" y2="320" stroke="#1e1630" stroke-width="2"/>
+    <rect x="30" y="110" width="8" height="28" fill="#1e1628" rx="1"/>
+    <ellipse cx="34" cy="108" rx="6" ry="9" fill="#b05018" opacity="0.9"><animate attributeName="opacity" values="0.9;0.5;0.85;0.4;0.9" dur="1.9s" repeatCount="indefinite"/></ellipse>
+    <ellipse cx="34" cy="105" rx="4" ry="6" fill="#e88020" opacity="0.7"><animate attributeName="opacity" values="0.7;0.3;0.7;0.2;0.7" dur="1.9s" repeatCount="indefinite"/></ellipse>
+    <rect x="562" y="110" width="8" height="28" fill="#1e1628" rx="1"/>
+    <ellipse cx="566" cy="108" rx="6" ry="9" fill="#b05018" opacity="0.9"><animate attributeName="opacity" values="0.5;0.9;0.4;0.88;0.5" dur="2.2s" repeatCount="indefinite"/></ellipse>
+    <ellipse cx="566" cy="105" rx="4" ry="6" fill="#e88020" opacity="0.7"><animate attributeName="opacity" values="0.3;0.8;0.2;0.75;0.3" dur="2.2s" repeatCount="indefinite"/></ellipse>
+    <radialGradient id="cg1" cx="50%" cy="50%"><stop offset="0%" stop-color="#b05018" stop-opacity="0.22"/><stop offset="100%" stop-color="#b05018" stop-opacity="0"/></radialGradient>
+    <ellipse cx="34" cy="140" rx="55" ry="45" fill="url(#cg1)"/>
+    <ellipse cx="566" cy="140" rx="55" ry="45" fill="url(#cg1)"/>
+    <ellipse cx="300" cy="108" rx="8" ry="10" fill="#0a0814"/>
+    <rect x="293" y="107" width="14" height="18" fill="#0a0814" rx="2"/>
+    <line x1="180" y1="220" x2="420" y2="220" stroke="#130e1e" stroke-width="1"/>
+    <line x1="180" y1="250" x2="420" y2="250" stroke="#130e1e" stroke-width="1"/>
+    <line x1="270" y1="190" x2="220" y2="320" stroke="#130e1e" stroke-width="1"/>
+    <line x1="300" y1="190" x2="300" y2="320" stroke="#130e1e" stroke-width="1"/>
+    <line x1="330" y1="190" x2="380" y2="320" stroke="#130e1e" stroke-width="1"/>
+  </svg>
+</div>`,
+
+'hospital': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#060a08 0%,#0a1210 55%,#0c1008 100%)">
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="0" width="600" height="320" fill="#080c0a"/>
+    <rect x="0" y="230" width="600" height="90" fill="#0a0e0c"/>
+    <rect x="0" y="228" width="600" height="3" fill="#182420"/>
+    <rect x="120" y="30" width="70" height="90" fill="#0e1a12" rx="2"/>
+    <rect x="125" y="35" width="60" height="80" fill="#0c1810" rx="1"/>
+    <line x1="155" y1="35" x2="155" y2="115" stroke="#182420" stroke-width="1.5"/>
+    <line x1="125" y1="75" x2="185" y2="75" stroke="#182420" stroke-width="1.5"/>
+    <rect x="410" y="30" width="70" height="90" fill="#0e1a12" rx="2"/>
+    <rect x="415" y="35" width="60" height="80" fill="#0c1810" rx="1"/>
+    <line x1="445" y1="35" x2="445" y2="115" stroke="#182420" stroke-width="1.5"/>
+    <line x1="415" y1="75" x2="475" y2="75" stroke="#182420" stroke-width="1.5"/>
+    <rect x="60" y="180" width="120" height="55" fill="#0f1a12" rx="3" stroke="#1a2a1e" stroke-width="1"/>
+    <rect x="65" y="175" width="50" height="30" fill="#121e16" rx="8"/>
+    <rect x="420" y="180" width="120" height="55" fill="#0f1a12" rx="3" stroke="#1a2a1e" stroke-width="1"/>
+    <rect x="425" y="175" width="50" height="30" fill="#121e16" rx="8"/>
+    <ellipse cx="300" cy="185" rx="12" ry="16" fill="#0d1810"/>
+    <rect x="290" y="183" width="20" height="30" fill="#0d1810" rx="3"/>
+    <line x1="200" y1="0" x2="200" y2="40" stroke="#1e2820" stroke-width="1.5"/>
+    <ellipse cx="200" cy="44" rx="8" ry="12" fill="#182818" opacity="0.8"/>
+    <line x1="380" y1="0" x2="380" y2="40" stroke="#1e2820" stroke-width="1.5"/>
+    <ellipse cx="380" cy="44" rx="8" ry="12" fill="#182818" opacity="0.8"/>
+    <rect x="290" y="0" width="20" height="50" fill="none" stroke="#1e2820" stroke-width="1.5"/>
+    <rect x="286" y="48" width="28" height="18" fill="#141e16" rx="2"/>
+    <ellipse cx="300" cy="65" rx="10" ry="5" fill="#3a7040" opacity="0.6"><animate attributeName="opacity" values="0.6;0.3;0.55;0.25;0.6" dur="2.4s" repeatCount="indefinite"/></ellipse>
+    <radialGradient id="hg1" cx="50%" cy="50%"><stop offset="0%" stop-color="#206030" stop-opacity="0.14"/><stop offset="100%" stop-color="#206030" stop-opacity="0"/></radialGradient>
+    <ellipse cx="300" cy="120" rx="150" ry="100" fill="url(#hg1)"/>
+  </svg>
+</div>`,
+
+'rooftop': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#05080f 0%,#08101a 40%,#0c141e 100%)">
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="0" width="600" height="320" fill="#05080f"/>
+    <circle cx="45" cy="20" r="1" fill="#c8c0a8" opacity="0.7"/>
+    <circle cx="120" cy="35" r="0.8" fill="#c8c0a8" opacity="0.5"/>
+    <circle cx="200" cy="15" r="1.2" fill="#c8c0a8" opacity="0.8"/>
+    <circle cx="310" cy="28" r="0.9" fill="#c8c0a8" opacity="0.6"/>
+    <circle cx="390" cy="10" r="1" fill="#c8c0a8" opacity="0.7"/>
+    <circle cx="480" cy="30" r="0.8" fill="#c8c0a8" opacity="0.5"/>
+    <circle cx="555" cy="18" r="1.1" fill="#c8c0a8" opacity="0.8"/>
+    <circle cx="480" cy="55" r="22" fill="#d4c890" opacity="0.12"/>
+    <circle cx="480" cy="55" r="16" fill="#d4c890" opacity="0.18"/>
+    <polygon points="0,200 30,185 40,175 55,185 70,170 90,185 110,160 130,180 160,165 190,180 220,155 260,178 300,160 340,178 380,155 410,180 440,165 470,180 500,160 530,178 570,165 600,180 600,320 0,320" fill="#07090f"/>
+    <rect x="0" y="230" width="600" height="90" fill="#0c0f14"/>
+    <rect x="0" y="228" width="600" height="3" fill="#161e28"/>
+    <rect x="0" y="220" width="600" height="12" fill="#101520" rx="1"/>
+    <ellipse cx="240" cy="215" rx="11" ry="14" fill="#0a0e14"/>
+    <rect x="231" y="213" width="18" height="22" fill="#0a0e14" rx="3"/>
+    <ellipse cx="360" cy="218" rx="10" ry="13" fill="#0a0e14"/>
+    <rect x="352" y="216" width="16" height="20" fill="#0a0e14" rx="3"/>
+    <radialGradient id="mg1" cx="80%" cy="0%"><stop offset="0%" stop-color="#d4c890" stop-opacity="0.06"/><stop offset="100%" stop-color="#d4c890" stop-opacity="0"/></radialGradient>
+    <rect x="0" y="0" width="600" height="320" fill="url(#mg1)"/>
+  </svg>
+</div>`,
+
+'ocean-night': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#04060d 0%,#060a12 40%,#08101a 100%)">
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="0" width="600" height="175" fill="#04060d"/>
+    <circle cx="60" cy="18" r="0.9" fill="#b8c0c8" opacity="0.6"/>
+    <circle cx="140" cy="8" r="1.1" fill="#b8c0c8" opacity="0.8"/>
+    <circle cx="250" cy="22" r="0.8" fill="#b8c0c8" opacity="0.5"/>
+    <circle cx="350" cy="12" r="1" fill="#b8c0c8" opacity="0.7"/>
+    <circle cx="460" cy="25" r="0.9" fill="#b8c0c8" opacity="0.6"/>
+    <circle cx="540" cy="10" r="1.2" fill="#b8c0c8" opacity="0.8"/>
+    <circle cx="90" cy="60" r="20" fill="#c8c0a0" opacity="0.13"/>
+    <circle cx="90" cy="60" r="13" fill="#c8c0a0" opacity="0.20"/>
+    <rect x="0" y="175" width="600" height="145" fill="#050d18"/>
+    <radialGradient id="og1" cx="50%" cy="0%"><stop offset="0%" stop-color="#1040a0" stop-opacity="0.12"/><stop offset="100%" stop-color="#1040a0" stop-opacity="0"/></radialGradient>
+    <ellipse cx="300" cy="175" rx="300" ry="40" fill="url(#og1)"/>
+    <path d="M0,190 Q30,183 60,190 Q90,197 120,190 Q150,183 180,190 Q210,197 240,190 Q270,183 300,190 Q330,197 360,190 Q390,183 420,190 Q450,197 480,190 Q510,183 540,190 Q570,197 600,190" fill="none" stroke="#0a1828" stroke-width="2" opacity="0.8"><animateTransform attributeName="transform" type="translate" from="0 0" to="-60 0" dur="4s" repeatCount="indefinite"/></path>
+    <polygon points="240,165 360,165 375,175 225,175" fill="#030608"/>
+    <rect x="290" y="105" width="4" height="62" fill="#040710"/>
+    <polygon points="294,108 294,145 330,145" fill="#05080e" opacity="0.9"/>
+    <polygon points="290,115 290,148 260,148" fill="#05080e" opacity="0.7"/>
+  </svg>
+</div>`,
+
+'harbor-day': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#0a1018 0%,#121a22 40%,#0e1520 100%)">
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="0" width="600" height="160" fill="#0a1018"/>
+    <ellipse cx="150" cy="50" rx="120" ry="35" fill="#0e141e" opacity="0.9"/>
+    <ellipse cx="350" cy="35" rx="140" ry="30" fill="#0c1218" opacity="0.8"/>
+    <rect x="0" y="160" width="600" height="160" fill="#08121c"/>
+    <rect x="0" y="200" width="280" height="18" fill="#121820" rx="2"/>
+    <rect x="40" y="190" width="8" height="28" fill="#101820" rx="1"/>
+    <rect x="100" y="190" width="8" height="28" fill="#101820" rx="1"/>
+    <rect x="160" y="190" width="8" height="28" fill="#101820" rx="1"/>
+    <rect x="220" y="190" width="8" height="28" fill="#101820" rx="1"/>
+    <polygon points="50,165 230,165 250,200 30,200" fill="#0c1018"/>
+    <rect x="120" y="90" width="5" height="78" fill="#0e1420"/>
+    <polygon points="125,95 125,140 175,140" fill="#101828" opacity="0.8"/>
+    <polygon points="120,100 120,145 80,145" fill="#0e1624" opacity="0.7"/>
+    <ellipse cx="160" cy="196" rx="9" ry="12" fill="#090d14"/>
+    <rect x="153" y="194" width="14" height="18" fill="#090d14" rx="2"/>
+    <ellipse cx="200" cy="198" rx="8" ry="11" fill="#090d14"/>
+    <rect x="194" y="196" width="13" height="16" fill="#090d14" rx="2"/>
+    <circle cx="38" cy="190" r="3" fill="#c8a050" opacity="0.6"><animate attributeName="opacity" values="0.6;0.4;0.6" dur="2s" repeatCount="indefinite"/></circle>
+  </svg>
+</div>`,
+
+'assembly': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#06040c 0%,#0e0b18 55%,#120e10 100%)">
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="0" width="600" height="320" fill="#07050e"/>
+    <rect x="0" y="260" width="600" height="60" fill="#0c0918"/>
+    <rect x="20" y="235" width="560" height="28" fill="#0b0816" rx="1"/>
+    <rect x="50" y="210" width="500" height="28" fill="#0a0715" rx="1"/>
+    <rect x="85" y="188" width="430" height="25" fill="#090614" rx="1"/>
+    <rect x="125" y="168" width="350" height="22" fill="#080513" rx="1"/>
+    <ellipse cx="80" cy="260" rx="9" ry="12" fill="#060410"/>
+    <ellipse cx="130" cy="260" rx="9" ry="12" fill="#060410"/>
+    <ellipse cx="180" cy="260" rx="9" ry="12" fill="#060410"/>
+    <ellipse cx="230" cy="260" rx="9" ry="12" fill="#060410"/>
+    <ellipse cx="280" cy="260" rx="9" ry="12" fill="#070512"/>
+    <ellipse cx="330" cy="260" rx="9" ry="12" fill="#060410"/>
+    <ellipse cx="380" cy="260" rx="9" ry="12" fill="#060410"/>
+    <ellipse cx="430" cy="260" rx="9" ry="12" fill="#060410"/>
+    <ellipse cx="480" cy="260" rx="9" ry="12" fill="#060410"/>
+    <ellipse cx="520" cy="260" rx="9" ry="12" fill="#060410"/>
+    <ellipse cx="100" cy="235" rx="8" ry="11" fill="#050310"/>
+    <ellipse cx="160" cy="235" rx="8" ry="11" fill="#050310"/>
+    <ellipse cx="220" cy="235" rx="8" ry="11" fill="#050310"/>
+    <ellipse cx="280" cy="235" rx="8" ry="11" fill="#050310"/>
+    <ellipse cx="340" cy="235" rx="8" ry="11" fill="#050310"/>
+    <ellipse cx="400" cy="235" rx="8" ry="11" fill="#050310"/>
+    <ellipse cx="460" cy="235" rx="8" ry="11" fill="#050310"/>
+    <rect x="220" y="150" width="160" height="20" fill="#14101e" rx="2"/>
+    <ellipse cx="300" cy="143" rx="13" ry="17" fill="#0f0c1c"/>
+    <rect x="289" y="140" width="22" height="28" fill="#0f0c1c" rx="3"/>
+    <rect x="200" y="130" width="6" height="24" fill="#1a1428" rx="1"/>
+    <ellipse cx="203" cy="128" rx="5" ry="8" fill="#c05020" opacity="0.9"><animate attributeName="opacity" values="0.9;0.5;0.85;0.4;0.9" dur="1.7s" repeatCount="indefinite"/></ellipse>
+    <rect x="394" y="130" width="6" height="24" fill="#1a1428" rx="1"/>
+    <ellipse cx="397" cy="128" rx="5" ry="8" fill="#c05020" opacity="0.9"><animate attributeName="opacity" values="0.5;0.9;0.4;0.88;0.5" dur="2.0s" repeatCount="indefinite"/></ellipse>
+    <radialGradient id="ag1" cx="50%" cy="100%"><stop offset="0%" stop-color="#c05020" stop-opacity="0.15"/><stop offset="100%" stop-color="#c05020" stop-opacity="0"/></radialGradient>
+    <ellipse cx="300" cy="160" rx="100" ry="60" fill="url(#ag1)"/>
+  </svg>
+</div>`,
+
+'antechamber': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#06040d 0%,#0c0a1a 55%,#100c12 100%)">
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="0" width="600" height="320" fill="#07050e"/>
+    <rect x="0" y="245" width="600" height="75" fill="#0b0918"/>
+    <rect x="0" y="243" width="600" height="3" fill="#1e1830"/>
+    <rect x="210" y="60" width="180" height="186" fill="#0e0b1c" rx="2" stroke="#2a2040" stroke-width="2"/>
+    <line x1="300" y1="60" x2="300" y2="246" stroke="#2a2040" stroke-width="1.5"/>
+    <path d="M210,100 Q300,40 390,100" fill="none" stroke="#2a2040" stroke-width="2"/>
+    <circle cx="288" cy="175" r="4" fill="#2a2040"/>
+    <circle cx="312" cy="175" r="4" fill="#2a2040"/>
+    <rect x="0" y="80" width="140" height="168" fill="#08060e"/>
+    <rect x="460" y="80" width="140" height="168" fill="#08060e"/>
+    <rect x="130" y="65" width="20" height="185" fill="#100d1e" rx="2"/>
+    <rect x="450" y="65" width="20" height="185" fill="#100d1e" rx="2"/>
+    <rect x="15" y="130" width="7" height="20" fill="#1e1830" rx="1"/>
+    <ellipse cx="18" cy="128" rx="5" ry="7" fill="#b04818" opacity="0.9"><animate attributeName="opacity" values="0.9;0.5;0.85;0.4;0.9" dur="1.9s" repeatCount="indefinite"/></ellipse>
+    <rect x="578" y="130" width="7" height="20" fill="#1e1830" rx="1"/>
+    <ellipse cx="582" cy="128" rx="5" ry="7" fill="#b04818" opacity="0.9"><animate attributeName="opacity" values="0.5;0.9;0.4;0.88;0.5" dur="2.2s" repeatCount="indefinite"/></ellipse>
+    <radialGradient id="dg1" cx="50%" cy="60%"><stop offset="0%" stop-color="#c8a050" stop-opacity="0.06"/><stop offset="100%" stop-color="#c8a050" stop-opacity="0"/></radialGradient>
+    <ellipse cx="300" cy="200" rx="140" ry="100" fill="url(#dg1)"/>
+  </svg>
+</div>`,
+
+'shore': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#04060e 0%,#060a14 40%,#0a1018 100%)">
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="0" width="600" height="185" fill="#04060e"/>
+    <circle cx="500" cy="55" r="18" fill="#c8c0a0" opacity="0.15"/>
+    <circle cx="500" cy="55" r="12" fill="#c8c0a0" opacity="0.22"/>
+    <polygon points="0,185 80,155 140,165 200,140 250,160 300,145 350,162 400,138 460,158 520,145 600,160 600,185 0,185" fill="#060810"/>
+    <rect x="0" y="185" width="600" height="50" fill="#0a0e14"/>
+    <rect x="0" y="235" width="600" height="85" fill="#050e1a"/>
+    <path d="M0,236 Q50,232 100,236 Q150,240 200,236 Q250,232 300,236 Q350,240 400,236 Q450,232 500,236 Q550,240 600,236" fill="none" stroke="#0e1e30" stroke-width="2"/>
+    <ellipse cx="260" cy="210" rx="10" ry="13" fill="#07090f"/>
+    <rect x="252" y="208" width="16" height="20" fill="#07090f" rx="2"/>
+    <ellipse cx="340" cy="212" rx="10" ry="13" fill="#07090f"/>
+    <rect x="332" y="210" width="16" height="20" fill="#07090f" rx="2"/>
+    <rect x="295" y="215" width="10" height="14" fill="#181420" rx="1"/>
+    <ellipse cx="300" cy="215" rx="6" ry="4" fill="#c8a050" opacity="0.7"><animate attributeName="opacity" values="0.7;0.4;0.65;0.35;0.7" dur="1.8s" repeatCount="indefinite"/></ellipse>
+  </svg>
+</div>`,
+
+'final': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#06040c 0%,#0e0a18 40%,#14101e 100%)">
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="0" width="600" height="320" fill="#07050e"/>
+    <rect x="0" y="250" width="600" height="70" fill="#0c0a1a"/>
+    <rect x="0" y="248" width="600" height="3" fill="#201840"/>
+    <rect x="160" y="230" width="280" height="22" fill="#14102a" rx="2"/>
+    <ellipse cx="205" cy="206" rx="11" ry="14" fill="#0c0a1a"/>
+    <rect x="196" y="203" width="18" height="22" fill="#0c0a1a" rx="3"/>
+    <ellipse cx="265" cy="206" rx="11" ry="14" fill="#0c0a1a"/>
+    <rect x="256" y="203" width="18" height="22" fill="#0c0a1a" rx="3"/>
+    <ellipse cx="335" cy="206" rx="11" ry="14" fill="#0c0a1a"/>
+    <rect x="326" y="203" width="18" height="22" fill="#0c0a1a" rx="3"/>
+    <ellipse cx="395" cy="206" rx="11" ry="14" fill="#0c0a1a"/>
+    <rect x="386" y="203" width="18" height="22" fill="#0c0a1a" rx="3"/>
+    <circle cx="300" cy="110" r="52" fill="none" stroke="#2a1e42" stroke-width="2"/>
+    <circle cx="300" cy="110" r="36" fill="none" stroke="#241838" stroke-width="1.5"/>
+    <polygon points="300,62 314,96 350,96 322,118 332,152 300,130 268,152 278,118 250,96 286,96" fill="none" stroke="#342850" stroke-width="1.5"/>
+    <rect x="55" y="90" width="10" height="35" fill="#1e1830" rx="1"/>
+    <ellipse cx="60" cy="87" rx="8" ry="11" fill="#c06820" opacity="0.9"><animate attributeName="opacity" values="0.9;0.5;0.85;0.4;0.9" dur="1.7s" repeatCount="indefinite"/></ellipse>
+    <rect x="535" y="90" width="10" height="35" fill="#1e1830" rx="1"/>
+    <ellipse cx="540" cy="87" rx="8" ry="11" fill="#c06820" opacity="0.9"><animate attributeName="opacity" values="0.5;0.9;0.4;0.88;0.5" dur="2.0s" repeatCount="indefinite"/></ellipse>
+    <radialGradient id="fg1" cx="50%" cy="80%"><stop offset="0%" stop-color="#c8a050" stop-opacity="0.10"/><stop offset="100%" stop-color="#c8a050" stop-opacity="0"/></radialGradient>
+    <ellipse cx="300" cy="220" rx="200" ry="100" fill="url(#fg1)"/>
+  </svg>
+</div>`,
+
+'exam': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#06050e 0%,#0d0b18 55%,#0f0c14 100%)">
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
+    <rect x="0" y="248" width="600" height="72" fill="#0b0918"/>
+    <rect x="0" y="246" width="600" height="3" fill="#1a1630"/>
+    <line x1="0" y1="265" x2="600" y2="265" stroke="#100d1c" stroke-width="1"/>
+    <line x1="0" y1="283" x2="600" y2="283" stroke="#100d1c" stroke-width="1"/>
+    <line x1="150" y1="248" x2="150" y2="320" stroke="#100d1c" stroke-width="1"/>
+    <line x1="300" y1="248" x2="300" y2="320" stroke="#100d1c" stroke-width="1"/>
+    <line x1="450" y1="248" x2="450" y2="320" stroke="#100d1c" stroke-width="1"/>
+    <rect x="0" y="0" width="90" height="248" fill="#090715"/>
+    <rect x="510" y="0" width="90" height="248" fill="#090715"/>
+    <rect x="85" y="0" width="22" height="248" fill="#0e0b1c" rx="1"/>
+    <rect x="148" y="30" width="18" height="218" fill="#0c091a" rx="1"/>
+    <rect x="434" y="30" width="18" height="218" fill="#0c091a" rx="1"/>
+    <rect x="493" y="0" width="22" height="248" fill="#0e0b1c" rx="1"/>
+    <rect x="262" y="18" width="76" height="108" fill="#0e1030" rx="3"/>
+    <line x1="300" y1="18" x2="300" y2="126" stroke="#181a3c" stroke-width="1.5"/>
+    <line x1="262" y1="72" x2="338" y2="72" stroke="#181a3c" stroke-width="1.5"/>
+    <path d="M262,18 Q300,-8 338,18" fill="none" stroke="#181a3c" stroke-width="1.5"/>
+    <radialGradient id="exwg" cx="50%" cy="0%"><stop offset="0%" stop-color="#2030a0" stop-opacity="0.12"/><stop offset="100%" stop-color="#2030a0" stop-opacity="0"/></radialGradient>
+    <ellipse cx="300" cy="90" rx="90" ry="80" fill="url(#exwg)"/>
+    <rect x="95" y="82" width="6" height="18" fill="#1a1530" rx="1"/>
+    <ellipse cx="98" cy="80" rx="5" ry="7" fill="#a04218" opacity="0.9"><animate attributeName="opacity" values="0.9;0.5;0.85;0.4;0.9" dur="2.1s" repeatCount="indefinite"/></ellipse>
+    <ellipse cx="98" cy="77" rx="3" ry="5" fill="#d07018" opacity="0.7"><animate attributeName="opacity" values="0.7;0.3;0.65;0.25;0.7" dur="2.1s" repeatCount="indefinite"/></ellipse>
+    <rect x="499" y="82" width="6" height="18" fill="#1a1530" rx="1"/>
+    <ellipse cx="502" cy="80" rx="5" ry="7" fill="#a04218" opacity="0.9"><animate attributeName="opacity" values="0.5;0.9;0.4;0.88;0.5" dur="1.8s" repeatCount="indefinite"/></ellipse>
+    <ellipse cx="502" cy="77" rx="3" ry="5" fill="#d07018" opacity="0.7"><animate attributeName="opacity" values="0.3;0.7;0.25;0.65;0.3" dur="1.8s" repeatCount="indefinite"/></ellipse>
+    <radialGradient id="exeg" cx="50%" cy="50%"><stop offset="0%" stop-color="#a04218" stop-opacity="0.18"/><stop offset="100%" stop-color="#a04218" stop-opacity="0"/></radialGradient>
+    <ellipse cx="98" cy="108" rx="48" ry="42" fill="url(#exeg)"/>
+    <ellipse cx="502" cy="108" rx="48" ry="42" fill="url(#exeg)"/>
+    <rect x="195" y="166" width="210" height="10" fill="#141028" rx="1" stroke="#221a3a" stroke-width="1"/>
+    <rect x="220" y="150" width="160" height="18" fill="#110e22" rx="1"/>
+    <rect x="240" y="138" width="120" height="14" fill="#0f0c1e" rx="2" stroke="#1c1830" stroke-width="1"/>
+    <ellipse cx="300" cy="133" rx="9" ry="11" fill="#08061a"/>
+    <rect x="292" y="130" width="16" height="20" fill="#08061a" rx="2"/>
+    <rect x="108" y="205" width="384" height="5" fill="#0d0b1c" rx="1"/>
+    <ellipse cx="148" cy="203" rx="6" ry="8" fill="#070513"/>
+    <rect x="143" y="201" width="10" height="14" fill="#070513" rx="1"/>
+    <ellipse cx="208" cy="203" rx="6" ry="8" fill="#070513"/>
+    <rect x="203" y="201" width="10" height="14" fill="#070513" rx="1"/>
+    <ellipse cx="268" cy="203" rx="6" ry="8" fill="#080615"/>
+    <rect x="263" y="201" width="10" height="14" fill="#080615" rx="1"/>
+    <ellipse cx="332" cy="203" rx="6" ry="8" fill="#070513"/>
+    <rect x="327" y="201" width="10" height="14" fill="#070513" rx="1"/>
+    <ellipse cx="392" cy="203" rx="6" ry="8" fill="#070513"/>
+    <rect x="387" y="201" width="10" height="14" fill="#070513" rx="1"/>
+    <ellipse cx="452" cy="203" rx="6" ry="8" fill="#070513"/>
+    <rect x="447" y="201" width="10" height="14" fill="#070513" rx="1"/>
+    <rect x="88" y="228" width="424" height="5" fill="#0d0b1c" rx="1"/>
+    <ellipse cx="128" cy="226" rx="6" ry="8" fill="#060412"/>
+    <rect x="123" y="224" width="10" height="14" fill="#060412" rx="1"/>
+    <ellipse cx="192" cy="226" rx="6" ry="8" fill="#060412"/>
+    <rect x="187" y="224" width="10" height="14" fill="#060412" rx="1"/>
+    <ellipse cx="256" cy="226" rx="6" ry="8" fill="#060412"/>
+    <rect x="251" y="224" width="10" height="14" fill="#060412" rx="1"/>
+    <ellipse cx="344" cy="226" rx="6" ry="8" fill="#060412"/>
+    <rect x="339" y="224" width="10" height="14" fill="#060412" rx="1"/>
+    <ellipse cx="408" cy="226" rx="6" ry="8" fill="#060412"/>
+    <rect x="403" y="224" width="10" height="14" fill="#060412" rx="1"/>
+    <ellipse cx="472" cy="226" rx="6" ry="8" fill="#060412"/>
+    <rect x="467" y="224" width="10" height="14" fill="#060412" rx="1"/>
+  </svg>
+</div>`,
+
+}; // end SCENE_ART
+
+// ─── CHARACTER SILHOUETTES (seen from behind) ────────────────
+
+const SILHOUETTES = {
+
+strategist: `<svg viewBox="0 0 80 128" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+  <ellipse cx="40" cy="16" rx="11" ry="13" fill="#0c0a1a"/>
+  <rect x="36" y="27" width="8" height="7" fill="#0c0a1a"/>
+  <path d="M13,34 Q40,31 67,34 L71,53 Q56,51 40,52 Q24,51 9,53 Z" fill="#0c0a1a"/>
+  <rect x="7" y="34" width="13" height="9" fill="#0c0a1a" rx="2"/>
+  <rect x="60" y="34" width="13" height="9" fill="#0c0a1a" rx="2"/>
+  <path d="M13,53 L10,110 L40,115 L70,110 L67,53 Z" fill="#0c0a1a"/>
+  <line x1="40" y1="76" x2="40" y2="115" stroke="#080614" stroke-width="2"/>
+  <rect x="13" y="72" width="54" height="5" fill="#080614" rx="1"/>
+  <rect x="10" y="109" width="14" height="10" fill="#0c0a1a" rx="1"/>
+  <rect x="56" y="109" width="14" height="10" fill="#0c0a1a" rx="1"/>
+</svg>`,
+
+healer: `<svg viewBox="0 0 80 128" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+  <ellipse cx="40" cy="15" rx="10" ry="12" fill="#0a1210"/>
+  <rect x="37" y="25" width="6" height="8" fill="#0a1210"/>
+  <path d="M22,33 Q40,31 58,33 L62,48 Q51,46 40,47 Q29,46 18,48 Z" fill="#0a1210"/>
+  <path d="M18,48 Q9,116 20,116 L40,119 L60,116 Q71,116 62,48 Z" fill="#0a1210"/>
+  <path d="M20,82 Q12,102 17,116" fill="none" stroke="#060e0a" stroke-width="5"/>
+  <path d="M60,82 Q68,102 63,116" fill="none" stroke="#060e0a" stroke-width="5"/>
+  <rect x="38" y="0" width="4" height="20" fill="#060e0a" rx="1"/>
+  <rect x="32" y="6" width="16" height="4" fill="#060e0a" rx="1"/>
+</svg>`,
+
+navigator: `<svg viewBox="0 0 80 128" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+  <ellipse cx="40" cy="15" rx="11" ry="13" fill="#0e0e0a"/>
+  <rect x="37" y="26" width="7" height="7" fill="#0e0e0a"/>
+  <path d="M15,33 Q40,31 65,33 L68,51 Q55,49 40,50 Q25,49 12,51 Z" fill="#0e0e0a"/>
+  <path d="M12,51 L9,112 L40,116 L71,112 L68,51 Z" fill="#0e0e0a"/>
+  <rect x="65" y="49" width="11" height="32" fill="#0e0e0a" rx="2"/>
+  <rect x="68" y="81" width="16" height="5" fill="#0e0e0a" rx="1"/>
+  <line x1="40" y1="78" x2="40" y2="116" stroke="#090904" stroke-width="1.5"/>
+  <rect x="12" y="72" width="56" height="4" fill="#090904" rx="1"/>
+  <rect x="9" y="110" width="13" height="9" fill="#0e0e0a" rx="1"/>
+  <rect x="58" y="110" width="13" height="9" fill="#0e0e0a" rx="1"/>
+</svg>`,
+
+worker: `<svg viewBox="0 0 80 128" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+  <ellipse cx="40" cy="15" rx="11" ry="13" fill="#100c08"/>
+  <rect x="37" y="26" width="7" height="8" fill="#100c08"/>
+  <path d="M16,34 Q40,32 64,34 L66,51 Q53,50 40,51 Q27,50 14,51 Z" fill="#100c08"/>
+  <path d="M14,51 L12,112 L40,116 L68,112 L66,51 Z" fill="#100c08"/>
+  <rect x="14" y="68" width="52" height="6" fill="#080604" rx="1"/>
+  <rect x="14" y="84" width="52" height="4" fill="#080604" rx="1"/>
+  <rect x="12" y="110" width="14" height="10" fill="#100c08" rx="1"/>
+  <rect x="54" y="110" width="14" height="10" fill="#100c08" rx="1"/>
+</svg>`,
+
+}; // end SILHOUETTES
+
+// ─── CHARACTERS ─────────────────────────────────────────────
+
+const CHARACTERS = [
+
+// ══════ KAEL DORN — THE LOWBORN STRATEGIST ══════
+{
+  id: 'strategist', name: 'Kael Dorn', title: 'The Lowborn Strategist',
+  tagline: 'Fifteen years reading law by candlelight. Today, the exam door finally opens.',
+  color: '#4a88cc', icon: '◈',
+  scenes: [
+    {
+      title: 'The Merit Exam', location: 'Imperial Academy Examination Hall',
+      art: 'exam', label: 'SCENE I',
+      npcName: 'Examiner Valdis',
+      npcLine: '"Merit-only track. No sponsor on file. The score council grades you against every candidate — background irrelevant. You have three hours."',
+      innerVoice: 'This is the only door they ever left open for someone like you. Don\'t rush it.',
+      body: `<p>The hall smells of old varnish and fresh ink. Fifty candidates arranged in tiered rows — most with tailored coats, sponsor letters in their satchels, names you\'ve seen on civic plaques since you were a child. You find your seat near the back. The desk wobbles slightly. <em>You don\'t adjust it. Not now. You\'ve sat at worse.</em></p><p>The pension administration section is worth thirty points. You know it cold. You\'ve read the Civic Labour Code so many times the binding has split.</p>`,
+      choices: [
+        {
+          text: 'Work methodically through every section. No guessing.',
+          sub: '(You open the paper and begin without a word.)',
+          consequence: 'Three hours of steady, careful work. Your civic law answers are precise; the pension formula section is near-perfect. You finish with time to spare and don\'t change a single answer. The examiner notes your name.',
+          changes: { rank: 8, trust: 3, equality: 1, stability: 4 },
+          sets: { methodical: true },
+        },
+        {
+          text: 'Write what you actually believe about pension access — in the essay, with your name on it.',
+          sub: '(You pause at the essay prompt. Then you write fast, and you don\'t stop.)',
+          consequence: 'Your essay argues for full pension extension to colonial-registration workers. Two examiners flag it for committee review. You pass — but your views are now on record in a building full of people who remember such things.',
+          changes: { rank: 5, trust: 2, equality: 10, stability: -3 },
+          sets: { recordedView: true },
+        },
+        {
+          text: 'The candidate beside you is panicking. Walk her through the pension formula before time starts.',
+          sub: '"That third formula — substitute years served, not registration date. You\'ve got this."',
+          consequence: 'You lose eight minutes. Your score is modest. But word travels through the candidates\' common room that afternoon: Kael Dorn helped someone on exam day. That reputation will arrive in rooms before you do.',
+          changes: { rank: 2, trust: 11, equality: 5, stability: 0 },
+          sets: { helpedCandidate: true },
+        },
+      ],
+    },
+    {
+      title: 'The Petition', location: 'Civic Assembly Hall — Lower District',
+      art: 'assembly', label: 'SCENE II',
+      npcName: 'Elder Maris',
+      npcLine: '"Three bridge workers. Fifteen combined years of civic service. One transposed date on a registration form each. The reapplication window closed. Kael — you know this system. Tell me there\'s a way."',
+      innerVoice: 'You know exactly what it cost these families to be here. You know because it cost yours the same.',
+      body: `<p>The assembly hall is full — standing room along the back wall. The three workers sit in the front row with their hands folded in their laps. A child is asleep across two chairs. <em>Elder Maris sent a note to your lodging house directly. The whole street knew you\'d passed before you did.</em></p><p>The pension denials were issued on filing errors — technically correct, practically devastating. You understand both of those facts at the same time, and they don\'t cancel each other out.</p>`,
+      choices: [
+        {
+          text: 'File corrected applications yourself. All three. This week.',
+          sub: '"Don\'t reapply — that\'s a dead end. Give me your documentation. I\'m going to the original filings."',
+          consequence: 'Three late nights in the civic records office. Every claim corrected, certified, and resubmitted under your name. All three approved within a fortnight. The families remember. Elder Maris puts your name in her recommendation book.',
+          changes: { rank: 3, trust: 12, equality: 8, stability: 3 },
+          sets: { fixedPensions: true },
+        },
+        {
+          text: 'Address this assembly — publicly — on the systemic flaw that caused this.',
+          sub: '"What happened to these three men happens every month to people who don\'t have anyone in their corner. I\'m going to say that out loud, in the civic gazette, with my name on it."',
+          consequence: 'The speech earns you a formal council candidacy recommendation. The three workers are still waiting for their specific claims while your name circulates in committee rooms.',
+          changes: { rank: 8, trust: 5, equality: 6, stability: 1 },
+        },
+        {
+          text: 'Draft a collective guild petition under Article 14. It has more legal force than three separate appeals.',
+          sub: '"A group grievance gives the records office forty days to respond. That\'s the pressure point — let me show you how to use it."',
+          consequence: 'Two workers receive their credits within six weeks. The third remains under appeal — his filing error runs deeper. He thanks you anyway.',
+          changes: { rank: 2, trust: 5, equality: 5, stability: 5 },
+        },
+      ],
+    },
+    {
+      title: 'The Endorsement Wall', location: 'Civic Records Office',
+      art: 'corridor', label: 'SCENE III',
+      npcName: 'Clerk Sevin',
+      npcLine: '"Your exam results are exceptional — highest merit-track score this quarter. But the endorsement requirement has no exemptions. I\'m sorry. This isn\'t the answer you came here for."',
+      innerVoice: 'You prepared for this room for three years. You didn\'t expect the obstacle to be a single line on a form.',
+      body: `<p>The records office smells of stone dust and old wax. Clerk Sevin has reviewed your application three times while you stood at the counter — not from difficulty, but caution. She is not unkind. She is explaining a rule she did not write. <em>A character endorsement from a sitting Public Officer. Required. No exceptions. The rule exists, officially, to prevent unvetted candidates from advancing. What it does, in practice, is wall off everyone who wasn\'t born knowing a Public Officer.</em></p>`,
+      memoryLines: {
+        helpedCandidate: `<p><em>You think of the candidate from the exam hall — the one you walked through the pension formula. If she passed, she might know someone. It\'s a long shot. But so was every other door you\'ve knocked on.</em></p>`,
+      },
+      choices: [
+        {
+          text: 'Ask who in this building endorses merit-track candidates. Get a name.',
+          sub: '"I\'m not asking you to bend anything. I\'m asking if there\'s a formal channel I haven\'t found."',
+          consequence: 'Sevin gives you Officer Liris\'s name — known for reviewing merit-track candidates. You wait two weeks for an appointment. The door opens.',
+          changes: { rank: 4, trust: 5, equality: 3, stability: 3 },
+        },
+        {
+          text: 'File formally for an exceptional-score review. Use the system against itself.',
+          sub: '"My score is in the top quartile. If there\'s a mechanism for that, I want to file for it properly."',
+          consequence: 'No formal exemption exists — but Sevin escalates to a senior clerk who adds a notation that carries weight. The board reviews your file the same week.',
+          changes: { rank: 6, trust: 3, equality: 2, stability: 5 },
+        },
+        {
+          text: 'Write a public letter about this requirement. Civic gazette. Your name on it.',
+          sub: '"I\'m not angry at you. But I\'m going to put on record that this rule undermines the merit system it claims to protect."',
+          consequence: 'Two officers contact you — one to endorse, one to warn you about making enemies too early. Both relationships turn out to be useful.',
+          changes: { rank: 3, trust: 4, equality: 8, stability: -2 },
+          sets: { publicLetter: true },
+        },
+        {
+          text: 'Ask the candidate you helped on exam day if she has a contact.',
+          sub: '(You almost smile.) "Turns out helping someone has a longer reach than I expected."',
+          consequence: 'She does. Officer Liris sees you within three days, moved partly by the story of exam-day generosity. You have your endorsement before the week is out.',
+          changes: { rank: 6, trust: 8, equality: 4, stability: 2 },
+          requiresMemory: 'helpedCandidate',
+        },
+      ],
+    },
+    {
+      title: 'The Assembly Debate', location: 'Civic Assembly Hall',
+      art: 'assembly', label: 'SCENE IV',
+      npcName: 'Representative Boren',
+      npcLine: '"Candidate Dorn. The question is pension eligibility for colonial-registration workers. Your position — on record."',
+      innerVoice: 'Say what you actually believe, or say what advances you. You cannot always do both. Choose now.',
+      body: `<p>The chamber fills differently when something matters. You can feel the weight of attention before you sit down. Capital-district representatives on the left. Colonial delegates along the right wall — several of them standing because the seating was allocated before they were invited. <em>You noticed that the moment you walked in. You notice everything.</em></p><p>Representative Boren chairs with professional calm. He asks your position the way people watch to see which way a door swings.</p>`,
+      memoryLines: {
+        fixedPensions: `<p><em>Elder Maris is in the gallery. You can see her from here. She gave you three weeks of her trust — you gave it back in corrected paperwork. This room feels like a different scale of the same problem.</em></p>`,
+      },
+      choices: [
+        {
+          text: 'Full extension. No conditions. Every person who serves Iliatania earns equal protection.',
+          sub: '(You stand fully, both hands flat on the table.) "That is the founding compact, and I will not qualify it."',
+          consequence: 'Colonial delegates applaud. Several capital merchants leave early. You\'ve put your position on record in a way that can\'t be softened later. It will follow you — as a liability to some, as a promise to others.',
+          changes: { rank: 4, trust: 6, equality: 13, stability: -3 },
+          sets: { supportedColonial: true },
+        },
+        {
+          text: 'Full extension is the destination. Propose a phased transition the fund can sustain.',
+          sub: '"I\'m not offering a lesser commitment. I\'m offering a credible path."',
+          consequence: 'Moderates on both sides accept this. Colonial delegates are cautiously hopeful. You haven\'t closed any doors, and you haven\'t opened any enemies.',
+          changes: { rank: 7, trust: 5, equality: 7, stability: 5 },
+        },
+        {
+          text: 'Raise the fund\'s solvency first. Expansion must hold when it arrives.',
+          sub: '"Promising rights we can\'t fund isn\'t compassion. It\'s politics. I want both — but I want the one we can keep."',
+          consequence: 'You gain a reputation for careful thinking. Colonial advocates are quietly disappointed. You have not said no — but you\'ve said not now, and in this room that feels like the same thing.',
+          changes: { rank: 5, trust: 3, equality: 2, stability: 8 },
+        },
+      ],
+    },
+    {
+      title: 'The Forty-Minute Wait', location: 'Council Selection Committee — Antechamber',
+      art: 'antechamber', label: 'SCENE V',
+      npcName: 'Committee Secretary Olan',
+      npcLine: '"Candidate Dorn? They\'re ready. I apologize for the wait."',
+      innerVoice: 'They\'ve kept you waiting forty minutes past your appointment. Deliberately. You\'re meant to feel small before you enter.',
+      body: `<p>The antechamber is lit by a single tall window. The chairs are designed to be uncomfortable — too formal to slouch in, too rigid to relax. You have been here forty-five minutes past your scheduled time. <em>You\'ve counted the flagstones: forty-two. You\'ve read the civic charter placard on the wall three times. You know it by heart now.</em></p><p>An older candidate exits the committee room looking satisfied. He adjusts his cufflinks. His father sat on this committee. You know because you looked it up before you came.</p>`,
+      choices: [
+        {
+          text: 'Walk in exactly as prepared. The wait changes nothing.',
+          sub: '(You stand, straighten your jacket, walk in at your own measured pace.)',
+          consequence: 'You enter composed. One committee member leans to another and whispers something. Later, someone asks how you stayed calm. You don\'t give the real answer: you\'ve been waiting your whole life for rooms like this. The interview goes well.',
+          changes: { rank: 8, trust: 5, equality: 2, stability: 5 },
+        },
+        {
+          text: 'Note the delay — politely, directly, before the interview begins.',
+          sub: '"Before we start: forty-five minutes past schedule is unusual. I wanted to note it and move on."',
+          consequence: 'Silence. Then one committee member laughs — genuinely surprised. "Fair," she says. The interview is better for it. She is the deciding vote.',
+          changes: { rank: 5, trust: 8, equality: 3, stability: 2 },
+        },
+        {
+          text: 'Study the committee\'s seating before answering a single question.',
+          sub: '(You pause in the doorway. Take in the room fully. Then sit.)',
+          consequence: 'You identify who defers to whom, which members have your exam results open versus untouched, who is watching your face versus the window. You direct every answer at the right person. They notice.',
+          changes: { rank: 7, trust: 4, equality: 1, stability: 6 },
+        },
+      ],
+    },
+    {
+      title: 'The East Wing', location: 'Civic Hospital — East Corridor',
+      art: 'hospital', label: 'SCENE VI',
+      npcName: 'Senior Physician',
+      npcLine: '"Candidate Dorn. You\'re not assigned to this wing. What brings you here — officially?"',
+      innerVoice: 'This is not your jurisdiction. But injustice doesn\'t stay in its lane, and you stopped letting that stop you a long time ago.',
+      body: `<p>The east wing corridor is where workers classified Certified and below are directed — shorter staff ratios, older equipment, longer waits. A colleague mentioned that pension credit disputes are resolved differently depending on which wing you\'re treated in. <em>You didn\'t believe it. Then you asked for the discharge records.</em></p><p>Workers treated in the east wing are three times more likely to have pension credit appeals denied. The pattern isn\'t explained anywhere in the filing notes. You\'re a strategist. You don\'t need it explained.</p>`,
+      choices: [
+        {
+          text: 'Request the pension credit resolution records for both wings. Side by side.',
+          sub: '"I\'m documenting a disparity. I\'m not here to cause difficulty — I\'m here because the numbers don\'t add up."',
+          consequence: 'The physician gives you access — carefully, with chart numbers redacted. You document the pattern anyway. Three more weeks to make it airtight. Worth it.',
+          changes: { rank: 3, trust: 7, equality: 9, stability: 1 },
+        },
+        {
+          text: 'Present your candidacy papers and conduct a formal compliance review.',
+          sub: '"This is an official review visit under equal-treatment provisions. I\'d like to begin in the records room."',
+          consequence: 'The formal framing opens more doors than asking permission would have. Two nurses volunteer information they wouldn\'t have otherwise. You leave with more than you came for.',
+          changes: { rank: 5, trust: 4, equality: 7, stability: 4 },
+        },
+        {
+          text: 'Talk to the patients. Not the records — the people.',
+          sub: '"The files will tell me what happened. The patients will tell me what it felt like."',
+          consequence: 'Three hours in the east wing. Four patients who tell you, with careful precision, exactly what was done differently for them. You leave with testimony, not just statistics.',
+          changes: { rank: 2, trust: 10, equality: 8, stability: 0 },
+          sets: { hasTestimony: true },
+        },
+      ],
+    },
+    {
+      title: 'The Council Vote', location: 'Imperial Council Chamber',
+      art: 'council', label: 'SCENE VII', isFinal: true,
+      npcName: 'Council Chair Iren',
+      npcLine: '"The pension reform bill — colonial extension article. Candidate Dorn, you have five minutes to present the supporting case."',
+      innerVoice: 'This is the moment everything before was building toward. It will not feel as large as you imagined. Do it anyway.',
+      body: `<p>The chamber seats thirty-two. Twenty-seven are present. You have spent eight months on this bill — you know which four members are undecided, which two respond to argument, which two move only under political cost. <em>You have every number memorized. You have the names of every affected worker\'s district.</em></p>`,
+      memoryLines: {
+        hasTestimony: `<p><em>In your inside pocket: testimony from four east wing patients, handwritten, each signed. You didn\'t plan to use it today. You may have to.</em></p>`,
+        helpedCandidate: `<p><em>In the back row, you see a face from the exam hall — the candidate you helped with the pension formula. She\'s an observer today. She gives you a single nod. You feel it land.</em></p>`,
+      },
+      choices: [
+        {
+          text: 'Lead with data. Clean, documented, no sentiment.',
+          sub: '"The fund can sustain this extension. The retroactive period is five years. The cost-per-capita is lower than the civic remediation cost of not acting. I\'ll take questions."',
+          consequence: 'The undecided members move. The bill passes 16-11. Not a sweep — a margin. But durable. The reform will hold.',
+          changes: { rank: 12, trust: 7, equality: 10, stability: 6 },
+        },
+        {
+          text: 'Read from the patient testimony. Let them hear what the disparity costs.',
+          sub: '"I have four statements from east wing patients. I\'d like to read one — with permission, which I have in writing."',
+          consequence: 'Two undecided members vote yes who wouldn\'t have on data alone. The bill passes 18-9 — a margin that doesn\'t get quietly amended away later.',
+          changes: { rank: 11, trust: 10, equality: 12, stability: 4 },
+          requiresMemory: 'hasTestimony',
+        },
+        {
+          text: 'Name the two movable members directly. On the record. In the chamber.',
+          sub: '"Representatives Halv and Coren — I\'ve spoken with your district coordinators. This gap affects workers in your districts specifically. I\'m asking you to vote for those workers today."',
+          consequence: 'Halv votes yes. Coren abstains — which in a contested vote is close enough. The bill passes 15-11-1. Coren never forgives you for naming him publicly. It was worth it.',
+          changes: { rank: 9, trust: 6, equality: 11, stability: 4 },
+        },
+      ],
+    },
+  ],
+},
+
+// ══════ TESSYN VAYLE — THE VEYRAN HEALER ══════
+{
+  id: 'healer', name: 'Tessyn Vayle', title: 'The Veyran Healer',
+  tagline: 'Trained abroad, licensed here. Every day she proves she belongs in rooms that weren\'t built for her.',
+  color: '#5aad8a', icon: '⊕',
+  scenes: [
+    {
+      title: 'The Morning Ward', location: 'Civic Hospital — General Ward',
+      art: 'hospital', label: 'SCENE I',
+      npcName: 'Head Physician Draul',
+      npcLine: '"Vayle. The east-wing patients are not your assignment. You\'re on the upper ward. Please stay in your designated section."',
+      innerVoice: 'He doesn\'t say it outright. He doesn\'t have to. You\'ve learned to read the distance between what Iliatanian physicians say and what they mean.',
+      body: `<p>The ward smells of lye soap and something underneath it that no amount of cleaning removes. You\'ve been a certified civic physician for fourteen months. You are still the only Veyran-trained healer on staff. <em>Some mornings the other physicians greet you by name. Some mornings they look past you. You\'ve stopped trying to predict which kind of morning it will be.</em></p><p>There\'s a patient in the east wing running a fever that Physician Draul classified as minor. You passed his bed on your way in. His breathing was not minor.</p>`,
+      choices: [
+        {
+          text: 'Go to the east wing patient. His breathing is wrong and you know it.',
+          sub: '(You change direction without a word and go.)',
+          consequence: 'Early pneumonia. You catch it before it consolidates. The patient is transferred to your care. Draul says nothing to you directly — but the ward nursing staff notice what you did, and who didn\'t.',
+          changes: { rank: 4, trust: 10, equality: 8, stability: 2 },
+          sets: { brokeProtocol: true },
+        },
+        {
+          text: 'Flag your concern to Draul formally and let him decide.',
+          sub: '"I want to note for the record that the east-wing patient in bed seven has labored breathing inconsistent with a minor classification. I\'d like a second review."',
+          consequence: 'Draul reviews the patient two hours later. He adjusts the classification. He doesn\'t acknowledge your flag. The patient is treated in time.',
+          changes: { rank: 3, trust: 5, equality: 4, stability: 5 },
+        },
+        {
+          text: 'Go to your assigned ward — then document the east-wing patient\'s symptoms in writing before anyone can claim you didn\'t notice.',
+          sub: '(You write the observation in your case notes, dated and timed, and go to your ward.)',
+          consequence: 'The documentation protects you later when the patient worsens and the question of who knew what becomes relevant. It is a careful, cold way to do the right thing. You\'re not sure how you feel about that.',
+          changes: { rank: 2, trust: 4, equality: 3, stability: 7 },
+          sets: { documented: true },
+        },
+      ],
+    },
+    {
+      title: 'The Certification Exam', location: 'Imperial Academy — Medical Board',
+      art: 'exam', label: 'SCENE II',
+      npcName: 'Board Examiner Helke',
+      npcLine: '"Your Veyran training covers the practical requirements. The theoretical sections will be graded on Iliatanian civic medicine standards. Any questions before we begin?"',
+      innerVoice: 'You\'ve passed this exam before — in a different language, in a different country. This version asks you to forget half of what you know.',
+      body: `<p>The medical board examination room is smaller than you expected. Three examiners, a clerk, and a blank sheet of paper in front of you. Examiner Helke has your Veyran certification on the table beside her, face-down. <em>You notice that. You notice everything they do with their hands when they think you\'re not watching.</em></p><p>The Iliatanian theoretical sections include several categories where Veyran methodology diverges significantly from standard practice. You know both approaches. You know which one works better in certain cases. This exam doesn\'t ask which one works better.</p>`,
+      choices: [
+        {
+          text: 'Answer using Iliatanian standards throughout. Pass clean.',
+          sub: '(You set aside the Veyran methodology and work through the exam as they\'ve defined it.)',
+          consequence: 'You pass with a strong score. No flags, no questions. The board approves your full civic certification. You will use Veyran methods in practice regardless — the exam just doesn\'t need to know that.',
+          changes: { rank: 7, trust: 3, equality: 2, stability: 6 },
+        },
+        {
+          text: 'Answer Iliatanian standards, but note where Veyran methodology differs — and why.',
+          sub: '(In the margin of two answers, you add a footnote. You sign your name to the footnote.)',
+          consequence: 'One examiner flags the footnotes for review. Two weeks later, she contacts you to ask more questions — academic interest, she says. It becomes a correspondence that lasts years.',
+          changes: { rank: 5, trust: 5, equality: 6, stability: 3 },
+          sets: { sharedVeyranKnowledge: true },
+        },
+        {
+          text: 'Answer using whichever methodology produces the better outcome for each question.',
+          sub: '(You write the best answer you know, without filtering it through what they expect.)',
+          consequence: 'The exam board flags several answers as non-standard. You pass — barely. One examiner writes in the margin: "Unconventional. Effective. Watch this one." You are watched, for better and worse.',
+          changes: { rank: 3, trust: 6, equality: 7, stability: 1 },
+          sets: { flaggedUnconventional: true },
+        },
+      ],
+    },
+    {
+      title: 'The Resource Meeting', location: 'Hospital Administration — Third Floor',
+      art: 'corridor', label: 'SCENE III',
+      npcName: 'Administrator Quelm',
+      npcLine: '"The east-wing supply allocation is set by patient classification, not physician preference. I understand your concern — but the system is the system."',
+      innerVoice: 'He\'s not wrong about the system. He\'s wrong about accepting it.',
+      body: `<p>Administrator Quelm has a very clean desk. Everything on it is aligned at right angles. He looks at your resource request the way people look at things they\'ve already decided to deny. <em>You\'ve been in this meeting four times in fourteen months. You have brought different evidence each time. The desk has not changed.</em></p><p>The east-wing supply shortage means patients there receive lower-grade wound care materials and slower pharmaceutical access than the upper ward. The outcomes data shows it. You have the outcomes data with you.</p>`,
+      memoryLines: {
+        brokeProtocol: `<p><em>The patient with pneumonia is three floors below you right now, recovering. He has a name: Terven. He told you he\'d been in the east wing for two days before anyone checked his breathing properly.</em></p>`,
+      },
+      choices: [
+        {
+          text: 'Present the outcomes data formally and request it be entered into the hospital record.',
+          sub: '"I want this documented. If the board is making resource decisions, they should be making them with accurate outcome information in front of them."',
+          consequence: 'Quelm enters your data reluctantly. It sits in the record for six months before a civic inspector reviews it during a routine audit and asks why nothing was done. Something is done.',
+          changes: { rank: 3, trust: 5, equality: 7, stability: 4 },
+          sets: { formalRecord: true },
+        },
+        {
+          text: 'Ask Quelm directly: which outcomes would change his decision?',
+          sub: '"I want to understand the threshold. What evidence would move this? Tell me what you need and I\'ll get it."',
+          consequence: 'He names a mortality differential he doesn\'t believe you can prove. You spend six weeks proving it. He approves a partial reallocation. It\'s not everything. It helps.',
+          changes: { rank: 4, trust: 6, equality: 8, stability: 3 },
+        },
+        {
+          text: 'Go over Quelm\'s head — directly to the civic health inspector.',
+          sub: '(You put the outcomes data in an envelope and write a cover letter that evening.)',
+          consequence: 'The inspector responds within a week. The reallocation is ordered. Quelm doesn\'t speak to you in the corridor for two months. The east-wing patients don\'t notice — they just notice the better bandages.',
+          changes: { rank: 5, trust: 4, equality: 10, stability: -1 },
+          sets: { wentAboveHead: true },
+        },
+      ],
+    },
+    {
+      title: 'The Pension Claim', location: 'Civic Hospital — East Ward',
+      art: 'hospital', label: 'SCENE IV',
+      npcName: 'Patient Terven',
+      npcLine: '"The guild said my sick leave doesn\'t count toward pension credits because I was in the east wing, not the upper ward. I didn\'t choose which ward they put me in."',
+      innerVoice: 'He is telling you that the place they assigned him to heal is now being used to deny him what healing cost.',
+      body: `<p>Terven is a bridge rigger — has been for twenty years. He is sitting up in bed for the first time since you admitted him, which means the fever has broken and his lungs are clearing. He should be relieved. <em>He doesn\'t look relieved.</em></p><p>The pension credit classification for sick leave depends, apparently, on which ward you were admitted to. Upper ward: full credits. East wing: partial credits, with a guild review required. Nobody told him this when he was admitted. Nobody tells anyone.</p>`,
+      choices: [
+        {
+          text: 'Write a formal clinical note contesting the ward classification on medical grounds.',
+          sub: '"Your admission to the east wing was a staffing decision, not a severity decision. I\'m going to put that in writing and it will be in your file."',
+          consequence: 'The note gives his guild appeal a medical foundation. His claim is approved six weeks later. He sends you a handwritten card. You keep it.',
+          changes: { rank: 3, trust: 9, equality: 8, stability: 3 },
+        },
+        {
+          text: 'Contact the guild directly and explain the medical situation.',
+          sub: '"I\'m Physician Vayle. I treated this patient. His east-wing placement was administrative — his condition was serious. I\'d like to speak to whoever handles classification appeals."',
+          consequence: 'The guild clerk is initially defensive. By the end of the call she\'s taking notes. Terven\'s claim is expedited. Two other workers with similar situations contact you the following week.',
+          changes: { rank: 4, trust: 8, equality: 9, stability: 2 },
+          sets: { guildContact: true },
+        },
+        {
+          text: 'Ask Terven if he knows other workers in the same situation and offer to help all of them.',
+          sub: '"This doesn\'t sound like it happened only to you. If there are others, I\'d like to know — and I\'d like to help."',
+          consequence: 'Seven workers. All east-wing patients, all with contested pension credits tied to their ward placement. You spend the next month working through each case. It costs you evenings and two weekends. Every case is approved.',
+          changes: { rank: 2, trust: 12, equality: 11, stability: 1 },
+          sets: { helpedGroup: true },
+        },
+      ],
+    },
+    {
+      title: 'The Whistleblower\'s Choice', location: 'Hospital Administration — Corridor',
+      art: 'antechamber', label: 'SCENE V',
+      npcName: 'Nurse Aldis',
+      npcLine: '"Vayle. I need to tell you something, but I need you to understand — if it gets traced back to me, I lose this job. My family needs this job."',
+      innerVoice: 'She came to you specifically. That\'s not an accident. She\'s decided something about who you are — make sure she\'s right.',
+      body: `<p>Aldis finds you in the supply corridor between shifts. She has been a ward nurse for eleven years. She is not prone to dramatic statements. <em>She is visibly frightened.</em></p><p>What she tells you: Physician Draul has been systematically mis-classifying east-wing patients to keep their admission costs down — which also, incidentally, keeps their pension credit eligibility down. It is not accidental. There are notes. She has seen the notes.</p>`,
+      choices: [
+        {
+          text: 'Ask to see the notes. Document everything. Protect her name.',
+          sub: '"Show me what you\'ve seen. I won\'t use your name — I\'ll find another way to surface this."',
+          consequence: 'You spend a week verifying the pattern independently, using your own access to case records. You build a case that doesn\'t require Aldis to come forward. She doesn\'t. The case still holds.',
+          changes: { rank: 4, trust: 9, equality: 10, stability: 2 },
+          sets: { hasEvidenceDraul: true },
+        },
+        {
+          text: 'Tell her you need to report this — but you\'ll go to the civic inspector, not internal administration.',
+          sub: '"If we take this to Quelm, it disappears. The inspector has external authority. That\'s the only path that doesn\'t loop back through this building."',
+          consequence: 'She agrees, hesitantly. You file with the civic inspector that week. The investigation takes two months. Draul is suspended pending review. Aldis is interviewed once and her name is sealed. She keeps her job.',
+          changes: { rank: 6, trust: 8, equality: 11, stability: -1 },
+          sets: { reportedDraul: true, whistleblew: true },
+        },
+        {
+          text: 'Listen — and then tell her you need time to think about what to do with it.',
+          sub: '"I hear you. I need to think about how to do this without destroying you in the process. Give me a few days."',
+          consequence: 'You think carefully. You find a way to surface the pattern through civic outcomes data that doesn\'t require Aldis\'s testimony at all. It takes longer. The case is airtight.',
+          changes: { rank: 3, trust: 6, equality: 8, stability: 4 },
+          sets: { hasEvidenceDraul: true },
+        },
+      ],
+    },
+    {
+      title: 'The Equal Care Charter', location: 'Civic Assembly Hall',
+      art: 'council', label: 'SCENE VI',
+      npcName: 'Assembly Speaker Dreva',
+      npcLine: '"Physician Vayle. You\'ve submitted a proposed amendment to the hospital equal-treatment charter. The floor is open — explain your reasoning."',
+      innerVoice: 'Everything you\'ve seen in two years is in this room right now. Speak it plainly.',
+      body: `<p>The assembly hall holds forty when full. Today it holds thirty-one, which is full enough. Your charter amendment has three articles: equal supply access by admission need rather than ward, pension credit eligibility tied to clinical severity rather than location, and mandatory outcome reporting by ward classification. <em>Simple. Auditable. Overdue by a decade.</em></p>`,
+      memoryLines: {
+        hasEvidenceDraul: `<p><em>The evidence on Draul\'s mis-classifications is in a separate packet — you decided not to lead with it. If they fight the charter, you\'ll use it. If they don\'t, it stays in reserve.</em></p>`,
+        helpedGroup: `<p><em>Seven workers\' names are written in the back of your notebook. You don\'t read them aloud. You don\'t need to. You know exactly who you\'re speaking for.</em></p>`,
+      },
+      choices: [
+        {
+          text: 'Present the outcomes data. Let the numbers make the case.',
+          sub: '"Patients in the east wing have a 23% higher rate of delayed diagnosis. That is not a matter of preference — it is a measurable failure. The charter amendment corrects it."',
+          consequence: 'The assembly approves the first two articles immediately. The third — mandatory reporting — requires a further review period. Two of the three will transform conditions for thousands of patients.',
+          changes: { rank: 8, trust: 7, equality: 11, stability: 5 },
+        },
+        {
+          text: 'Open with a patient case. Make it a person, not a statistic.',
+          sub: '"I want to tell you about a bridge rigger named Terven. He was in the east wing for eight days. Here is what that cost him — in pension credits, in time, in what he was and wasn\'t told."',
+          consequence: 'Two assembly members who were planning to abstain vote yes. The full charter passes. Terven is in the gallery. He does not know you used his name. You\'ll ask his permission afterward.',
+          changes: { rank: 7, trust: 10, equality: 12, stability: 3 },
+          sets: { charterPassed: true },
+        },
+        {
+          text: 'Present the Veyran approach to equal-admission triage. Frame it as a technical improvement.',
+          sub: '"In Veyran civic medicine, triage is based on clinical need alone — ward assignment follows, not precedes, severity classification. Iliatania can adopt this. I can show you how."',
+          consequence: 'The technical framing disarms opposition from administrators who would have fought a rights-based argument. The charter passes with broader support than you expected. Examiner Helke, watching from the gallery, makes a note.',
+          changes: { rank: 6, trust: 6, equality: 10, stability: 6 },
+        },
+      ],
+    },
+    {
+      title: 'The Last Shift', location: 'Civic Hospital — Corridor',
+      art: 'corridor', label: 'SCENE VII', isFinal: true,
+      npcName: 'Apprentice Physician Soren',
+      npcLine: '"Physician Vayle — before you go. I wanted to ask: how do you decide? When the rule and the right thing aren\'t the same?"',
+      innerVoice: 'He\'s twenty-two. He came to you because he trusts you. Don\'t say what sounds good. Say what you actually believe.',
+      body: `<p>It is the end of a double shift. The corridor is quiet in the way hospitals get quiet at the turn of the night — not peaceful, just temporarily still. Soren has been your apprentice for three months. He is thoughtful and frightened in equal measure, which means he\'ll be good at this eventually. <em>He reminds you of yourself at his age, which is both heartening and alarming.</em></p>`,
+      memoryLines: {
+        charterPassed: `<p><em>The new charter takes effect next month. You\'ve already seen the supply orders change in the east wing. Small things — better wound dressings, faster pharmaceutical access — that to a patient feel enormous.</em></p>`,
+        whistleblew: `<p><em>Draul\'s review concluded last week. He has been transferred to an administrative role. Aldis is still on the ward. She nodded to you this morning in a way that meant something.</em></p>`,
+      },
+      choices: [
+        {
+          text: '"The rule and the right thing are usually the same. When they aren\'t, document everything and act on what you know is right."',
+          sub: '"And find colleagues who will back you. You can\'t do this alone — no one should have to."',
+          consequence: 'Soren writes it down. Not because you said something eloquent — because you said something true. Years from now he will say you told him this, and he will be right.',
+          changes: { rank: 5, trust: 12, equality: 8, stability: 6 },
+        },
+        {
+          text: '"There isn\'t a rule for that. You learn your own line and you hold it. It costs something every time. That\'s how you know it means something."',
+          sub: '"I can\'t give you a formula. I can tell you what it feels like to have a line worth holding."',
+          consequence: 'He is quiet for a long moment. Then he says: "Okay." That\'s the right answer. The ones who say okay and mean it turn out to be the best physicians.',
+          changes: { rank: 4, trust: 10, equality: 10, stability: 4 },
+        },
+        {
+          text: '"Follow the rule until you\'ve tried everything within it. Then — only then — decide if the rule deserves to be broken."',
+          sub: '"That order matters. The people who skip straight to breaking rules usually aren\'t doing it for the right reasons."',
+          consequence: 'Soren nods slowly. He asks one follow-up question: "How do you know if the rule deserves it?" You tell him: "You\'ll know." That\'s not a complete answer. It\'s the honest one.',
+          changes: { rank: 6, trust: 8, equality: 7, stability: 8 },
+        },
+      ],
+    },
+  ],
+},
+
+// ══════ MARA SHON — THE MERCHANT NAVIGATOR ══════
+{
+  id: 'navigator', name: 'Mara Shon', title: 'The Merchant Navigator',
+  tagline: 'Three documented voyages. She knows what the sea costs — and what it\'s worth.',
+  color: '#c89840', icon: '◎',
+  scenes: [
+    {
+      title: 'The Falsified Manifest', location: 'Harbor Broker\'s Office',
+      art: 'corridor', label: 'SCENE I',
+      npcName: 'Broker Yenne',
+      npcLine: '"The cargo weight is close enough. Everyone adjusts manifests, Shon. It\'s three crates. Nobody checks three crates."',
+      innerVoice: 'He\'s right that no one will check. That\'s exactly why it matters that you don\'t do it.',
+      body: `<p>The broker\'s office smells of salt rope and old ledgers. Yenne has been in this harbor for thirty years and has the patience of someone who has worn down a lot of resistant navigators. <em>He\'s watching you the way merchants watch the tide — waiting for the inevitable shift.</em></p><p>Three crates under the declared weight. The difference is wool — pre-sold at the destination port, never officially loaded. The pension credit calculations for harbor workers are based on certified cargo tonnage. Under-declaring the weight means three dock workers won\'t accrue the credits they\'re owed for loading it.</p>`,
+      choices: [
+        {
+          text: 'Refuse. File the accurate manifest.',
+          sub: '"Three crates is three crates, Yenne. File the real weight."',
+          consequence: 'Yenne marks you as difficult. Two smaller contracts fall through in the following month because he talks. Three dock workers accrue their full pension credits without knowing why. You sleep fine.',
+          changes: { rank: 5, trust: 11, equality: 8, stability: 2 },
+          sets: { refusedFalsify: true },
+        },
+        {
+          text: 'Point out the pension credit implications. Make it about the dock workers, not your ethics.',
+          sub: '"Those three crates represent dock worker tonnage credits. You\'re not just adjusting a number — you\'re cutting what three men will retire on."',
+          consequence: 'Yenne is surprised — this isn\'t the objection he expected. He recalculates. He approves the accurate filing and bills the merchant for the correction. He respects you more for knowing the downstream effects.',
+          changes: { rank: 4, trust: 8, equality: 10, stability: 3 },
+          sets: { refusedFalsify: true },
+        },
+        {
+          text: 'Sign the adjusted manifest. You can\'t lose this contract.',
+          sub: '(You pick up the pen. You don\'t meet Yenne\'s eyes.)',
+          consequence: 'The contract holds. The money is good. For six weeks you don\'t think about it. Then you do. Then you think about it every time you file a manifest for the next two years, which is often.',
+          changes: { rank: 7, trust: -3, equality: -5, stability: 5 },
+          sets: { signedFalse: true },
+        },
+      ],
+    },
+    {
+      title: 'The Dock Dispute', location: 'Harbor — East Pier',
+      art: 'harbor-day', label: 'SCENE II',
+      npcName: 'Dock Foreman Cassev',
+      npcLine: '"The guild says our pension credits get split between the loading and the voyage. We load your ship — half credit. You and your crew get the other half for the voyage. That\'s not what the charter says."',
+      innerVoice: 'He\'s read the charter more carefully than the guild official who explained it to him. He\'s right, and he knows it.',
+      body: `<p>East pier at midday is all salt spray and shouted coordinates. Cassev is the kind of man who has earned the right to be listened to — twenty-two years on the docks, every one of them documented. <em>He holds the charter passage in his hand, folded and re-folded so many times the paper has gone soft at the creases.</em></p><p>The pension credit split being applied to his workers is incorrect. The charter is clear: full credits for loading, separate credits for voyage. Someone in the guild administration either misread it or decided it was easier not to correct the error.</p>`,
+      memoryLines: {
+        refusedFalsify: `<p><em>Cassev was one of the workers who loaded your last voyage. You think of the manifest you filed accurately. At least the tonnage was right. At least that.</em></p>`,
+      },
+      choices: [
+        {
+          text: 'Read the charter passage together with Cassev and confirm he\'s correct.',
+          sub: '"You\'re right. That split is wrong. Let\'s document this in writing before you take it to the guild."',
+          consequence: 'With your signature supporting the charter interpretation, Cassev\'s appeal has navigational credibility behind it. The guild corrects the error within three weeks and issues backdated credits for six months.',
+          changes: { rank: 3, trust: 9, equality: 9, stability: 3 },
+        },
+        {
+          text: 'Offer to accompany Cassev to the guild office personally.',
+          sub: '"If a licensed navigator shows up alongside you, they\'re going to have a harder time pretending they don\'t understand the charter."',
+          consequence: 'The guild official\'s posture changes the moment you walk in. The error is acknowledged in the room and corrected the same day. Cassev calls you a useful person, which is the highest compliment he gives.',
+          changes: { rank: 4, trust: 10, equality: 9, stability: 2 },
+          sets: { supportedCassev: true },
+        },
+        {
+          text: 'Put the charter interpretation in writing and submit it to the guild as a formal navigation officer\'s clarification.',
+          sub: '"A written clarification from a licensed navigator creates a precedent. Every dock worker in this harbor benefits from it, not just yours."',
+          consequence: 'The formal clarification is approved and entered into the guild\'s interpretation record. It takes six weeks, but it covers seventeen docks, not just East Pier. Cassev shakes your hand. You both know you did the bigger thing.',
+          changes: { rank: 5, trust: 8, equality: 11, stability: 4 },
+          sets: { formalClarification: true },
+        },
+      ],
+    },
+    {
+      title: 'The Trade Assembly', location: 'Civic Assembly Hall — Trade Committee',
+      art: 'assembly', label: 'SCENE III',
+      npcName: 'Committee Chair Fenrik',
+      npcLine: '"The proposed route licensing reform would open northern sea lanes to independent navigators. The established merchant houses are opposed. Navigator Shon — you have experience on those routes. What\'s your position?"',
+      innerVoice: 'The established houses have been controlling those lanes for thirty years. They\'ve been charging what they like. Everyone in this room knows it.',
+      body: `<p>The trade committee chamber smells of beeswax and old ambition. You are the only working navigator at the table — everyone else is a merchant representative, a guild administrator, or a civic official who has never touched a tiller. <em>Fenrik calls on you by name with the careful neutrality of someone who already knows how the vote will go and is giving you a chance to be useful or invisible.</em></p>`,
+      choices: [
+        {
+          text: 'Support the reform. Independent navigators mean competitive routes and lower shipping costs for everyone.',
+          sub: '"The northern lanes are navigable. They\'re only controlled because the established houses made it expensive to learn them. Open licensing fixes that."',
+          consequence: 'Three merchant representatives immediately challenge you. You answer each challenge with specific route data from your own logs. The reform passes narrowly. The merchant houses remember your name for years.',
+          changes: { rank: 6, trust: 7, equality: 10, stability: -2 },
+          sets: { supportedReform: true },
+        },
+        {
+          text: 'Support the reform but propose a navigation safety certification requirement for new licensees.',
+          sub: '"Open the lanes — but require documented safe-passage certification. Experienced navigators can run the certification program. That\'s quality control and opportunity at the same time."',
+          consequence: 'The safety certification compromise threads the needle. The reform passes with broader support. You are appointed to design the certification program, which turns out to be significant work and significant influence.',
+          changes: { rank: 7, trust: 6, equality: 8, stability: 5 },
+          sets: { certificationRole: true },
+        },
+        {
+          text: 'Present your voyage logs from the northern lanes and let the data speak.',
+          sub: '"I\'ve run the northern routes three times. Here are the conditions, the passage times, and the cargo outcomes. The committee can draw its own conclusions."',
+          consequence: 'The data is harder to argue with than your opinion would have been. The reform passes. Fenrik thanks you afterward for keeping it clean. You\'ve made a useful ally.',
+          changes: { rank: 5, trust: 8, equality: 7, stability: 4 },
+        },
+      ],
+    },
+    {
+      title: 'Night Passage', location: 'Northern Sea Lane — Three Days Out',
+      art: 'ocean-night', label: 'SCENE IV',
+      npcName: 'First Mate Prael',
+      npcLine: '"Navigator Shon. We\'re three degrees off the lodged route. Cutting across saves six hours. The cargo owner is asking."',
+      innerVoice: 'Six hours saved means six hours less pay for your crew. That\'s not why you\'re hesitating. You\'re hesitating because the unlodged route is also the one that skips the harbor toll, and that toll funds dock worker pensions.',
+      body: `<p>The northern sea is flat and black and very cold. The stars are sharp tonight — ideal navigation conditions. Prael has done the calculation correctly: cutting the headland shaves six hours and saves fuel. <em>What Prael\'s calculation doesn\'t include: the harbor toll on the lodged route contributes directly to the dock pension fund. Taking the unlodged route legally avoids it. Legally. Not honestly.</em></p>`,
+      choices: [
+        {
+          text: 'Hold the lodged route.',
+          sub: '"We stay on the filed course. Six hours is six hours."',
+          consequence: 'Prael nods, adjusts the heading, and says nothing further. The cargo owner complains at arrival. Your reputation with dock workers — who somehow always know these things — goes up another notch.',
+          changes: { rank: 3, trust: 10, equality: 8, stability: 4 },
+          sets: { heldRoute: true },
+        },
+        {
+          text: 'Explain the pension fund implication to the cargo owner and let him decide.',
+          sub: '"The shorter route skips a toll that funds dock worker pensions. I want you to know that before I make the call."',
+          consequence: 'The cargo owner is quiet for a long moment. Then he says: "Hold the route." He is not a good man by most measures, but he is surprised into a good decision by the specificity of the information.',
+          changes: { rank: 4, trust: 8, equality: 9, stability: 3 },
+        },
+        {
+          text: 'Take the shortcut. It\'s legal. The toll system is a separate problem.',
+          sub: '"Adjust heading. We\'re cutting the headland."',
+          consequence: 'You arrive six hours early. The cargo owner is pleased. You don\'t mention the toll to anyone. You file the unlodged route in the morning log and feel the particular discomfort of something that was technically permitted.',
+          changes: { rank: 6, trust: -2, equality: -4, stability: 3 },
+          sets: { tookShortcut: true },
+        },
+      ],
+    },
+    {
+      title: 'The Chart Sale', location: 'Harbor Broker\'s Office',
+      art: 'harbor-day', label: 'SCENE V',
+      npcName: 'Independent Navigator Vesk',
+      npcLine: '"Your northern route charts. I\'ve been asking for two years. Name your price — I\'ll pay it. This is my family\'s livelihood."',
+      innerVoice: 'You spent three years on those routes earning those charts. They\'re yours. The question is what "yours" means when someone else needs them to survive.',
+      body: `<p>Vesk is forty-three and has been trying to break into the northern lanes for seven years. The established houses have kept the charts proprietary — legal but effective at keeping independent navigators out. <em>Your charts are the result of your own three voyages, your own observations, your own risk. Nobody gave them to you. You built them.</em></p><p>If you sell them at market rate, Vesk can\'t afford them. If you share them freely, every navigator you compete with has your knowledge and you lose your competitive edge.</p>`,
+      choices: [
+        {
+          text: 'Sell at a price Vesk can actually pay. Below market.',
+          sub: '"Cost price. Don\'t mention this to the broker\'s consortium — they\'ll try to stop it."',
+          consequence: 'Vesk gets the charts. He runs the northern lanes the following season. He refers two other navigators to you. You haven\'t lost your edge — you\'ve built a network instead.',
+          changes: { rank: 3, trust: 9, equality: 9, stability: 3 },
+          sets: { sharedCharts: true },
+        },
+        {
+          text: 'Give Vesk the charts freely — and propose a knowledge-sharing cooperative for independent navigators.',
+          sub: '"What if the charts were everyone\'s? A navigator cooperative — we all contribute, we all draw from it. The houses have done this for years. We can too."',
+          consequence: 'The cooperative takes a season to organize. Twelve independent navigators join the first year. The northern lanes open. The established houses file an official complaint, which is the best confirmation you could ask for that it\'s working.',
+          changes: { rank: 4, trust: 8, equality: 12, stability: 2 },
+          sets: { foundedCooperative: true },
+        },
+        {
+          text: 'Sell at full market rate. You earned those charts.',
+          sub: '"Full price. That\'s the value — I can\'t set a precedent of underselling my own work."',
+          consequence: 'Vesk can\'t afford it. He thanks you for being honest about the price and leaves. You don\'t feel good about it. You\'re not sure the alternative would have felt better.',
+          changes: { rank: 5, trust: 1, equality: -3, stability: 5 },
+        },
+      ],
+    },
+    {
+      title: 'The Corruption Report', location: 'Harbor Authority Office',
+      art: 'council', label: 'SCENE VI',
+      npcName: 'Harbor Authority Inspector Nole',
+      npcLine: '"You\'re saying the consortium has been colluding on cargo declaration standards. That\'s a serious allegation, Navigator Shon. I\'ll need documentation."',
+      innerVoice: 'You have the documentation. You\'ve had it for three months. You kept waiting for someone else to file this. No one else has.',
+      body: `<p>Inspector Nole has the particular stillness of someone used to receiving bad news about organizations he was supposed to be overseeing. He is not defensive — he\'s taking notes. <em>That\'s a good sign.</em></p><p>The consortium has been coordinating cargo under-declarations across seven merchant houses. The pattern is in the manifests — the same adjustments, the same categories, over four years. It systematically cuts dock worker pension credits across the harbor. You found it because you file accurate manifests and the pattern shows up as an anomaly against your numbers.</p>`,
+      memoryLines: {
+        refusedFalsify: `<p><em>Yenne asked you to adjust three crates once. You said no. Looking at this four-year pattern, you wonder how long he\'d been doing it before he asked you.</em></p>`,
+        heldRoute: `<p><em>You think about the northern passage — holding the lodged route when cutting it would have been legal. Small choices. They add up to being the kind of person Inspector Nole believes when you walk into his office.</em></p>`,
+      },
+      choices: [
+        {
+          text: 'File the full report with everything you have.',
+          sub: '"Here\'s the documentation. Four years, seven houses, the pattern is clear. I\'ll testify if needed."',
+          consequence: 'The investigation takes five months. Three consortium members are fined. The coordinated under-declaration practice is formally prohibited. Dock worker pension credits increase across the harbor by an average of eleven percent. You are called difficult by people whose opinion you have stopped valuing.',
+          changes: { rank: 8, trust: 10, equality: 12, stability: 3 },
+          sets: { reportedConsortium: true },
+        },
+        {
+          text: 'File the report — but first give the consortium a chance to self-correct.',
+          sub: '"I\'m going to give you this documentation. Before I file it officially, I\'d like one week for the consortium to come to you voluntarily. After that, I file regardless."',
+          consequence: 'Two of the seven houses come forward voluntarily. The investigation is faster and broader because of it. You are viewed as measured, which is a more durable reputation than righteous.',
+          changes: { rank: 7, trust: 8, equality: 10, stability: 5 },
+          sets: { reportedConsortium: true },
+        },
+        {
+          text: 'Share the documentation with other independent navigators first so they can corroborate it.',
+          sub: '"My word against seven merchant houses is a story. Seven navigators\' documentation is evidence. Let me build the case properly."',
+          consequence: 'Four other navigators find the same pattern in their own records within a week. The report you file jointly is impossible to dismiss. The investigation is expedited. The consortium\'s legal challenge goes nowhere.',
+          changes: { rank: 6, trust: 9, equality: 11, stability: 4 },
+          sets: { reportedConsortium: true },
+        },
+      ],
+    },
+    {
+      title: 'The Navigator\'s License', location: 'Trade Commission — Final Review',
+      art: 'council', label: 'SCENE VII', isFinal: true,
+      npcName: 'Trade Commissioner Aren',
+      npcLine: '"Navigator Shon. Your license renewal is before this commission — along with your report on the consortium. I want to ask you directly: why file it? You knew it would make enemies."',
+      innerVoice: 'Because the dock workers\' pension credits are real money in real lives, and I had the information to stop it being taken from them. That\'s why.',
+      body: `<p>Commissioner Aren has the weather-worn face of someone who has been asking hard questions for a long time. She isn\'t hostile. She is trying to understand the calculation you made, because she doesn\'t meet many people who make it. <em>Your license renewal is technically straightforward — your record is clean, your voyage logs are complete, your certifications are current. The question isn\'t really about the license.</em></p>`,
+      memoryLines: {
+        foundedCooperative: `<p><em>Twelve independent navigators now use the cooperative you started. The northern lanes are open. The established houses are still trying to close them through licensing delays — they won\'t succeed, but they\'ll try for years.</em></p>`,
+        reportedConsortium: `<p><em>Three consortium members were fined. Dock worker pension credits have gone up across the harbor. Yenne doesn\'t greet you at the pier anymore. You don\'t miss it.</em></p>`,
+      },
+      choices: [
+        {
+          text: '"Because I had accurate records and they didn\'t. That\'s the only reason. I don\'t need a more complicated one."',
+          sub: '(You meet her eyes without ceremony.) "The information was mine to use. I used it."',
+          consequence: 'Aren is quiet for a moment. Then: "License renewed. Commendation noted." She shakes your hand with the grip of someone who means it. You walk out into the harbor smell and feel, briefly, exactly right about everything.',
+          changes: { rank: 10, trust: 11, equality: 8, stability: 6 },
+        },
+        {
+          text: '"Because dock workers\' pension credits are real money in real lives, and I was the one person with the information to stop them being stolen."',
+          sub: '"That\'s not complicated. That\'s arithmetic."',
+          consequence: 'Aren writes something in her file. Later you find out she quoted you in a trade commission address about navigator accountability. Your words, attributed by name. You are simultaneously proud and slightly embarrassed.',
+          changes: { rank: 9, trust: 10, equality: 11, stability: 5 },
+        },
+        {
+          text: '"Because I decided, a long time ago, that my word on a manifest means something. Everything else follows from that."',
+          sub: '"The consortium didn\'t believe navigators like me kept that standard. I needed them to be wrong."',
+          consequence: 'Aren nods slowly. "That\'s a harder thing to maintain than most people imagine," she says. You tell her: "Yes." The license is renewed. You sail again in three weeks. The sea doesn\'t care about your reputation, which is part of why you love it.',
+          changes: { rank: 8, trust: 9, equality: 9, stability: 7 },
+        },
+      ],
+    },
+  ],
+},
+
+// ══════ DAVAN CORR — THE FORMER TRIBUTE WORKER ══════
+{
+  id: 'worker', name: 'Davan Corr', title: 'The Former Tribute Worker',
+  tagline: 'Fifteen years under the tribute system. He knows exactly what the system costs — and who pays it.',
+  color: '#a86030', icon: '◆',
+  scenes: [
+    {
+      title: 'The Quota Meeting', location: 'Craftsmen\'s Guild Hall',
+      art: 'assembly', label: 'SCENE I',
+      npcName: 'Overseer Bant',
+      npcLine: '"The quarterly quota is going up twelve percent. This is not a proposal — it\'s been approved at the district level. Your crew meets it or the contracts go elsewhere."',
+      innerVoice: 'You have sat in this chair for fifteen years and listened to this exact speech. The words are different. The structure is identical.',
+      body: `<p>The guild hall smells of sawdust and old stone. Bant delivers the quota increase with the brisk efficiency of someone who considers resentment an inefficiency. <em>Twelve percent. You run the numbers in your head without moving. At current pace, twelve percent means two extra hours every day, unpaid, because the daily rate is fixed to the base quota. It always is.</em></p><p>Three of the workers beside you are within two years of pension eligibility. A quota increase at this stage will affect their credit calculations.</p>`,
+      choices: [
+        {
+          text: 'Ask Bant to put the pension credit impact in writing before the crew votes.',
+          sub: '"Before we respond: I need the quota increase\'s effect on pension credit calculations documented. In writing. From the district office."',
+          consequence: 'Bant is visibly annoyed — this isn\'t a question he expected. The written documentation takes two weeks to arrive. When it does, it confirms the impact. Three workers use it to file formal objections. The quota increase is delayed.',
+          changes: { rank: 4, trust: 8, equality: 8, stability: 3 },
+          sets: { demandsWritten: true },
+        },
+        {
+          text: 'Refuse the quota increase. Formally, on behalf of the crew.',
+          sub: '"The crew doesn\'t accept this. We\'ll put our objection in writing today."',
+          consequence: 'Bant warns you the contracts will move. You prepare for that. The contracts don\'t move — finding a crew of your quality and reliability takes longer than he implied. The quota increase is quietly revised downward by six percent.',
+          changes: { rank: 5, trust: 7, equality: 9, stability: 1 },
+          sets: { refusedQuota: true },
+        },
+        {
+          text: 'Accept the quota — but log every extra hour worked beyond the base, starting today.',
+          sub: '(To the crew, quietly:) "Everyone logs hours. Everything extra. All of it."',
+          consequence: 'The logs accumulate. After eight weeks you have documentation of 340 collective hours of uncompensated work above the base quota. You take the logs to the guild administrator. The crew receives a retroactive payment adjustment.',
+          changes: { rank: 3, trust: 6, equality: 7, stability: 5 },
+          sets: { loggedHours: true },
+        },
+      ],
+    },
+    {
+      title: 'The Pension Shortfall', location: 'Civic Records Office',
+      art: 'assembly', label: 'SCENE II',
+      npcName: 'Records Clerk Voss',
+      npcLine: '"Your tribute-years — the fifteen years before your reclassification — aren\'t eligible for pension credit under current rules. The new framework only counts civic employment years."',
+      innerVoice: 'Fifteen years of work. Gone from the ledger as if they didn\'t happen. Because the system that recorded them has been renamed.',
+      body: `<p>Clerk Voss is not cruel. She is reciting rules that she finds uncomfortable to recite, which is something. <em>You look at the numbers on the form. Your certified civic years: four. Your tribute years: fifteen. For pension purposes: four.</em></p><p>The transition framework that reclassified tribute workers into the civic employment system did not include a credit conversion mechanism. It was either an oversight or a decision. Either way it has the same effect: nineteen years of labor produces four years of retirement security.</p>`,
+      choices: [
+        {
+          text: 'Request a formal review of the transition framework\'s credit provisions.',
+          sub: '"I want a formal review on record — not just my case, the framework itself. This can\'t only be happening to me."',
+          consequence: 'The formal review surfaces 847 workers with the same gap. Voss processes your request carefully and files it with the civic review board. It becomes part of the case for the pension reform bill the following year.',
+          changes: { rank: 4, trust: 7, equality: 9, stability: 4 },
+          sets: { formalReview: true },
+        },
+        {
+          text: 'Find other tribute-era workers with the same shortfall. Build a collective case.',
+          sub: '"I know I\'m not alone in this. Before I file anything, I want to understand how many of us there are."',
+          consequence: 'You spend three weeks finding forty-three workers with identical gaps. The collective case is substantially harder to dismiss than an individual appeal. A civic advocate takes it without charge.',
+          changes: { rank: 3, trust: 9, equality: 10, stability: 2 },
+          sets: { builtCollective: true },
+        },
+        {
+          text: 'Ask Voss directly: who decided not to include a credit conversion mechanism?',
+          sub: '"I\'m not asking who wrote the rule. I\'m asking who decided not to include the conversion. Someone made that choice. I want to know who."',
+          consequence: 'Voss checks the original framework documentation. It was an administrative working group. Their names are public record. You write them down. Having names makes the next step easier.',
+          changes: { rank: 5, trust: 5, equality: 8, stability: 2 },
+          sets: { hasNames: true },
+        },
+      ],
+    },
+    {
+      title: 'The Union Meeting', location: 'Workers\' Assembly Hall',
+      art: 'assembly', label: 'SCENE III',
+      npcName: 'Union Organizer Fenn',
+      npcLine: '"We\'re asking for a strike authorization vote. The tribute credit gap, the quota system, the unsafe hours — it\'s all connected. We need to move together or not at all. Corr — you have credibility with the older workers. We need your voice."',
+      innerVoice: 'Fenn is right that it\'s connected. You\'re less certain about the strike. Strikes can be won or lost, and what gets lost is harder to rebuild than what got taken.',
+      body: `<p>The assembly hall is warm with bodies — ninety workers, maybe more. The energy in the room is the specific kind that comes from people who have been patient for a long time and have decided to stop. <em>You know this energy. You\'ve felt it before. You also know what happens when it breaks wrong.</em></p><p>Fenn has been organizing for six years. She is effective and impatient, which is a combination that moves things faster than slow. You trust her goals. You\'re not certain about her timeline.</p>`,
+      choices: [
+        {
+          text: 'Endorse the strike authorization but ask for a negotiation deadline before action.',
+          sub: '"I\'m with Fenn. But I want thirty days of formal negotiation first — in writing, with a documented response required. If they don\'t respond, we move. That timeline is reasonable, and it protects us legally."',
+          consequence: 'The negotiation deadline is accepted. The district responds within twenty days, offering a partial quota adjustment and a promise to review the tribute credit gap. Fenn isn\'t satisfied. You tell her: this is the opening, not the end.',
+          changes: { rank: 5, trust: 8, equality: 8, stability: 4 },
+          sets: { negotiationFirst: true },
+        },
+        {
+          text: 'Speak in support of the strike. All of it, now.',
+          sub: '"We\'ve been reasonable for fifteen years. There is no version of reasonable they haven\'t found a way around. I vote yes."',
+          consequence: 'The room responds. The authorization passes. The strike lasts nine days. It is difficult and it works. The tribute credit gap goes onto the district\'s formal agenda. Some workers lose a week\'s pay they couldn\'t afford to lose. You don\'t forget that.',
+          changes: { rank: 6, trust: 7, equality: 10, stability: -2 },
+          sets: { organised: true },
+        },
+        {
+          text: 'Recommend building the case publicly before striking.',
+          sub: '"Strike when the public knows what we\'re striking for. Right now they don\'t. Give me two weeks to change that."',
+          consequence: 'You spend two weeks speaking at civic assemblies and sending documentation to the civic gazette. By the time the strike vote happens again, three neighborhood councils have publicly backed the workers. The district settles before the strike starts.',
+          changes: { rank: 4, trust: 9, equality: 9, stability: 5 },
+          sets: { builtPublicCase: true },
+        },
+      ],
+    },
+    {
+      title: 'The Safety Report', location: 'Guild Administration Office',
+      art: 'corridor', label: 'SCENE IV',
+      npcName: 'Guild Administrator Helm',
+      npcLine: '"The unsafe timber frame was repaired last week. The incident report was filed internally. There\'s no need to escalate this to the civic safety inspector — it\'s handled."',
+      innerVoice: 'A worker broke his wrist because of that frame. "Handled" means the frame was fixed. It doesn\'t mean the worker was compensated, or that the safety check that missed it was reviewed.',
+      body: `<p>Administrator Helm\'s office is tidy and defensive in equal measure. The frame was repaired — that part is true. <em>What Helm isn\'t mentioning: the safety inspection that cleared the frame three weeks before it failed was signed by a guild inspector who hasn\'t walked the floor in six months. You\'ve seen the logbook. You know the signature.</em></p><p>The worker who broke his wrist is named Priv. He is thirty-one. He is currently on reduced pay because his modified duties count as a different classification.</p>`,
+      choices: [
+        {
+          text: 'File with the civic safety inspector yourself. Today.',
+          sub: '"The internal filing doesn\'t cover the inspection failure. I\'m filing with the external inspector. Priv deserves a full review."',
+          consequence: 'The inspection review finds three other frames flagged and ignored in the same building. The inspector\'s signature is investigated. The guild tightens its inspection protocols. Priv receives a classification review and full compensation.',
+          changes: { rank: 5, trust: 8, equality: 9, stability: 2 },
+          sets: { filedSafety: true },
+        },
+        {
+          text: 'Demand Priv\'s compensation be settled before you agree this is "handled."',
+          sub: '"The frame is fixed. Priv hasn\'t been compensated at full rate. Until that\'s done, this isn\'t handled — it\'s half-handled."',
+          consequence: 'Helm processes a full-rate compensation adjustment for Priv the same week. You do not file the external report. The inspection problem remains — for now.',
+          changes: { rank: 3, trust: 7, equality: 7, stability: 5 },
+        },
+        {
+          text: 'Ask Priv what he wants done before you decide anything.',
+          sub: '"This affects him most. I\'m not going to decide how to handle it without knowing what he needs."',
+          consequence: 'Priv wants his pay restored and doesn\'t want more trouble. You get him the pay. You file a partial report that flags the inspection issue without naming him. It\'s the right compromise. It takes longer.',
+          changes: { rank: 2, trust: 10, equality: 8, stability: 4 },
+        },
+      ],
+    },
+    {
+      title: 'The Cooperative Charter', location: 'Civic Records Office',
+      art: 'council', label: 'SCENE V',
+      npcName: 'Charter Clerk Mev',
+      npcLine: '"A worker-owned cooperative requires five founding members, a capital bond, and a civic purpose statement. You have the members. You\'re short on the bond by half."',
+      innerVoice: 'The bond exists to stop people like you from doing exactly what you\'re trying to do. You know that. File anyway.',
+      body: `<p>Clerk Mev is efficient and, you think, privately rooting for you — she keeps re-reading the bond requirement as if a different amount might appear. <em>The cooperative you\'re founding would be the first worker-owned craftsmen\'s collective in this district. The capital bond requirement was written when cooperatives were a theoretical concern. Nobody expected one to actually try to file.</em></p>`,
+      memoryLines: {
+        builtCollective: `<p><em>Forty-three workers with identical pension gaps. Twelve of them are contributing to the cooperative bond — a little from each, adding up to something that looks like solidarity and functions like capital.</em></p>`,
+        refusedQuota: `<p><em>The workers who stood beside you at the quota meeting are four of the five founding members. There is a specific quality of trust that comes from standing in the same room when something was at stake.</em></p>`,
+      },
+      choices: [
+        {
+          text: 'Pool contributions from every worker who\'s committed. File what you have and let the process move.',
+          sub: '"We\'re filing today with what we\'ve got. The clerk can note the bond deficit — we\'ll clear it within sixty days. That\'s the formal timeline anyway."',
+          consequence: 'Mev processes the filing with a sixty-day bond completion notice. You clear the bond in forty-one days. The cooperative is chartered. It\'s the first one in the district. It won\'t be the last.',
+          changes: { rank: 7, trust: 8, equality: 10, stability: 4 },
+          sets: { cooperativeChartered: true },
+        },
+        {
+          text: 'Ask Mev what the minimum viable filing looks like. Find every legal way to reduce the bond.',
+          sub: '"Walk me through the bond calculation. I want to know if there\'s a legal path we haven\'t found."',
+          consequence: 'There is one: a civic purpose bond reduction for cooperatives in underserved craft categories. Your craft qualifies. The reduction brings the bond to within your reach in two weeks. You file immediately.',
+          changes: { rank: 6, trust: 7, equality: 9, stability: 5 },
+          sets: { cooperativeChartered: true },
+        },
+        {
+          text: 'Request that the district civic fund consider a bond loan for first-time cooperative filings.',
+          sub: '"We\'re not asking for charity. We\'re asking for the same access to capital that established merchant houses receive through their existing bond relationships."',
+          consequence: 'The request is reviewed. It takes two months. The district approves a first-cooperative bond loan program — not just for you, but for any future cooperative filing. You get your loan. Three other cooperatives file the following year, citing your precedent.',
+          changes: { rank: 5, trust: 9, equality: 12, stability: 3 },
+          sets: { cooperativeChartered: true },
+        },
+      ],
+    },
+    {
+      title: 'The Public Speech', location: 'Eastward District — Rooftop Assembly',
+      art: 'rooftop', label: 'SCENE VI',
+      npcName: 'Neighbor Aleth',
+      npcLine: '"Davan. The pension reform bill is going to the council next week. Someone needs to speak at the public forum. You\'re the one who knows what it actually means — in actual lives. Will you?"',
+      innerVoice: 'You don\'t make speeches. You never have. But nobody who does make speeches has lived what you\'ve lived — and the council is about to vote on something that depends on them understanding it.',
+      body: `<p>The rooftop assembly meets after dark because the district hall was double-booked and nobody was surprised. The sky is clear. There are forty people on this roof and a drop of four floors on every side. <em>Aleth chose this venue on purpose — you can see the bridge from here, where three of the workers in tonight\'s audience have spent the last two decades.</em></p>`,
+      memoryLines: {
+        cooperativeChartered: `<p><em>The cooperative\'s first month of operation cleared twelve percent more in worker earnings than the equivalent contracted work would have. You have the numbers. You know what they mean.</em></p>`,
+        builtPublicCase: `<p><em>You did this before — two weeks of civic assemblies, speaking until the public understood what the workers were asking for. It worked then. The scale is larger now.</em></p>`,
+      },
+      choices: [
+        {
+          text: 'Speak. Tell them exactly what fifteen years as a tribute worker felt like — and what the pension gap costs in real terms.',
+          sub: '"I\'m going to tell you what the numbers look like when they\'re your numbers. Then I\'m going to tell you what I want the council to do about it."',
+          consequence: 'The speech is recorded by two people in the audience who share it without asking. The civic gazette publishes an excerpt. Three council members contact the reform bill\'s sponsors before the forum ends. You don\'t sleep well that night — not from anxiety, from something closer to release.',
+          changes: { rank: 8, trust: 11, equality: 10, stability: 2 },
+          sets: { madePublicSpeech: true },
+        },
+        {
+          text: 'Speak — but focus on what the reform would create, not what the current system has cost.',
+          sub: '"I\'m not here to make you angry at the past. I\'m here to show you what the future looks like if this bill passes — for real people, in real numbers."',
+          consequence: 'The forward-focused framing reaches people who came skeptical of worker advocacy. Four of them leave committed to attending the public forum. The council hears from a broader coalition than any previous reform effort.',
+          changes: { rank: 7, trust: 9, equality: 9, stability: 5 },
+          sets: { madePublicSpeech: true },
+        },
+        {
+          text: 'Bring one of the affected workers to speak alongside you. Your voice and theirs.',
+          sub: '"I\'ll speak first. Then Priv is going to say what the safety shortfall and pension gap cost his family. In his words."',
+          consequence: 'Priv speaks for four minutes. Forty people on a rooftop are absolutely still. The cooperative\'s presence in the forum triples the media coverage the bill receives. It passes.',
+          changes: { rank: 6, trust: 12, equality: 11, stability: 3 },
+          sets: { madePublicSpeech: true },
+        },
+      ],
+    },
+    {
+      title: 'The Reform Vote', location: 'Imperial Council Chamber',
+      art: 'council', label: 'SCENE VII', isFinal: true,
+      npcName: 'Council Chair Iren',
+      npcLine: '"The pension reform bill — tribute credit conversion article. The cooperative sector is entitled to one representative statement. Who speaks for you?"',
+      innerVoice: 'You. Obviously you. You\'ve been building to this room for fifteen years without knowing it.',
+      body: `<p>The council chamber is colder than you expected. The chairs are arranged in a semicircle around a floor space where speakers stand. You have stood in many rooms in your life. <em>Most of them were rooms designed to make you smaller. This one is designed to make the speaker central — a different experience entirely.</em></p><p>The tribute credit conversion article would retroactively credit tribute years at a civic-equivalent rate for pension calculations. 847 workers. Fifteen years of labor, restored to the ledger.</p>`,
+      memoryLines: {
+        madePublicSpeech: `<p><em>You\'ve said this in public before. You know what the words cost you and what they open in the people who hear them. Say them again.</em></p>`,
+        cooperativeChartered: `<p><em>The cooperative exists. Twelve members, one charter, four months of operation. It is evidence that the people you\'re speaking for can build things when the system gets out of the way.</em></p>`,
+      },
+      choices: [
+        {
+          text: 'Give the numbers. Clean, precise, undeniable.',
+          sub: '"847 workers. 15 years each, on average. 12,705 combined years of labor not counted toward their retirement. The conversion cost to the fund is documented and manageable. I\'ll take any question on any figure."',
+          consequence: 'The bill passes 17-10. The precision of the numbers makes it harder to vote against without looking negligent. Pension credits begin processing for 847 workers within the month. You read the gazette that morning in the cooperative office.',
+          changes: { rank: 15, trust: 9, equality: 12, stability: 6 },
+        },
+        {
+          text: 'Speak as a tribute worker. Tell this chamber what it cost, in the first person.',
+          sub: '"I worked fifteen years under the tribute system. Those fifteen years are not in my pension file. I want the council to understand — not abstractly — what that means to a person who is standing in front of you."',
+          consequence: 'The chamber is quiet in a way chambers rarely are. The bill passes 19-8. Three council members who were undecided vote yes. Afterward, one of them tells you: "I didn\'t understand what we were voting on until you walked in." That is the thing you\'ll remember.',
+          changes: { rank: 14, trust: 12, equality: 13, stability: 4 },
+        },
+        {
+          text: 'Yield part of your time to one of the 847 workers. Let the council hear directly.',
+          sub: '"I\'ll use two of my five minutes. The remaining three belong to a tribute worker named Aleth, who is better qualified than I am to explain what this bill means."',
+          consequence: 'Aleth speaks for three minutes. She doesn\'t have your practice at this. She has something more important: the council hears someone who has nothing to gain from eloquence and everything to gain from the vote. The bill passes 20-7. It is the largest margin any pension reform has received.',
+          changes: { rank: 13, trust: 11, equality: 14, stability: 5 },
+        },
+      ],
+    },
+  ],
+},
+
+]; // end CHARACTERS
+
+
+
+
+// ── ENDINGS (condition-based, per character) ──────────────────────────────────
 const ENDINGS = {
-  united_dominion: {
-    title:    'The United Dominion',
-    subtitle: 'Reform holds the empire together.',
-    symbol:   '◆',
-    body: [
-      "You remade what needed remaking. The compact between Iliatania and its colonies is rewritten, not merely mended. Veyra receives imperial investment, religious protections, and a voice in its own governance. Governor Fael ratifies the new agreement. Savra Olan, for the first time in years, is not leading a protest.",
-      "Maren's fleet withdraws over three weeks, their offer undercut by a stronger one: the loyalty of a people who chose to stay. The council is fractured but functional. Three junior ministers — younger, less entrenched — rise to fill the vacated seats.",
-      "History will call this the Compact Period. It is not perfect. The empire's finances will need years to recover. But the harbor is Iliatanian, and the people of Veyra are not prisoners of the arrangement. That is something new. Something that may hold.",
-    ],
-  },
-  iron_dominion: {
-    title:    'The Iron Dominion',
-    subtitle: 'The empire is saved. So is its cruelty.',
-    symbol:   '&#9876;',
-    body: [
-      "Veyra is subdued. Maren withdraws when the full weight of the imperial military makes clear there is nothing left to negotiate for. The harbor is secured. The tribute system stands. Order has been restored — that word doing a great deal of work.",
-      "The cost: Governor Fael is removed. Savra Olan and twelve of her lieutenants are imprisoned on sedition charges. The marginalized faith is formally restricted in Veyra for five years. The medical crisis is managed under garrison authority.",
-      "Other colonies receive the message. Iliatania is not afraid to use force. The next generation of colonial governors will be chosen for loyalty, not competence. The empire survives. Whether it deserves to is a question your successors will inherit.",
-    ],
-  },
-  marenic_foothold: {
-    title:    'The Marenic Foothold',
-    subtitle: 'The harbor is lost. So is the precedent.',
-    symbol:   '&#9672;',
-    body: [
-      "Ambassador Crevath's offer was simply better. Maren promised what Iliatania withheld — freedom from tribute, religious recognition, immediate reconstruction. Governor Fael, pragmatic to the last, chose survival over loyalty when loyalty offered nothing.",
-      "Veyra formally petitions for protectorate status under Maren. The imperial council declares it illegal. No fleet is sent — the calculus of war is not favorable. Maren's ships move into the harbor without firing a shot.",
-      "The harbor is gone. Two smaller colonies, watching, request renegotiation of their own tribute arrangements. The empire is not collapsing — but it has discovered the cost of treating loyalty as a certainty rather than a covenant it must continually earn.",
-    ],
-  },
-  burning_harbor: {
-    title:    'The Burning Harbor',
-    subtitle: 'What cannot be held is denied to all.',
-    symbol:   '&#9711;',
-    body: [
-      "The engineers worked through the night. By dawn, the harbor that built Veyra's economy for three centuries was unusable for deep-water vessels. Maren's fleet, arriving to claim their prize, found rubble and blocked channels.",
-      "What followed was not war — it was something worse. Maren withdrew, their investment destroyed. Veyra's fishing families, merchants, and dockworkers looked at what remained and understood: the empire had chosen to deny them a future rather than risk sharing one.",
-      "Iliatania survived the Marenic threat. It may not survive what Veyra remembers. In the archives, the decision is recorded without embellishment. Future crisis strategists will read it and understand that some victories are almost indistinguishable from losses.",
-    ],
-  },
-  free_coast: {
-    title:    'The Free Coast Alliance',
-    subtitle: 'An ally, not a subject. A different kind of empire.',
-    symbol:   '&#9671;',
-    body: [
-      "The proclamation of Veyra's autonomous status is a departure from Iliatanian doctrine. Colonies are not supposed to choose — they are supposed to belong. But the empire chose differently this time, and Veyra, given the choice, chose to remain.",
-      "Maren's emissary departed within a week of the announcement. There was nothing left to offer. The harbor is self-governed but open to imperial trade. Savra Olan runs for Veyra's new local council. Governor Fael, who expected to be removed, is asked to stay.",
-      "Three other colonies have petitioned for similar arrangements. The council is alarmed. The empire you leave behind is looser, more negotiated, more uncertain — and arguably more durable for it. The covenant between state and colony is, at last, a covenant.",
-    ],
-  },
-  collapse: {
-    title:    'Collapse of the Covenant',
-    subtitle: 'The system broke before anyone admitted it was breaking.',
-    symbol:   '&#10022;',
-    body: [
-      "It did not happen at once. It rarely does. The tribute system fractured first — Veyra's refusal, once unpunished, was noted by every colony that had ever paid under duress. The medical crisis, mismanaged or delayed, spread beyond Veyra's borders. Three coastal towns reported fever within a month.",
-      "Maren did not need to conquer Iliatania. They simply needed to wait. The empire's credibility — its promise of protection in exchange for tribute — had been demonstrated hollow. When Veyra formally broke from the empire, twelve months after the storm, six other territories were already in quiet negotiation with foreign powers.",
-      "The capital, Aurelion, remains. The empire, in its original form, does not. What comes next will be called many things by many scholars. You, who held the role of Crisis Strategist at the moment of breaking, are among the first to understand that the covenant between a state and those it governs is not destroyed by rebellion. It is destroyed by the long accumulation of things left unsaid and unkept.",
-    ],
-  },
+  strategist: [
+    {
+      condition: s => s.rank >= 76 && s.trust >= 65,
+      eyebrow: 'KAEL DORN — CIVIC RECORD SEALED',
+      title: 'The Voice of the Council',
+      body: 'Kael\'s unflinching honesty in exam halls and public assemblies earned him a Council seat no one could question. The lowborn boy who memorized law books by candlelight now writes them.'
+    },
+    {
+      condition: s => s.rank >= 52 && s.equality >= 60,
+      eyebrow: 'KAEL DORN — CIVIC RECORD SEALED',
+      title: 'Public Officer of the Eastward District',
+      body: 'He never reached the Council, but as a Public Officer he rewrote pension access rules that freed three thousand tribute workers from debt. Iliatania noticed.'
+    },
+    {
+      condition: s => s.trust >= 60,
+      eyebrow: 'KAEL DORN — CIVIC RECORD SEALED',
+      title: 'The Trusted Examiner',
+      body: 'Rank eluded him, but trust did not. Kael became the most respected exam proctor in the Imperial Academy — the one students prayed would read their papers.'
+    },
+    {
+      condition: () => true,
+      eyebrow: 'KAEL DORN — CIVIC RECORD SEALED',
+      title: 'A Citizen Who Tried',
+      body: 'He did not rise as high as he hoped. But he played fair, left the system a little cleaner, and the students he mentored remember his name.'
+    },
+  ],
+  healer: [
+    {
+      condition: s => s.rank >= 64 && s.equality >= 70,
+      eyebrow: 'TESSYN VAYLE — CIVIC RECORD SEALED',
+      title: 'Director of Public Medicine',
+      body: 'Tessyn\'s insistence on equal care regardless of rank reshaped Iliatania\'s hospital charter. Every ward now displays the Vayle Principle: "Illness does not ask your rank."'
+    },
+    {
+      condition: s => s.rank >= 52 && s.trust >= 65,
+      eyebrow: 'TESSYN VAYLE — CIVIC RECORD SEALED',
+      title: 'Senior Civic Physician',
+      body: 'Trusted by patients across every district, Tessyn built a network of healers trained in Veyran methods. She never stopped learning — or teaching.'
+    },
+    {
+      condition: s => s.stability >= 65,
+      eyebrow: 'TESSYN VAYLE — CIVIC RECORD SEALED',
+      title: 'The Steady Healer',
+      body: 'When the fever outbreak spread through the lower districts, Tessyn stayed. The city\'s stability owed a debt to her quiet resilience that the records never fully captured.'
+    },
+    {
+      condition: () => true,
+      eyebrow: 'TESSYN VAYLE — CIVIC RECORD SEALED',
+      title: 'A Healer Who Stayed',
+      body: 'Rank came slowly and recognition slower. But every patient she treated honestly left healthier — and that, she told her apprentices, was enough.'
+    },
+  ],
+  navigator: [
+    {
+      condition: s => s.rank >= 76 && s.trust >= 70,
+      eyebrow: 'MARA SHON — CIVIC RECORD SEALED',
+      title: 'Imperial Trade Commissioner',
+      body: 'Mara\'s refusal to falsify manifests cost her one contract and won her an empire\'s confidence. She now sets the standards every navigator is measured against.'
+    },
+    {
+      condition: s => s.rank >= 52 && s.equality >= 60,
+      eyebrow: 'MARA SHON — CIVIC RECORD SEALED',
+      title: 'Guild Charter Navigator',
+      body: 'She restructured the navigator guild to share route knowledge freely — ending the era of hoarded maps that kept new traders poor. The sea opened for everyone.'
+    },
+    {
+      condition: s => s.trust >= 65,
+      eyebrow: 'MARA SHON — CIVIC RECORD SEALED',
+      title: 'The Honest Merchant',
+      body: 'Buyers across three ports learned: Mara Shon\'s word is the manifest. Her reputation outlasted every competitor who chose shortcuts over honesty.'
+    },
+    {
+      condition: () => true,
+      eyebrow: 'MARA SHON — CIVIC RECORD SEALED',
+      title: 'A Navigator Who Charted Fair',
+      body: 'The sea does not reward fairness — but the people who sail it do. Mara\'s routes, her logs, and her name were passed down to a generation of navigators she never met.'
+    },
+  ],
+  worker: [
+    {
+      condition: s => s.rank >= 64 && s.equality >= 70,
+      eyebrow: 'DAVAN CORR — CIVIC RECORD SEALED',
+      title: 'Founder of the Worker Cooperative',
+      body: 'Davan turned fifteen years of tribute labour into the blueprint for Iliatania\'s first worker-owned cooperative. The system he escaped now studied him.'
+    },
+    {
+      condition: s => s.rank >= 52 && s.stability >= 65,
+      eyebrow: 'DAVAN CORR — CIVIC RECORD SEALED',
+      title: 'Civic Contributor — Guild Master',
+      body: 'He became the steadying hand of the craftsmen\'s guild: negotiating fair wages, blocking unsafe quotas, and making sure no younger worker signed what he once signed.'
+    },
+    {
+      condition: s => s.trust >= 65,
+      eyebrow: 'DAVAN CORR — CIVIC RECORD SEALED',
+      title: 'The Worker They Trusted',
+      body: 'His colleagues voted him shop steward every term. Not for his rank — he never climbed far — but because he told the truth when telling it was costly.'
+    },
+    {
+      condition: () => true,
+      eyebrow: 'DAVAN CORR — CIVIC RECORD SEALED',
+      title: 'A Worker Who Endured',
+      body: 'The system ground him. He pushed back. He didn\'t win everything, but his name appears in the margin of the cooperative charter — one of the hands that started something.'
+    },
+  ],
 };
 
-// ─── SCENE ART PANELS ────────────────────────
-const SCENE_ARTS = [
-
-  // 0 — The Storm's Legacy: watchtower, signal fire, Marenic ships on horizon
-  `<div style="position:absolute;inset:0;background:linear-gradient(180deg,#06111e 0%,#0c1c30 52%,#091520 100%);">
-    <div style="position:absolute;bottom:0;left:0;width:100%;height:44%;background:linear-gradient(0deg,#030c18 0%,#071422 70%,transparent 100%);"></div>
-    <div class="cs-shimmer-layer" style="height:44%;opacity:0.15;"></div>
-    <div style="position:absolute;bottom:44%;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(50,90,150,0.18),transparent);"></div>
-    <svg style="position:absolute;bottom:44.5%;left:40%;width:7%;opacity:0.44;" viewBox="0 0 90 48" fill="none"><path d="M4 30 Q45 38 86 30 L80 44 Q45 50 10 44Z" fill="#060918"/><line x1="28" y1="30" x2="28" y2="6" stroke="#060918" stroke-width="2"/><line x1="55" y1="30" x2="55" y2="2" stroke="#060918" stroke-width="2"/><polygon points="28,8 46,16 28,28" fill="#0a1020"/><polygon points="55,4 76,14 55,28" fill="#0a1020"/><polygon points="28,8 44,12 28,17" fill="#560a0a" opacity="0.88"/></svg>
-    <svg style="position:absolute;bottom:45%;left:51%;width:5%;opacity:0.3;" viewBox="0 0 80 42" fill="none"><path d="M3 26 Q40 34 77 26 L72 38 Q40 44 8 38Z" fill="#07091a"/><line x1="24" y1="26" x2="24" y2="5" stroke="#07091a" stroke-width="2"/><line x1="48" y1="26" x2="48" y2="2" stroke="#07091a" stroke-width="2"/><polygon points="24,7 40,14 24,24" fill="#090e1e"/><polygon points="48,4 65,12 48,24" fill="#090e1e"/></svg>
-    <svg style="position:absolute;bottom:45.5%;left:60%;width:4%;opacity:0.18;" viewBox="0 0 70 36" fill="none"><path d="M2 22 Q35 30 68 22 L63 34 Q35 38 7 34Z" fill="#07091a"/><line x1="20" y1="22" x2="20" y2="4" stroke="#07091a" stroke-width="1.5"/><line x1="42" y1="22" x2="42" y2="2" stroke="#07091a" stroke-width="1.5"/><polygon points="20,6 33,12 20,20" fill="#0a1020"/><polygon points="42,4 57,10 42,20" fill="#0a1020"/></svg>
-    <div style="position:absolute;bottom:42%;left:9%;width:4%;height:34%;background:#040810;"></div>
-    <div style="position:absolute;bottom:74%;left:7.5%;width:7%;height:6%;background:#030710;border-radius:1px 1px 0 0;clip-path:polygon(0% 100%,50% 0%,100% 100%);"></div>
-    <div style="position:absolute;bottom:79%;left:10.5%;width:2%;height:2%;background:radial-gradient(circle,#f08020 0%,#c04010 55%,transparent 72%);border-radius:50%;box-shadow:0 0 10px 6px rgba(240,120,28,0.52);animation:cs-pulse 1.8s ease-in-out infinite;"></div>
-    <div style="position:absolute;bottom:42%;left:0;width:22%;height:3%;background:#030710;border-top:1px solid #0c1428;"></div>
-    <div style="position:absolute;bottom:43%;left:3%;width:1.5%;height:5%;background:#04080e;"></div>
-    <div style="position:absolute;bottom:43%;left:6.5%;width:1.5%;height:4%;background:#040810;"></div>
-    <div style="position:absolute;bottom:42%;left:15%;width:1.5%;height:6%;background:#04080e;"></div>
-    <div style="position:absolute;bottom:42%;left:18.5%;width:1.5%;height:5%;background:#040810;"></div>
-  </div>`,
-
-  // 1 — Accounting for Ruin: council chamber, torches, figures around table
-  `<div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 55%,#110e07 0%,#070508 52%,#030304 100%);">
-    <div style="position:absolute;top:10%;left:6%;width:18%;height:35%;background:radial-gradient(ellipse at 0% 50%,rgba(205,130,25,0.12) 0%,transparent 65%);"></div>
-    <div style="position:absolute;top:10%;right:6%;width:18%;height:35%;background:radial-gradient(ellipse at 100% 50%,rgba(205,130,25,0.10) 0%,transparent 65%);"></div>
-    <div style="position:absolute;top:15%;left:9%;width:1.4%;height:9%;background:#1a1005;border-radius:1px;"></div>
-    <div style="position:absolute;top:13%;left:8.7%;width:2%;height:3%;background:#160d04;border-radius:2px;"></div>
-    <div style="position:absolute;top:11.5%;left:9%;width:1.7%;height:2%;background:#f09020;border-radius:50%;box-shadow:0 0 14px 8px rgba(225,140,20,0.38);animation:cs-pulse 2.1s ease-in-out infinite;"></div>
-    <div style="position:absolute;top:15%;right:9%;width:1.4%;height:9%;background:#1a1005;border-radius:1px;"></div>
-    <div style="position:absolute;top:13%;right:8.7%;width:2%;height:3%;background:#160d04;border-radius:2px;"></div>
-    <div style="position:absolute;top:11.5%;right:9%;width:1.7%;height:2%;background:#f09020;border-radius:50%;box-shadow:0 0 14px 8px rgba(225,140,20,0.38);animation:cs-pulse 2.1s ease-in-out 0.45s infinite;"></div>
-    <div style="position:absolute;bottom:0;left:0;width:100%;height:28%;background:linear-gradient(0deg,#040404 0%,#080705 100%);"></div>
-    <div style="position:absolute;bottom:26%;left:12%;width:76%;height:4.5%;background:#111006;border-top:1px solid #201c08;border-radius:2px;box-shadow:0 6px 18px rgba(0,0,0,0.85);"></div>
-    <div style="position:absolute;bottom:22%;left:12%;width:76%;height:4%;background:#0e0d04;border-radius:0 0 2px 2px;"></div>
-    <svg style="position:absolute;bottom:29%;left:15%;width:4%;height:16%;" viewBox="0 0 38 72" fill="none"><ellipse cx="19" cy="7.5" rx="6.5" ry="7" fill="#09080a"/><path d="M13 14 Q10 44 9 70 L29 70 Q28 44 25 14Z" fill="#0b090c"/></svg>
-    <svg style="position:absolute;bottom:29%;left:27%;width:4%;height:16%;" viewBox="0 0 38 72" fill="none"><ellipse cx="19" cy="7.5" rx="6.5" ry="7" fill="#09080a"/><path d="M13 14 Q10 44 9 70 L29 70 Q28 44 25 14Z" fill="#0b090c"/></svg>
-    <svg style="position:absolute;bottom:29%;left:40%;width:4%;height:17%;" viewBox="0 0 38 76" fill="none"><rect x="13" y="0" width="12" height="10" rx="1" fill="#09080a"/><ellipse cx="19" cy="15" rx="7" ry="7.5" fill="#09080a"/><path d="M12 22 Q9 50 8 74 L30 74 Q29 50 26 22Z" fill="#0b090c"/></svg>
-    <svg style="position:absolute;bottom:29%;left:54%;width:4%;height:16%;" viewBox="0 0 38 72" fill="none"><ellipse cx="19" cy="7.5" rx="6.5" ry="7" fill="#09080a"/><path d="M13 14 Q10 44 9 70 L29 70 Q28 44 25 14Z" fill="#0b090c"/></svg>
-    <svg style="position:absolute;bottom:29%;left:67%;width:4%;height:16%;" viewBox="0 0 38 72" fill="none"><ellipse cx="19" cy="7.5" rx="6.5" ry="7" fill="#09080a"/><path d="M13 14 Q10 44 9 70 L29 70 Q28 44 25 14Z" fill="#0b090c"/></svg>
-    <div style="position:absolute;bottom:30%;left:36%;width:28%;height:2%;background:#1c1808;border-radius:1px;opacity:0.7;"></div>
-  </div>`,
-
-  // 2 — The Weight of One Ward: hospital, lanterns, beds, doctor
-  `<div style="position:absolute;inset:0;background:linear-gradient(180deg,#060507 0%,#0a0809 52%,#060506 100%);">
-    <div style="position:absolute;top:0;left:15%;width:70%;height:50%;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(175,108,18,0.09) 0%,transparent 65%);"></div>
-    <div style="position:absolute;top:7%;left:21%;width:1.4%;height:2.5%;background:#1a1205;border-radius:2px 2px 4px 4px;"></div>
-    <div style="position:absolute;top:4.5%;left:21.3%;width:0.8%;height:3%;background:radial-gradient(circle,#f0b030 0%,#d07010 55%,transparent 72%);border-radius:50%;box-shadow:0 0 12px 7px rgba(220,135,18,0.3);animation:cs-pulse 2.4s ease-in-out infinite;"></div>
-    <div style="position:absolute;top:7%;left:49%;width:1.4%;height:2.5%;background:#1a1205;border-radius:2px 2px 4px 4px;"></div>
-    <div style="position:absolute;top:4.5%;left:49.3%;width:0.8%;height:3%;background:radial-gradient(circle,#f0b030 0%,#d07010 55%,transparent 72%);border-radius:50%;box-shadow:0 0 12px 7px rgba(220,135,18,0.3);animation:cs-pulse 2.4s ease-in-out 0.7s infinite;"></div>
-    <div style="position:absolute;top:7%;left:77%;width:1.4%;height:2.5%;background:#1a1205;border-radius:2px 2px 4px 4px;"></div>
-    <div style="position:absolute;top:4.5%;left:77.3%;width:0.8%;height:3%;background:radial-gradient(circle,#f0b030 0%,#d07010 55%,transparent 72%);border-radius:50%;box-shadow:0 0 12px 7px rgba(220,135,18,0.3);animation:cs-pulse 2.4s ease-in-out 1.3s infinite;"></div>
-    <div style="position:absolute;bottom:0;left:0;width:100%;height:28%;background:linear-gradient(0deg,#050404 0%,#090807 100%);"></div>
-    <div style="position:absolute;bottom:26%;left:3%;width:20%;height:5%;background:#0e0c08;border-radius:1px;border:1px solid #18140a;"></div>
-    <div style="position:absolute;bottom:26%;left:26%;width:20%;height:5%;background:#0e0c08;border-radius:1px;border:1px solid #18140a;"></div>
-    <div style="position:absolute;bottom:26%;left:50%;width:20%;height:5%;background:#0e0c08;border-radius:1px;border:1px solid #18140a;"></div>
-    <div style="position:absolute;bottom:26%;left:73%;width:20%;height:5%;background:#0e0c08;border-radius:1px;border:1px solid #18140a;"></div>
-    <div style="position:absolute;bottom:30%;left:4%;width:16%;height:2%;background:#0c0a07;border-radius:2px;opacity:0.75;"></div>
-    <div style="position:absolute;bottom:30%;left:27%;width:16%;height:2%;background:#0c0a07;border-radius:2px;opacity:0.75;"></div>
-    <div style="position:absolute;bottom:30%;left:51%;width:16%;height:2%;background:#0c0a07;border-radius:2px;opacity:0.75;"></div>
-    <svg style="position:absolute;bottom:26%;left:93%;width:4%;height:20%;" viewBox="0 0 34 76" fill="none"><ellipse cx="17" cy="7" rx="6.5" ry="7" fill="#090a0d"/><path d="M10 13 Q7 42 6 74 L28 74 Q27 42 24 13Z" fill="#0b0d10"/><path d="M10 18 Q2 28 2 42" stroke="#090a0d" stroke-width="4" stroke-linecap="round"/><path d="M24 18 Q32 28 32 40" stroke="#090a0d" stroke-width="4" stroke-linecap="round"/></svg>
-  </div>`,
-
-  // 3 — The Weight of Prayers: two temple silhouettes, torches, crowd
-  `<div style="position:absolute;inset:0;background:linear-gradient(180deg,#050810 0%,#080e1c 52%,#050a12 100%);">
-    <div style="position:absolute;top:0;left:28%;width:44%;height:45%;background:radial-gradient(ellipse at 50% 0%,rgba(90,60,140,0.1) 0%,transparent 62%);"></div>
-    <div style="position:absolute;bottom:0;left:0;width:100%;height:22%;background:linear-gradient(0deg,#030508 0%,#060a12 100%);"></div>
-    <div style="position:absolute;bottom:20%;left:6%;width:24%;height:48%;background:#060810;"></div>
-    <div style="position:absolute;bottom:66%;left:4%;width:28%;height:8%;background:#060810;clip-path:polygon(0% 100%,50% 0%,100% 100%);"></div>
-    <div style="position:absolute;bottom:20%;left:7.5%;width:1.5%;height:38%;background:#080c12;"></div>
-    <div style="position:absolute;bottom:20%;left:12%;width:1.5%;height:38%;background:#080c12;"></div>
-    <div style="position:absolute;bottom:20%;left:16%;width:1.5%;height:38%;background:#080c12;"></div>
-    <div style="position:absolute;bottom:20%;left:20%;width:1.5%;height:38%;background:#080c12;"></div>
-    <div style="position:absolute;bottom:73%;left:16.5%;width:1.5%;height:1.5%;background:radial-gradient(circle,#f09020 0%,#c04010 55%,transparent 72%);border-radius:50%;box-shadow:0 0 10px 6px rgba(240,128,20,0.46);animation:cs-pulse 2s ease-in-out infinite;"></div>
-    <div style="position:absolute;bottom:20%;right:8%;width:15%;height:34%;background:#060710;"></div>
-    <div style="position:absolute;bottom:52%;right:7%;width:17%;height:6%;background:#060710;clip-path:polygon(0% 100%,50% 0%,100% 100%);"></div>
-    <div style="position:absolute;bottom:57%;right:14%;width:1%;height:1%;background:radial-gradient(circle,#e08018 0%,transparent 72%);border-radius:50%;box-shadow:0 0 6px 4px rgba(200,100,20,0.3);animation:cs-pulse 2.3s ease-in-out 0.5s infinite;"></div>
-    <div style="position:absolute;bottom:19%;left:30%;width:40%;height:6%;background:#040608;clip-path:ellipse(50% 80% at 50% 100%);opacity:0.8;"></div>
-    <div style="position:absolute;bottom:20%;left:32%;width:0.9%;height:11%;background:#040608;border-radius:50% 50% 0 0;"></div>
-    <div style="position:absolute;bottom:20%;left:36%;width:0.9%;height:13%;background:#040608;border-radius:50% 50% 0 0;"></div>
-    <div style="position:absolute;bottom:20%;left:40%;width:0.9%;height:10%;background:#040608;border-radius:50% 50% 0 0;"></div>
-    <div style="position:absolute;bottom:20%;left:44%;width:0.9%;height:14%;background:#040608;border-radius:50% 50% 0 0;"></div>
-    <div style="position:absolute;bottom:20%;left:48%;width:0.9%;height:11%;background:#040608;border-radius:50% 50% 0 0;"></div>
-    <div style="position:absolute;bottom:20%;left:52%;width:0.9%;height:12%;background:#040608;border-radius:50% 50% 0 0;"></div>
-    <div style="position:absolute;bottom:20%;left:56%;width:0.9%;height:9%;background:#040608;border-radius:50% 50% 0 0;"></div>
-    <div style="position:absolute;bottom:20%;left:60%;width:0.9%;height:13%;background:#040608;border-radius:50% 50% 0 0;"></div>
-    <div style="position:absolute;bottom:31%;left:50%;width:0.8%;height:0.8%;background:radial-gradient(circle,#f0a020 0%,transparent 72%);border-radius:50%;box-shadow:0 0 5px 3px rgba(225,138,18,0.32);animation:cs-pulse 2s ease-in-out 0.3s infinite;"></div>
-    <div style="position:absolute;bottom:29%;left:42%;width:0.7%;height:0.7%;background:radial-gradient(circle,#e09018 0%,transparent 72%);border-radius:50%;box-shadow:0 0 4px 3px rgba(210,118,18,0.28);animation:cs-pulse 2.2s ease-in-out 0.9s infinite;"></div>
-  </div>`,
-
-  // 4 — The Empire's Promise: sunset harbor, emissary ship with white flag
-  `<div style="position:absolute;inset:0;background:linear-gradient(190deg,#160808 0%,#3c1408 14%,#7a2a0a 28%,#b04015 42%,#c85020 52%,#a03810 62%,#3c1208 78%,#0a0608 100%);">
-    <div style="position:absolute;bottom:38%;left:0;width:100%;height:14%;background:linear-gradient(0deg,rgba(175,78,14,0.18) 0%,transparent 100%);"></div>
-    <div style="position:absolute;bottom:0;left:0;width:100%;height:40%;background:linear-gradient(0deg,#060a10 0%,#0a1018 45%,#10182a 70%,#12203a 100%);"></div>
-    <div class="cs-shimmer-layer cs-shimmer-warm" style="height:40%;opacity:0.45;"></div>
-    <div style="position:absolute;bottom:38%;left:10%;width:64%;height:3.5%;background:#07090e;"></div>
-    <div style="position:absolute;bottom:38%;left:16%;width:1.8%;height:7%;background:#06080c;"></div>
-    <div style="position:absolute;bottom:38%;left:26%;width:1.8%;height:6%;background:#06080c;"></div>
-    <div style="position:absolute;bottom:38%;left:36%;width:1.8%;height:8%;background:#060810;transform:rotate(-2deg);"></div>
-    <div style="position:absolute;bottom:38%;left:50%;width:1.8%;height:7%;background:#06080c;"></div>
-    <div style="position:absolute;bottom:38%;left:60%;width:1.8%;height:6%;background:#06080c;"></div>
-    <svg style="position:absolute;bottom:39%;left:24%;width:20%;" viewBox="0 0 200 90" fill="none"><path d="M8 58 Q100 70 192 58 L182 82 Q100 92 18 82Z" fill="#060a10"/><line x1="60" y1="58" x2="60" y2="10" stroke="#060a10" stroke-width="3.5"/><line x1="115" y1="58" x2="115" y2="3" stroke="#060a10" stroke-width="3.5"/><polygon points="60,12 90,27 60,56" fill="#0a1020"/><polygon points="115,5 152,23 115,56" fill="#0a1020"/><polygon points="60,12 88,18 60,27" fill="#ddd8c8" opacity="0.85"/><line x1="182" y1="60" x2="208" y2="44" stroke="#060a10" stroke-width="2.5"/></svg>
-    <div style="position:absolute;bottom:40%;left:62%;width:8%;height:16%;background:#07080c;opacity:0.6;"></div>
-    <div style="position:absolute;bottom:40%;left:71%;width:6%;height:11%;background:#06070b;opacity:0.45;"></div>
-    <div style="position:absolute;bottom:40%;left:78%;width:9%;height:14%;background:#07080d;opacity:0.38;"></div>
-  </div>`,
-
-  // 5 — Iron Water: blockade line, ships across harbor, cliff observer
-  `<div style="position:absolute;inset:0;background:linear-gradient(190deg,#040710 0%,#07101e 28%,#0c1830 55%,#0e1c38 68%,#0a1422 100%);">
-    <div style="position:absolute;bottom:40%;left:0;width:100%;height:8%;background:linear-gradient(0deg,rgba(38,56,100,0.14) 0%,transparent 100%);"></div>
-    <div style="position:absolute;bottom:0;left:0;width:100%;height:42%;background:linear-gradient(0deg,#030810 0%,#070e1c 48%,#0b1628 80%,#0e1c34 100%);"></div>
-    <div class="cs-shimmer-layer" style="height:42%;opacity:0.2;"></div>
-    <svg style="position:absolute;bottom:43%;left:2%;width:7%;opacity:0.48;" viewBox="0 0 88 50" fill="none"><path d="M3 30 Q44 40 85 30 L79 46 Q44 52 9 46Z" fill="#06091a"/><line x1="24" y1="30" x2="24" y2="5" stroke="#06091a" stroke-width="2.2"/><line x1="55" y1="30" x2="55" y2="2" stroke="#06091a" stroke-width="2.2"/><polygon points="24,7 42,16 24,28" fill="#090d1e"/><polygon points="55,4 76,14 55,28" fill="#090d1e"/></svg>
-    <svg style="position:absolute;bottom:43.5%;left:13%;width:9%;opacity:0.62;" viewBox="0 0 105 56" fill="none"><path d="M4 34 Q52 44 101 34 L94 50 Q52 56 10 50Z" fill="#050810"/><line x1="30" y1="34" x2="30" y2="6" stroke="#050810" stroke-width="2.5"/><line x1="62" y1="34" x2="62" y2="2" stroke="#050810" stroke-width="2.5"/><polygon points="30,8 50,18 30,32" fill="#090e1c"/><polygon points="62,4 86,16 62,32" fill="#090e1c"/><polygon points="30,8 48,13 30,19" fill="#560a0a" opacity="0.9"/></svg>
-    <svg style="position:absolute;bottom:43%;left:26%;width:13%;opacity:0.8;" viewBox="0 0 145 72" fill="none"><path d="M5 46 Q72 58 140 46 L130 66 Q72 76 15 66Z" fill="#050810"/><line x1="42" y1="46" x2="42" y2="8" stroke="#050810" stroke-width="3.2"/><line x1="86" y1="46" x2="86" y2="3" stroke="#050810" stroke-width="3.2"/><line x1="122" y1="44" x2="122" y2="15" stroke="#050810" stroke-width="2.8"/><polygon points="42,10 68,23 42,44" fill="#090e1c"/><polygon points="86,5 118,20 86,44" fill="#090e1c"/><polygon points="42,10 66,16 42,24" fill="#560a0a" opacity="0.9"/></svg>
-    <svg style="position:absolute;bottom:43%;left:43%;width:11%;opacity:0.9;" viewBox="0 0 130 65" fill="none"><path d="M5 42 Q65 53 125 42 L116 60 Q65 68 14 60Z" fill="#050810"/><line x1="38" y1="42" x2="38" y2="7" stroke="#050810" stroke-width="3"/><line x1="78" y1="42" x2="78" y2="2" stroke="#050810" stroke-width="3"/><polygon points="38,9 62,21 38,40" fill="#090e1c"/><polygon points="78,4 108,18 78,40" fill="#090e1c"/><polygon points="38,9 60,14 38,21" fill="#560a0a" opacity="0.9"/></svg>
-    <svg style="position:absolute;bottom:43.5%;left:58%;width:9%;opacity:0.68;" viewBox="0 0 105 56" fill="none"><path d="M4 34 Q52 44 101 34 L94 50 Q52 56 10 50Z" fill="#060a18"/><line x1="30" y1="34" x2="30" y2="6" stroke="#060a18" stroke-width="2.5"/><line x1="62" y1="34" x2="62" y2="2" stroke="#060a18" stroke-width="2.5"/><polygon points="30,8 50,18 30,32" fill="#0a0e1c"/><polygon points="62,4 86,16 62,32" fill="#0a0e1c"/></svg>
-    <svg style="position:absolute;bottom:44%;left:71%;width:7%;opacity:0.5;" viewBox="0 0 88 50" fill="none"><path d="M3 30 Q44 40 85 30 L79 46 Q44 52 9 46Z" fill="#07091e"/><line x1="24" y1="30" x2="24" y2="5" stroke="#07091e" stroke-width="2"/><line x1="55" y1="30" x2="55" y2="2" stroke="#07091e" stroke-width="2"/><polygon points="24,7 42,16 24,28" fill="#0a0e20"/><polygon points="55,4 76,14 55,28" fill="#0a0e20"/></svg>
-    <svg style="position:absolute;bottom:44.5%;left:81%;width:6%;opacity:0.32;" viewBox="0 0 78 44" fill="none"><path d="M2 26 Q39 34 76 26 L70 40 Q39 46 9 40Z" fill="#070a1e"/><line x1="22" y1="26" x2="22" y2="5" stroke="#070a1e" stroke-width="2"/><line x1="48" y1="26" x2="48" y2="2" stroke="#070a1e" stroke-width="2"/><polygon points="22,7 36,13 22,24" fill="#0b0f20"/><polygon points="48,4 65,11 48,24" fill="#0b0f20"/></svg>
-    <div style="position:absolute;bottom:0;left:0;width:26%;height:65%;background:#030408;clip-path:polygon(0% 100%,0% 30%,9% 18%,17% 13%,22% 22%,26% 100%);"></div>
-    <svg style="position:absolute;bottom:58%;left:12%;width:3%;height:18%;" viewBox="0 0 28 80" fill="none"><ellipse cx="14" cy="6.5" rx="6" ry="6.5" fill="#020308"/><path d="M8 12 Q5 42 4 78 L24 78 Q23 42 20 12Z" fill="#020408"/><path d="M8 17 Q0 26 0 40" stroke="#020308" stroke-width="3.5" stroke-linecap="round"/><path d="M20 17 Q28 26 28 36" stroke="#020308" stroke-width="3.5" stroke-linecap="round"/></svg>
-  </div>`,
-
-  // 6 — The Shape of Dominion: grand throne chamber, emperor, columns
-  `<div style="position:absolute;inset:0;background:radial-gradient(ellipse 78% 65% at 50% 58%,#120e08 0%,#070508 52%,#030304 100%);">
-    <div style="position:absolute;top:0;left:36%;width:28%;height:55%;background:radial-gradient(ellipse at 50% 0%,rgba(185,138,22,0.09) 0%,transparent 65%);"></div>
-    <div style="position:absolute;bottom:0;left:4%;width:3%;height:80%;background:#0b0905;border-right:1px solid #141008;"></div>
-    <div style="position:absolute;bottom:0;left:13%;width:3%;height:72%;background:#0b0905;border-right:1px solid #141008;"></div>
-    <div style="position:absolute;bottom:0;left:80%;width:3%;height:72%;background:#0b0905;border-right:1px solid #141008;"></div>
-    <div style="position:absolute;bottom:0;right:4%;width:3%;height:80%;background:#0b0905;border-right:1px solid #141008;"></div>
-    <div style="position:absolute;bottom:78%;left:3%;width:5%;height:2%;background:#0f0c06;"></div>
-    <div style="position:absolute;bottom:70%;left:12%;width:5%;height:2%;background:#0f0c06;"></div>
-    <div style="position:absolute;bottom:70%;left:79%;width:5%;height:2%;background:#0f0c06;"></div>
-    <div style="position:absolute;bottom:78%;right:3%;width:5%;height:2%;background:#0f0c06;"></div>
-    <div style="position:absolute;bottom:22%;left:34%;width:32%;height:5%;background:#0f0c06;border-top:1px solid #1c1808;border-radius:1px;"></div>
-    <div style="position:absolute;bottom:26%;left:36%;width:28%;height:4%;background:#120e08;border-top:1px solid #201a0a;"></div>
-    <svg style="position:absolute;bottom:30%;left:42%;width:16%;height:30%;" viewBox="0 0 84 126" fill="none"><rect x="6" y="0" width="72" height="76" rx="2" fill="#0e0b07"/><rect x="0" y="68" width="84" height="6" rx="1" fill="#0c0907"/><polygon points="18,0 42,-12 66,0" fill="#110e08"/><ellipse cx="42" cy="46" rx="11" ry="12" fill="#08080a"/><path d="M31 57 Q26 84 24 124 L60 124 Q58 84 53 57Z" fill="#09090c"/><polygon points="33,35 42,26 51,35" fill="#c9a020" opacity="0.6"/></svg>
-    <div style="position:absolute;bottom:0;left:0;width:100%;height:22%;background:linear-gradient(0deg,#040403 0%,#080705 100%);"></div>
-    <div style="position:absolute;bottom:0;left:0;width:100%;height:22%;background:linear-gradient(90deg,transparent 24.8%,rgba(255,255,255,0.01) 25%,transparent 25.2%) 0 0/25% 100%;"></div>
-    <div style="position:absolute;top:15%;left:20%;width:1.4%;height:9%;background:#1a1005;border-radius:1px;"></div>
-    <div style="position:absolute;top:13%;left:19.8%;width:1.8%;height:2.5%;background:#f09020;border-radius:50%;box-shadow:0 0 14px 8px rgba(225,135,20,0.34);animation:cs-pulse 2s ease-in-out infinite;"></div>
-    <div style="position:absolute;top:15%;right:20%;width:1.4%;height:9%;background:#1a1005;border-radius:1px;"></div>
-    <div style="position:absolute;top:13%;right:19.8%;width:1.8%;height:2.5%;background:#f09020;border-radius:50%;box-shadow:0 0 14px 8px rgba(225,135,20,0.34);animation:cs-pulse 2s ease-in-out 0.5s infinite;"></div>
-    <svg style="position:absolute;bottom:22%;left:22%;width:3.5%;height:22%;" viewBox="0 0 30 88" fill="none"><ellipse cx="15" cy="7" rx="6.5" ry="7" fill="#090808"/><path d="M9 13 Q6 46 5 86 L25 86 Q24 46 21 13Z" fill="#0b090a"/><path d="M9 19 Q1 28 1 42" stroke="#090808" stroke-width="4" stroke-linecap="round"/></svg>
-    <svg style="position:absolute;bottom:22%;right:22%;width:3.5%;height:20%;" viewBox="0 0 30 80" fill="none"><ellipse cx="15" cy="7" rx="6.5" ry="7" fill="#090808"/><path d="M9 13 Q6 44 5 78 L25 78 Q24 44 21 13Z" fill="#0b090a"/><path d="M21 19 Q29 28 29 42" stroke="#090808" stroke-width="4" stroke-linecap="round"/></svg>
-  </div>`,
+// ── FINAL ENDINGS (Council of Voices, all four characters played) ─────────────
+const FINAL_ENDINGS = [
+  {
+    condition: stats => stats.rank >= 70 && stats.trust >= 70 && stats.equality >= 65 && stats.stability >= 65,
+    title: 'The Golden Compact',
+    subtitle: 'Iliatania enters an era of honest governance not seen in three generations.',
+    gem: '◈',
+    body: `<p>Four voices — exam hall, hospital ward, trade deck, craftsmen's bench — rose through the same merit system and chose, every time, the harder honest path.</p>
+<p>The Council they shaped wrote pension protections that could not be purchased away. The equality they defended became law. The stability they tended held when lesser systems cracked.</p>
+<p>Iliatania did not become perfect. It became honest about its imperfections. That was enough to change the world.</p>`,
+  },
+  {
+    condition: stats => stats.rank >= 55 && stats.trust >= 60,
+    title: 'The Merit Compact',
+    subtitle: 'Slow, imperfect — but the system moves toward fairness.',
+    gem: '◉',
+    body: `<p>None of the four reached the highest rank. But each left the system more navigable for the next generation. Pension credits expanded. Exam fraud dropped. The hospitals posted waiting times for every district.</p>
+<p>Change in Iliatania is not a single voice — it is a chorus of decisions, each small, each leaving a mark. The archive holds their names.</p>`,
+  },
+  {
+    condition: stats => stats.equality >= 60 && stats.stability >= 55,
+    title: 'The Steady Foundation',
+    subtitle: 'Equality and stability take root where least expected.',
+    gem: '⊕',
+    body: `<p>They did not dominate the rankings. But the society they supported grew more equal and more stable than the records predicted. A healer's fairness, a worker's stubbornness, a navigator's honest log — each eroded the small corruptions that compound into great injustice.</p>
+<p>Iliatania noticed. Slowly. The way all honest systems do.</p>`,
+  },
+  {
+    condition: () => true,
+    title: 'Four Citizens of Iliatania',
+    subtitle: 'The archive holds every choice. Nothing is forgotten.',
+    gem: '◆',
+    body: `<p>They did not all rise high. They did not all choose wisely. But they navigated a system that demands merit and rewards it imperfectly — and in doing so they revealed both the promise and the failure of Iliatania's great experiment.</p>
+<p>The archive seals their record. Future citizens will read it and decide: was the compact kept?</p>`,
+  },
 ];
 
-// ─── GAME STATE ──────────────────────────────
-let gameState = {
-  sceneIndex: 0,
+// ── GAME STATE ────────────────────────────────────────────────────────────────
+const gameState = {
+  currentChar: null,
+  currentScene: 0,
   stats: { ...INITIAL_STATS },
-  finalFlag: null,
+  completed: {},      // { charId: { title, stats } }
+  councilPlayed: false,
+  memory: {},         // { flagName: true } — set by choices, read by scenes
 };
 
-// ─── ENDING CALCULATOR ───────────────────────
-function calculateEnding() {
-  const s = gameState.stats;
-  const flag = gameState.finalFlag;
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function clamp(v, lo = 0, hi = 100) { return Math.max(lo, Math.min(hi, v)); }
 
-  // Catastrophic collapse overrides everything
-  if (s.capitalStability < 25 && s.foreignThreat > 70)          return 'collapse';
-  if (s.colonyLoyalty < 20   && s.rebelRadicalization > 75)      return 'collapse';
-
-  // Marenic takeover
-  if (s.foreignThreat > 80)                                      return 'marenic_foothold';
-  if (s.colonyLoyalty < 22   && s.foreignThreat > 62)            return 'marenic_foothold';
-
-  switch (flag) {
-    case 'crush':
-      if (s.militaryReadiness >= 55 && s.capitalStability >= 42) return 'iron_dominion';
-      if (s.capitalStability < 38)                               return 'collapse';
-      return 'burning_harbor';
-
-    case 'reform':
-      if (s.colonyLoyalty >= 52 && s.councilSupport >= 32)       return 'united_dominion';
-      if (s.colonyLoyalty >= 42)                                  return 'free_coast';
-      if (s.foreignThreat >= 58)                                  return 'marenic_foothold';
-      return 'collapse';
-
-    case 'defend':
-      if (s.militaryReadiness >= 50) {
-        if (s.colonyLoyalty >= 48) return 'united_dominion';
-        return 'iron_dominion';
-      }
-      return 'burning_harbor';
-
-    case 'autonomy':
-      if (s.colonyLoyalty >= 48 && s.foreignThreat < 62)         return 'free_coast';
-      if (s.foreignThreat >= 62)                                  return 'marenic_foothold';
-      return 'free_coast';
-
-    case 'sabotage':
-      return 'burning_harbor';
-
-    default:
-      return 'collapse';
+function getCurrentRank(rankVal) {
+  for (const r of RANKS) {
+    if (rankVal >= r.min) return r.name;
   }
+  return RANKS[RANKS.length - 1].name;
 }
 
-// ─── CLAMP ───────────────────────────────────
-function clamp(v) { return Math.max(0, Math.min(100, v)); }
-
-// ─── BAR COLOR ───────────────────────────────
-function barColor(key, value) {
-  const def = STAT_DEFS.find(d => d.key === key);
-  if (!def) return 'bar-green';
-  if (def.type === 'good') {
-    if (value >= 60) return 'bar-green';
-    if (value >= 35) return 'bar-amber';
-    return 'bar-red';
-  } else {
-    if (value <= 35) return 'bar-green';
-    if (value <= 62) return 'bar-amber';
-    return 'bar-red';
-  }
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.classList.add('hidden');
+  });
+  const el = document.getElementById(id);
+  el.classList.remove('hidden');
+  el.classList.add('active');
 }
 
-// ─── RENDER STATS LIST ───────────────────────
+// ── STAT RENDERING ────────────────────────────────────────────────────────────
 function renderStats() {
-  const list = document.getElementById('stats-list');
-  list.innerHTML = '';
-  let currentGroup = null;
+  const hud = document.getElementById('ss-bars');
+  hud.innerHTML = '';
   STAT_DEFS.forEach(def => {
-    if (def.grapes !== currentGroup) {
-      currentGroup = def.grapes;
-      const gHdr = document.createElement('div');
-      gHdr.className = 'stat-group-header';
-      gHdr.innerHTML = `<span class="grapes-badge gb-${def.grapes.toLowerCase()}">${def.grapes}</span><span class="stat-group-name">${def.grapesLabel}</span>`;
-      list.appendChild(gHdr);
-    }
-    const val = gameState.stats[def.key];
-    const color = barColor(def.key, val);
-    const item = document.createElement('div');
-    item.className = 'stat-item';
-    item.id = 'stat-item-' + def.key;
-    item.innerHTML = `
-      <div class="stat-row">
-        <span class="stat-name">${def.label}</span>
-        <span class="stat-val" id="stat-val-${def.key}">${val}<span class="stat-delta" id="stat-delta-${def.key}"></span></span>
+    const val = gameState.stats[def.key] ?? 50;
+    const pct = Math.round(val);
+    const bar = document.createElement('div');
+    bar.className = 'ss-row';
+    bar.innerHTML = `
+      <div class="ss-row-head">
+        <span class="ss-icon" style="color:${def.color}">${def.icon}</span>
+        <span class="ss-label">${def.label}</span>
+        <span class="ss-val">${pct}</span>
       </div>
-      <div class="bar-track">
-        <div class="bar-fill ${color}" id="bar-${def.key}" style="width:${val}%"></div>
-      </div>
-    `;
-    list.appendChild(item);
+      <div class="ss-track"><div class="ss-fill" id="fill-${def.key}" style="width:${pct}%;background:${def.color}"></div></div>`;
+    hud.appendChild(bar);
   });
+  // Update rank display
+  const rankEl = document.getElementById('rank-display');
+  if (rankEl) {
+    const rankName = getCurrentRank(gameState.stats.rank);
+    rankEl.innerHTML = `<span class="rank-tier">CURRENT RANK</span><span class="rank-name">${rankName}</span>`;
+  }
 }
 
-// ─── ANIMATE STAT CHANGES ────────────────────
 function animateStats(changes) {
-  STAT_DEFS.forEach(def => {
-    const delta = changes[def.key];
-    if (!delta) return;
-
-    const newVal  = clamp(gameState.stats[def.key]);
-    const bar     = document.getElementById('bar-' + def.key);
-    const valEl   = document.getElementById('stat-val-' + def.key);
-    const deltaEl = document.getElementById('stat-delta-' + def.key);
-
-    if (bar)     bar.style.width = newVal + '%';
-    if (bar)     bar.className = 'bar-fill ' + barColor(def.key, newVal);
-    if (valEl)   valEl.childNodes[0].textContent = newVal;
-    const itemEl = document.getElementById('stat-item-' + def.key);
-    if (itemEl) { itemEl.classList.remove('flashing'); void itemEl.offsetWidth; itemEl.classList.add('flashing'); }
-    if (deltaEl) {
-      deltaEl.textContent = (delta > 0 ? ' +' : ' ') + delta;
-      deltaEl.className   = 'stat-delta show ' + (delta > 0 ? 'pos' : 'neg');
-      setTimeout(() => {
-        deltaEl.classList.remove('show');
-      }, 2800);
+  Object.entries(changes).forEach(([key, delta]) => {
+    const oldVal = gameState.stats[key] ?? 50;
+    const newVal = clamp(oldVal + delta);
+    gameState.stats[key] = newVal;
+    const fill = document.getElementById(`fill-${key}`);
+    if (fill) {
+      fill.style.transition = 'width 0.6s ease';
+      fill.style.width = newVal + '%';
     }
+    const valEl = fill && fill.closest('.ss-row').querySelector('.ss-val');
+    if (valEl) valEl.textContent = Math.round(newVal);
   });
-}
-
-// ─── RENDER SCENE ────────────────────────────
-function renderScene() {
-  const scene = SCENES[gameState.sceneIndex];
-  const card  = document.getElementById('scene-card');
-
-  card.style.opacity = '0';
-  card.style.transform = 'translateY(10px)';
-
-  setTimeout(() => {
-    document.getElementById('scene-act').textContent   = scene.act;
-    document.getElementById('scene-prog').textContent  = scene.progress;
-    document.getElementById('scene-title').textContent = scene.title;
-    document.getElementById('scene-body').innerHTML    = scene.body.map(p => `<p>${p}</p>`).join('');
-
-    // Scene art panel
-    const artPanel = document.getElementById('scene-art');
-    artPanel.innerHTML = SCENE_ARTS[gameState.sceneIndex] || '';
-
-    // Lore section
-    const loreSection = document.getElementById('lore-section');
-    const loreContent = document.getElementById('lore-content');
-    const loreToggle  = document.getElementById('lore-toggle');
-    if (scene.lore && scene.lore.length) {
-      loreSection.classList.remove('hidden');
-      loreContent.classList.add('hidden');
-      loreToggle.classList.remove('open');
-      loreToggle.innerHTML = '&#8853; Imperial Context';
-      loreContent.innerHTML = scene.lore.map(item =>
-        `<div class="lore-item"><span class="lore-badge grapes-badge gb-${item.g.toLowerCase()}">${item.g}</span><span>${item.text}</span></div>`
-      ).join('');
-    } else {
-      loreSection.classList.add('hidden');
-    }
-
-    renderAdvisors(scene);
-
-    document.getElementById('consequence').classList.add('hidden');
-    document.getElementById('continue-btn').classList.add('hidden');
-
-    renderChoices(scene);
-
-    card.style.opacity   = '1';
-    card.style.transform = 'translateY(0)';
-    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, 180);
-}
-
-// ─── LORE TOGGLE ─────────────────────────────
-function toggleLore() {
-  const btn     = document.getElementById('lore-toggle');
-  const content = document.getElementById('lore-content');
-  if (!btn || !content) return;
-  const isOpen = !content.classList.contains('hidden');
-  if (isOpen) {
-    content.classList.add('hidden');
-    btn.classList.remove('open');
-    btn.innerHTML = '&#8853; Imperial Context';
-  } else {
-    content.classList.remove('hidden');
-    btn.classList.add('open');
-    btn.innerHTML = '&#8854; Imperial Context';
+  // Update rank display after animation
+  const rankEl = document.getElementById('rank-display');
+  if (rankEl) {
+    const rankName = getCurrentRank(gameState.stats.rank);
+    rankEl.innerHTML = `<span class="rank-tier">CURRENT RANK</span><span class="rank-name">${rankName}</span>`;
   }
 }
 
-// ─── RENDER ADVISORS ─────────────────────────
-function renderAdvisors(scene) {
-  const section = document.getElementById('advisor-section');
-  const row     = document.getElementById('advisor-row');
-  if (!scene.advisors || !scene.advisors.length) {
-    section.classList.add('hidden');
-    return;
-  }
-  section.classList.remove('hidden');
-  row.innerHTML = '';
-  scene.advisors.forEach(adv => {
+// ── CHARACTER SELECT ──────────────────────────────────────────────────────────
+function renderCharSelect() {
+  const grid = document.getElementById('char-grid');
+  grid.innerHTML = '';
+  CHARACTERS.forEach(char => {
+    const done = gameState.completed[char.id];
     const card = document.createElement('div');
-    card.className = 'advisor-card';
+    card.className = 'char-card' + (done ? ' char-done' : '');
+    card.style.setProperty('--char-color', char.color);
     card.innerHTML = `
-      <span class="advisor-badge grapes-badge gb-${adv.grapes.toLowerCase()}">${adv.grapes}</span>
-      <div class="advisor-portrait">${adv.icon}</div>
-      <div class="advisor-name">${adv.name}</div>
-      <div class="advisor-role">${adv.role}</div>
-      <button class="advisor-consult-btn">Consult &#9660;</button>
-      <div class="advisor-dialogue">"${adv.dialogue}"</div>
-    `;
-    card.addEventListener('click', () => card.classList.add('consulted'));
-    row.appendChild(card);
+      <div class="char-card-top">
+        <span class="char-icon" style="color:${char.color}">${char.icon}</span>
+        ${done ? '<span class="char-badge">&#10003; Complete</span>' : ''}
+      </div>
+      <h3 class="char-name">${char.name}</h3>
+      <p class="char-card-title">${char.title}</p>
+      <p class="char-card-tag">${char.tagline}</p>
+      ${done ? `<p class="char-done-title">${done.title}</p>` : '<button class="btn-primary char-play-btn">&#9670; Play</button>'}`;
+    if (!done) {
+      card.querySelector('.char-play-btn').addEventListener('click', () => startCharacter(char.id));
+    }
+    grid.appendChild(card);
+  });
+
+  const allDone = CHARACTERS.every(c => gameState.completed[c.id]);
+  const unlock = document.getElementById('council-unlock');
+  if (allDone && !gameState.councilPlayed) {
+    unlock.classList.remove('hidden');
+  } else {
+    unlock.classList.add('hidden');
+  }
+}
+
+// ── START CHARACTER ───────────────────────────────────────────────────────────
+function startCharacter(charId) {
+  const char = CHARACTERS.find(c => c.id === charId);
+  if (!char) return;
+  gameState.currentChar = char;
+  gameState.currentScene = 0;
+  gameState.stats = { ...INITIAL_STATS };
+  gameState.memory = {};
+  document.documentElement.style.setProperty('--char-color', char.color);
+  showScreen('game-screen');
+  document.getElementById('gh-charname').textContent = char.name;
+  renderStats();
+  showScene(0);
+}
+
+// ── SCENE RENDERING ───────────────────────────────────────────────────────────
+function showScene(idx) {
+  const char = gameState.currentChar;
+  const scene = char.scenes[idx];
+  if (!scene) return;
+
+  // Cutscene overlay
+  showCutscene(scene, () => {
+    renderScene(scene, idx);
   });
 }
 
-// ─── RENDER CHOICES ──────────────────────────
-function renderChoices(scene) {
-  const container = document.getElementById('choices');
-  container.innerHTML = '';
+function showCutscene(scene, cb) {
+  const ov = document.getElementById('cutscene-ov');
+  document.getElementById('cso-loc').textContent = scene.location || '';
+  document.getElementById('cso-ttl').textContent = scene.title || '';
+  const sceneIdx = gameState.currentScene;
+  const total = gameState.currentChar.scenes.length;
+  document.getElementById('cso-num').textContent = `${scene.label || ('Scene ' + (sceneIdx + 1))} of ${total}`;
+  ov.classList.add('cso-on');
+  setTimeout(() => {
+    ov.classList.remove('cso-on');
+    if (cb) cb();
+  }, 2200);
+}
 
-  scene.choices.forEach((choice, idx) => {
+function renderScene(scene, idx) {
+  const char = gameState.currentChar;
+  const total = char.scenes.length;
+
+  // Progress
+  document.getElementById('gh-prog').textContent = `Scene ${idx + 1} / ${total}`;
+
+  // Art background
+  const artEl = document.getElementById('scene-art');
+  const artVal = SCENE_ART[scene.art];
+  artEl.style.background = artVal ? '' : '#1a1a2e';
+  artEl.innerHTML = artVal || '';
+
+  // Silhouette
+  const silEl = document.getElementById('player-silhouette');
+  silEl.innerHTML = SILHOUETTES[char.id] || '';
+  silEl.classList.remove('sil-vis');
+  requestAnimationFrame(() => requestAnimationFrame(() => silEl.classList.add('sil-vis')));
+
+  // NPC bubble
+  const bubbleEl = document.getElementById('npc-bubble');
+  bubbleEl.classList.remove('npc-vis', 'hidden');
+  if (scene.npcName && scene.npcLine) {
+    document.getElementById('npc-speaker').textContent = scene.npcName;
+    document.getElementById('npc-line').textContent = scene.npcLine;
+    requestAnimationFrame(() => requestAnimationFrame(() => bubbleEl.classList.add('npc-vis')));
+  } else {
+    bubbleEl.classList.add('hidden');
+  }
+
+  // Dialogue panel
+  document.getElementById('sc-location').textContent = scene.location || '';
+  document.getElementById('sc-label').textContent = scene.label || '';
+  document.getElementById('sc-title').textContent = scene.title || '';
+
+  // Body + optional memory-injected lines
+  let bodyHtml = scene.body || '';
+  if (scene.memoryLines) {
+    Object.entries(scene.memoryLines).forEach(([flag, html]) => {
+      if (gameState.memory[flag]) bodyHtml += html;
+    });
+  }
+  document.getElementById('sc-body').innerHTML = bodyHtml;
+
+  // Inline NPC quote inside dialogue panel
+  const dpNpc = document.getElementById('dp-npc');
+  if (scene.npcName && scene.npcLine) {
+    document.getElementById('dp-npc-name').textContent = scene.npcName;
+    document.getElementById('dp-npc-text').textContent = scene.npcLine;
+    dpNpc.classList.remove('hidden');
+  } else {
+    dpNpc.classList.add('hidden');
+  }
+
+  // Inner voice
+  const ivEl = document.getElementById('inner-voice');
+  if (scene.innerVoice) {
+    ivEl.textContent = scene.innerVoice;
+    ivEl.classList.remove('hidden');
+  } else {
+    ivEl.classList.add('hidden');
+  }
+
+  // Choices
+  renderChoices(scene.choices);
+
+  // Hide consequence/continue from last scene
+  document.getElementById('consequence').classList.add('hidden');
+  document.getElementById('continue-btn').classList.add('hidden');
+
+  // Rank display in header right
+  const ghRight = document.getElementById('gh-right');
+  ghRight.innerHTML = `<span class="gh-rank">${getCurrentRank(gameState.stats.rank)}</span>`;
+}
+
+// ── CHOICES ───────────────────────────────────────────────────────────────────
+function renderChoices(choices) {
+  const box = document.getElementById('choices');
+  box.innerHTML = '';
+  choices.forEach((ch, i) => {
+    // Check memory requirement
+    if (ch.requiresMemory && !gameState.memory[ch.requiresMemory]) return;
+
+    const locked = ch.minStat && Object.entries(ch.minStat).some(([k, v]) => (gameState.stats[k] || 0) < v);
     const btn = document.createElement('button');
-    btn.className = 'choice-btn';
-    btn.innerHTML = `
-      <span class="choice-letter">Option ${choice.letter}</span>
-      <span class="choice-label">${choice.label}</span>
-      <span class="choice-tip">${choice.tip}</span>
-    `;
-    btn.addEventListener('click', () => handleChoice(choice, btn, scene));
-    container.appendChild(btn);
+    btn.className = 'choice-btn' + (locked ? ' locked' : '');
+    const lockNote = locked
+      ? `<span class="choice-lock-note">Requires higher ${Object.keys(ch.minStat).join('/')}</span>`
+      : '';
+    btn.innerHTML = `<span class="choice-main">${ch.text}</span>${ch.sub ? `<span class="choice-sub">${ch.sub}</span>` : ''}${lockNote}`;
+    if (!locked) btn.addEventListener('click', () => handleChoice(ch, i));
+    box.appendChild(btn);
   });
 }
 
-// ─── HANDLE CHOICE ───────────────────────────
-function handleChoice(choice, clickedBtn, scene) {
-  // Lock all buttons
+function handleChoice(choice, idx) {
+  // Disable all choices
   document.querySelectorAll('.choice-btn').forEach(b => {
     b.disabled = true;
-    b.classList.remove('chosen');
+    b.classList.remove('selected');
   });
-  clickedBtn.classList.add('chosen');
-  clickedBtn.disabled = false;
+  const btns = document.querySelectorAll('.choice-btn');
+  if (btns[idx]) btns[idx].classList.add('selected');
 
   // Apply stat changes
-  const changes = choice.changes || {};
-  Object.keys(changes).forEach(key => {
-    gameState.stats[key] = clamp(gameState.stats[key] + changes[key]);
-  });
+  if (choice.changes) animateStats(choice.changes);
 
-  // Record final flag
-  if (scene.isFinal && choice.flag) {
-    gameState.finalFlag = choice.flag;
-  }
-
-  // Animate stats
-  animateStats(changes);
-
-  // Build consequence chips
-  const chips = Object.entries(changes)
-    .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
-    .map(([key, delta]) => {
-      const def  = STAT_DEFS.find(d => d.key === key);
-      const sign = delta > 0 ? '+' : '';
-      const cls  = delta > 0 ? 'chip-pos' : 'chip-neg';
-      return `<span class="chip ${cls}">${def ? def.label : key} ${sign}${delta}</span>`;
-    }).join('');
+  // Record memory flags
+  if (choice.sets) Object.assign(gameState.memory, choice.sets);
 
   // Show consequence
-  const consEl   = document.getElementById('consequence');
-  const textEl   = document.getElementById('consequence-text');
-  const chipsEl  = document.getElementById('consequence-chips');
-
-  textEl.textContent  = choice.consequence;
-  chipsEl.innerHTML   = chips;
+  const consEl = document.getElementById('consequence');
+  const consText = document.getElementById('consequence-text');
+  const consChips = document.getElementById('consequence-chips');
+  consText.textContent = choice.consequence || '';
+  consChips.innerHTML = '';
+  if (choice.changes) {
+    Object.entries(choice.changes).forEach(([key, delta]) => {
+      const def = STAT_DEFS.find(d => d.key === key);
+      if (!def) return;
+      const chip = document.createElement('span');
+      chip.className = 'chip ' + (delta >= 0 ? 'chip-pos' : 'chip-neg');
+      chip.textContent = `${def.icon} ${def.label} ${delta >= 0 ? '+' : ''}${delta}`;
+      consChips.appendChild(chip);
+    });
+  }
   consEl.classList.remove('hidden');
+  document.getElementById('continue-btn').classList.remove('hidden');
+}
 
-  // Scroll consequence into view
-  setTimeout(() => consEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
-
-  // Show continue button
-  const continueBtn = document.getElementById('continue-btn');
-  continueBtn.classList.remove('hidden');
-
-  if (scene.isFinal) {
-    continueBtn.textContent = 'View the Outcome ➜';
-    continueBtn.onclick = showEnding;
+// ── NEXT SCENE / FINISH ───────────────────────────────────────────────────────
+function nextScene() {
+  const char = gameState.currentChar;
+  const next = gameState.currentScene + 1;
+  if (next >= char.scenes.length) {
+    finishCharacter();
   } else {
-    continueBtn.textContent = 'Proceed to Next Scene ➜';
-    continueBtn.onclick = nextScene;
+    gameState.currentScene = next;
+    showScene(next);
   }
 }
 
-// ─── NEXT SCENE ──────────────────────────────
-function nextScene() {
-  gameState.sceneIndex++;
-  renderScene();
+function finishCharacter() {
+  const char = gameState.currentChar;
+  const stats = { ...gameState.stats };
+  const endings = ENDINGS[char.id] || [];
+  const match = endings.find(e => e.condition(stats)) || endings[endings.length - 1];
+
+  gameState.completed[char.id] = { title: match ? match.title : 'Complete', stats };
+
+  // Show character ending screen
+  document.getElementById('ce-eyebrow').textContent = match ? match.eyebrow : char.name;
+  document.getElementById('ce-title').textContent = match ? match.title : 'Journey Complete';
+  document.getElementById('ce-body').textContent = match ? match.body : '';
+  showScreen('char-end-screen');
 }
 
-// ─── SHOW ENDING ─────────────────────────────
-function showEnding() {
-  const endingKey = calculateEnding();
-  const ending    = ENDINGS[endingKey];
-  const s         = gameState.stats;
+// ── FINAL ENDING ──────────────────────────────────────────────────────────────
+function calculateEnding() {
+  const completed = Object.values(gameState.completed);
+  if (completed.length === 0) return;
+  const avg = { rank: 0, trust: 0, equality: 0, stability: 0 };
+  completed.forEach(c => {
+    STAT_DEFS.forEach(def => { avg[def.key] = (avg[def.key] || 0) + (c.stats[def.key] || 0); });
+  });
+  STAT_DEFS.forEach(def => { avg[def.key] = Math.round(avg[def.key] / completed.length); });
+  return avg;
+}
 
-  document.getElementById('ending-symbol').innerHTML  = ending.symbol;
-  document.getElementById('ending-title').textContent  = ending.title;
-  document.getElementById('ending-subtitle').textContent = ending.subtitle;
-  document.getElementById('ending-body').innerHTML =
-    ending.body.map(p => `<p>${p}</p>`).join('');
+function showFinalEnding() {
+  gameState.councilPlayed = true;
+  const avg = calculateEnding();
+  const match = FINAL_ENDINGS.find(e => e.condition(avg)) || FINAL_ENDINGS[FINAL_ENDINGS.length - 1];
 
-  // Final stat grid
-  const grid = document.getElementById('ending-stat-grid');
-  grid.innerHTML = '';
-  STAT_DEFS.forEach(def => {
-    const val = s[def.key];
-    let cls = 'good';
-    if (def.type === 'good') {
-      if (val < 35) cls = 'bad';
-      else if (val < 60) cls = 'mid';
-    } else {
-      if (val > 62) cls = 'bad';
-      else if (val > 38) cls = 'mid';
-    }
-    const item = document.createElement('div');
-    item.className = 'esg-item';
-    item.innerHTML = `
-      <span class="esg-name">${def.label}</span>
-      <span class="esg-val ${cls}">${val}</span>
-    `;
-    grid.appendChild(item);
+  document.getElementById('ending-title').textContent = match.title;
+  document.getElementById('ending-subtitle').textContent = match.subtitle;
+  document.getElementById('ending-gem').textContent = match.gem || '◈';
+  document.getElementById('ending-body').innerHTML = match.body;
+
+  // Art background (use a generic civic art)
+  const bgArt = document.getElementById('ending-bg-art');
+  bgArt.innerHTML = SCENE_ART['assembly'] || '';
+
+  // Voice summaries
+  const voicesBox = document.getElementById('ending-voices');
+  voicesBox.innerHTML = '<p class="ev-header">Four Voices — Sealed Record</p>';
+  CHARACTERS.forEach(char => {
+    const done = gameState.completed[char.id];
+    if (!done) return;
+    const div = document.createElement('div');
+    div.className = 'ev-entry';
+    div.style.setProperty('--char-color', char.color);
+    div.innerHTML = `<span class="ev-icon" style="color:${char.color}">${char.icon}</span>
+      <span class="ev-name">${char.name}</span>
+      <span class="ev-title">${done.title}</span>`;
+    voicesBox.appendChild(div);
   });
 
-  document.getElementById('game-screen').classList.add('hidden');
-  document.getElementById('ending-screen').classList.remove('hidden');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Final averaged stats
+  const statsBox = document.getElementById('ending-final-stats');
+  statsBox.innerHTML = '<p class="efs-header">Averaged Civic Record</p>';
+  STAT_DEFS.forEach(def => {
+    const val = avg[def.key] ?? 50;
+    const row = document.createElement('div');
+    row.className = 'efs-row';
+    row.innerHTML = `<span class="efs-icon" style="color:${def.color}">${def.icon}</span>
+      <span class="efs-label">${def.label}</span>
+      <div class="efs-track"><div class="efs-fill" style="width:${val}%;background:${def.color}"></div></div>
+      <span class="efs-val">${val}</span>`;
+    statsBox.appendChild(row);
+  });
+
+  showScreen('ending-screen');
 }
 
-// ─── RESTART ─────────────────────────────────
-function restartGame() {
-  gameState = {
-    sceneIndex: 0,
-    stats: { ...INITIAL_STATS },
-    finalFlag: null,
-  };
-  document.getElementById('ending-screen').classList.add('hidden');
-  document.getElementById('game-screen').classList.remove('hidden');
-  renderStats();
-  renderScene();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ─── INIT ────────────────────────────────────
+// ── EVENT LISTENERS ───────────────────────────────────────────────────────────
 document.getElementById('start-btn').addEventListener('click', () => {
-  document.getElementById('title-screen').style.opacity    = '0';
-  document.getElementById('title-screen').style.transition = 'opacity 0.6s';
-  setTimeout(() => {
-    document.getElementById('title-screen').classList.add('hidden');
-    showCutscene('opening', () => {
-      document.getElementById('game-screen').classList.remove('hidden');
-      renderStats();
-      renderScene();
-    });
-  }, 600);
+  showScreen('char-screen');
+  renderCharSelect();
 });
 
-// ─── CUTSCENE SYSTEM ─────────────────────────
+document.getElementById('back-btn').addEventListener('click', () => {
+  showScreen('char-screen');
+  renderCharSelect();
+});
 
-// Panel sequence data
-const CUTSCENE_DATA = {
-  opening: [
-    {
-      scene: 'aurelion-night',
-      location: 'Aurelion — Capital of Iliatania',
-      text: 'The empire sleeps. Its harbor walls stretch unbroken into the sea. Tonight, the lamps of Aurelion burn in every tower — the empire at the height of its power, unaware of what moves toward it from the south.',
-    },
-    {
-      scene: 'storm-hits',
-      location: 'Veyra Colony — The Black Tide Storm',
-      text: 'Eighty leagues south, the storm arrives without warning. The Black Tide is not one storm. It is every storm at once. The harbor district of Veyra is consumed in four hours. When it recedes, what remains is not a city. It is a question.',
-    },
-    {
-      scene: 'veyra-ruins',
-      location: 'Veyra — The Morning After',
-      text: 'Dawn finds the harbor half-swallowed. Governor Dresh Fael stands at the waterline of what was Veyra\'s market district. He does not move for a long time. Then he turns and walks to the courier station. The message to Aurelion is three lines.',
-    },
-    {
-      scene: 'marenic-fleet',
-      location: 'The Meridian Sea — 40 Leagues from Veyra',
-      text: 'Thirty warships. The Marenic Empire has been waiting for exactly this kind of moment. They do not advance. They do not retreat. They hold position on the horizon like a threat that has not yet decided to become a fact.',
-    },
-    {
-      scene: 'council-chamber',
-      location: 'Aurelion — The Imperial War Council',
-      text: 'The dispatch reaches the capital in eighteen hours. By the next morning, you are at the table. The emperor\'s council studies you — the strategist who rose without noble blood. No one says it aloud, but the question hangs in the air: can you hold an empire together?',
-    },
-  ],
-  act3: [
-    {
-      scene: 'emissary-dock',
-      location: 'Veyra Harbor — Under Marenic Watch',
-      text: 'Ambassador Crevath arrives on a private vessel, flying a white flag above Maren\'s crimson. He carries reconstruction gold in one hand and the promise of freedom in the other. He steps off the boat and looks at the ruins. He smiles like a man who has been patient for a very long time.',
-    },
-    {
-      scene: 'secret-meeting',
-      location: 'Veyra — Under Lantern Light',
-      text: 'By night, Crevath meets with Savra Olan. Two people who want the same outcome for entirely different reasons. Your intelligence agent watches through a cracked shutter. What passes between them takes two hours. The notes fill four pages.',
-    },
-    {
-      scene: 'blockade-shore',
-      location: 'Cape Dros — Northern Shore of Veyra',
-      text: 'The blockade is a physical fact now. Sixteen iron hulls in a line across the harbor mouth. A Veyran fisherman stands at the cliff\'s edge at dawn and counts the ships. He counts them every morning. He has not gone out to sea in eleven days.',
-    },
-  ],
-};
+document.getElementById('continue-btn').addEventListener('click', nextScene);
 
-// Scene HTML templates
-function CS_SCENE(id) {
-  const scenes = {
+document.getElementById('ce-continue').addEventListener('click', () => {
+  showScreen('char-screen');
+  renderCharSelect();
+});
 
-    'aurelion-night': `
-      <div style="position:absolute;inset:0;background:linear-gradient(185deg,#010208 0%,#020616 38%,#050c22 70%,#07102c 100%);"></div>
-      <div id="cs-sf" style="position:absolute;top:0;left:0;width:1px;height:1px;"></div>
-      <div style="position:absolute;top:6%;right:12%;width:3.5%;padding-top:3.5%;background:radial-gradient(circle at 35% 35%,#eee8d8,#d4cbb8);border-radius:50%;box-shadow:0 0 20px 10px rgba(215,205,175,0.25),0 0 55px 28px rgba(195,185,155,0.1);"></div>
-      <div style="position:absolute;top:4%;right:10%;width:7%;padding-top:7%;border-radius:50%;border:1px solid rgba(210,200,170,0.07);box-shadow:inset 0 0 18px rgba(210,200,170,0.04);"></div>
-      <div style="position:absolute;bottom:34%;left:22%;width:60%;height:11%;filter:blur(1px);opacity:0.4;">
-        <div style="position:absolute;bottom:0;left:3%;width:2.2%;height:55%;background:#050812;"></div>
-        <div style="position:absolute;bottom:0;left:8%;width:3.5%;height:35%;background:#040710;"></div>
-        <div style="position:absolute;bottom:0;left:14%;width:2.5%;height:72%;background:#050913;"></div>
-        <div style="position:absolute;bottom:0;left:20%;width:5%;height:42%;background:#04080f;"></div>
-        <div style="position:absolute;bottom:0;left:28%;width:7%;height:58%;background:#050912;border-radius:2px 2px 0 0;"></div>
-        <div style="position:absolute;bottom:0;left:37%;width:2.5%;height:75%;background:#040810;"></div>
-        <div style="position:absolute;bottom:0;left:42%;width:4%;height:40%;background:#050911;"></div>
-        <div style="position:absolute;bottom:0;left:49%;width:3%;height:62%;background:#050912;"></div>
-        <div style="position:absolute;bottom:0;left:55%;width:5%;height:44%;background:#040810;"></div>
-        <div style="position:absolute;bottom:0;left:63%;width:2.5%;height:68%;background:#050911;"></div>
-        <div style="position:absolute;bottom:0;left:69%;width:4%;height:38%;background:#04080f;"></div>
-        <div style="position:absolute;bottom:0;left:76%;width:3%;height:52%;background:#050912;"></div>
-        <div style="position:absolute;bottom:0;left:83%;width:5%;height:45%;background:#04080f;"></div>
-        <div style="position:absolute;top:16%;left:28.5%;width:3px;height:4px;background:#b08010;border-radius:1px;opacity:0.42;"></div>
-        <div style="position:absolute;top:9%;left:37.5%;width:3px;height:4px;background:#c49018;border-radius:1px;opacity:0.38;"></div>
-        <div style="position:absolute;top:24%;left:50%;width:3px;height:4px;background:#b08010;border-radius:1px;opacity:0.36;"></div>
-      </div>
-      <div style="position:absolute;bottom:34%;left:0;width:22%;height:16%;">
-        <div style="position:absolute;bottom:0;left:10%;width:3%;height:74%;background:#050a16;"></div>
-        <div style="position:absolute;bottom:0;left:17%;width:5%;height:52%;background:#040a12;"></div>
-        <div style="position:absolute;bottom:0;left:25%;width:4%;height:90%;background:#050b17;"></div>
-        <div style="position:absolute;bottom:0;left:33%;width:6%;height:58%;background:#040a13;"></div>
-        <div style="position:absolute;top:10%;left:25.5%;width:4px;height:5px;background:#d09018;border-radius:1px;opacity:0.62;box-shadow:0 0 5px 2px rgba(210,144,24,0.3);"></div>
-        <div style="position:absolute;top:28%;left:11%;width:4px;height:5px;background:#c08010;border-radius:1px;opacity:0.5;box-shadow:0 0 5px 2px rgba(192,128,16,0.25);"></div>
-      </div>
-      <div style="position:absolute;bottom:34%;right:0;width:20%;height:14%;">
-        <div style="position:absolute;bottom:0;right:10%;width:3.5%;height:68%;background:#050a15;"></div>
-        <div style="position:absolute;bottom:0;right:17%;width:4%;height:50%;background:#040910;"></div>
-        <div style="position:absolute;bottom:0;right:24%;width:5%;height:84%;background:#050b16;"></div>
-        <div style="position:absolute;bottom:0;right:32%;width:3%;height:44%;background:#040910;"></div>
-        <div style="position:absolute;top:12%;right:24.5%;width:4px;height:5px;background:#d09018;border-radius:1px;opacity:0.56;box-shadow:0 0 5px 2px rgba(210,144,24,0.28);"></div>
-      </div>
-      <div style="position:absolute;bottom:34%;left:3.5%;width:2.5%;height:44%;background:linear-gradient(90deg,#04080e,#06091c,#04080e);border-radius:2px 2px 0 0;"></div>
-      <div style="position:absolute;bottom:76%;left:3%;width:3.5%;height:5.5%;background:#050a16;border-radius:50% 50% 0 0;"></div>
-      <div style="position:absolute;bottom:79%;left:3.6%;width:2.2%;height:2%;background:radial-gradient(circle,#f5e898,#dbb828);border-radius:50%;box-shadow:0 0 18px 9px rgba(240,225,100,0.44),0 0 40px 20px rgba(210,185,50,0.18);animation:cs-pulse 2.3s ease-in-out infinite;"></div>
-      <div class="cs-beam-anim" style="position:absolute;bottom:80%;left:5.8%;width:40%;height:1.4%;background:linear-gradient(to right,rgba(240,225,100,0.12),transparent);transform-origin:left center;border-radius:0 50% 50% 0;"></div>
-      <div style="position:absolute;bottom:19%;left:0;width:100%;height:16%;background:linear-gradient(0deg,#040810 0%,#060a1a 55%,#070c1e 100%);border-top:1px solid #0d1530;"></div>
-      <div style="position:absolute;bottom:34%;left:26%;width:3.5%;height:4%;background:#040810;"></div>
-      <div style="position:absolute;bottom:34%;left:31%;width:3.5%;height:4%;background:#050913;"></div>
-      <div style="position:absolute;bottom:34%;left:36%;width:3.5%;height:4%;background:#040811;"></div>
-      <div style="position:absolute;bottom:34%;left:41%;width:3.5%;height:4%;background:#050912;"></div>
-      <div style="position:absolute;bottom:34%;left:46%;width:3.5%;height:4%;background:#040811;"></div>
-      <div style="position:absolute;bottom:34%;left:51%;width:3.5%;height:4%;background:#050913;"></div>
-      <div style="position:absolute;bottom:34%;left:56%;width:3.5%;height:4%;background:#040810;"></div>
-      <div style="position:absolute;bottom:34%;left:61%;width:3.5%;height:4%;background:#050912;"></div>
-      <div style="position:absolute;bottom:34%;left:66%;width:3.5%;height:4%;background:#040810;"></div>
-      <div style="position:absolute;bottom:34%;left:71%;width:3.5%;height:4%;background:#050913;"></div>
-      <div style="position:absolute;bottom:34%;left:76%;width:3.5%;height:4%;background:#040811;"></div>
-      <div style="position:absolute;bottom:34%;left:81%;width:3.5%;height:4%;background:#050912;"></div>
-      <div style="position:absolute;bottom:34%;left:86%;width:3.5%;height:4%;background:#040810;"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:19%;background:linear-gradient(0deg,#020508 0%,#040a1c 55%,#060f2a 100%);"></div>
-      <div class="cs-shimmer-layer" style="height:19%;"></div>
-      <div style="position:absolute;bottom:1%;right:9%;width:5%;height:16%;background:radial-gradient(ellipse 50% 100% at 50% 100%,rgba(210,200,170,0.1) 0%,transparent 65%);"></div>
-      <svg style="position:absolute;bottom:19%;left:5%;width:9%;height:55%;animation:cs-breathe 5s ease-in-out infinite;" viewBox="0 0 90 210" fill="none">
-        <defs>
-          <linearGradient id="an-sk" x1="0.25" y1="0" x2="0.75" y2="1"><stop offset="0%" stop-color="#c0b8d8"/><stop offset="40%" stop-color="#908598"/><stop offset="100%" stop-color="#484058"/></linearGradient>
-          <linearGradient id="an-arm" x1="0" y1="0" x2="1" y2="0.5"><stop offset="0%" stop-color="#1e2848"/><stop offset="100%" stop-color="#0e1630"/></linearGradient>
-          <linearGradient id="an-hlm" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stop-color="#283554"/><stop offset="55%" stop-color="#18254a"/><stop offset="100%" stop-color="#0e1835"/></linearGradient>
-          <radialGradient id="an-rim" cx="0.15" cy="0.25" r="0.75"><stop offset="0%" stop-color="rgba(195,210,250,0.3)"/><stop offset="100%" stop-color="rgba(195,210,250,0)"/></radialGradient>
-        </defs>
-        <ellipse cx="45" cy="207" rx="26" ry="5" fill="rgba(0,0,0,0.65)"/>
-        <line x1="74" y1="4" x2="74" y2="207" stroke="#1a2438" stroke-width="2.8"/>
-        <polygon points="70,4 78,4 74,0" fill="#283a54"/>
-        <ellipse cx="34" cy="205" rx="13" ry="5.5" fill="#10101e"/>
-        <ellipse cx="58" cy="205" rx="13" ry="5.5" fill="#0e0e1a"/>
-        <rect x="26" y="145" width="17" height="62" rx="6" fill="#16203e"/>
-        <rect x="50" y="145" width="17" height="62" rx="6" fill="#121c38"/>
-        <rect x="27" y="165" width="15" height="9" rx="3" fill="#1e2c4e"/>
-        <rect x="51" y="165" width="15" height="9" rx="3" fill="#1a2848"/>
-        <path d="M18 76 Q14 145 16 205 L34 205 L34 145 L58 145 L58 205 L76 205 Q78 145 74 76 Z" fill="#16223c"/>
-        <path d="M24 76 Q22 112 24 142 L45 142 L68 142 Q70 112 68 76 Q45 70 24 76 Z" fill="#1e2e50"/>
-        <path d="M24 78 Q22 108 24 136" stroke="rgba(190,210,250,0.13)" stroke-width="3" fill="none"/>
-        <line x1="45" y1="76" x2="45" y2="140" stroke="rgba(30,50,80,0.85)" stroke-width="2"/>
-        <rect x="18" y="136" width="56" height="11" rx="2" fill="#141c32"/>
-        <rect x="39" y="135" width="14" height="13" rx="2" fill="#c4a028"/>
-        <path d="M24 78 Q6 105 4 155 Q18 150 24 136 Q20 112 26 84 Z" fill="#0e1832" opacity="0.92"/>
-        <ellipse cx="23" cy="80" rx="11" ry="6.5" fill="#1e2e52"/>
-        <ellipse cx="67" cy="80" rx="11" ry="6.5" fill="#1a2a48"/>
-        <path d="M12 80 Q23 73 34 80" stroke="#c4a028" stroke-width="1.4" fill="none"/>
-        <path d="M56 80 Q67 73 78 80" stroke="#c4a028" stroke-width="1.4" fill="none"/>
-        <path d="M20 82 Q10 116 12 144 L24 142 Q24 114 28 86 Z" fill="url(#an-arm)"/>
-        <path d="M70 82 Q80 116 78 144 L66 142 Q66 114 62 86 Z" fill="#121e38"/>
-        <ellipse cx="76" cy="144" rx="7.5" ry="5.5" fill="url(#an-sk)"/>
-        <ellipse cx="17" cy="144" rx="7.5" ry="5.5" fill="url(#an-sk)"/>
-        <rect x="39" y="58" width="13" height="20" rx="5" fill="url(#an-sk)"/>
-        <ellipse cx="45" cy="40" rx="21" ry="24" fill="url(#an-hlm)"/>
-        <path d="M34 20 Q45 12 56 20 L52 16 Q45 10 38 16 Z" fill="#1a2848"/>
-        <rect x="43" y="10" width="4" height="12" rx="2" fill="#c4a028"/>
-        <rect x="43" y="28" width="4" height="24" rx="2" fill="#18263e"/>
-        <path d="M25 36 Q23 56 25 68" stroke="#18263e" stroke-width="8" stroke-linecap="round" fill="none"/>
-        <path d="M65 36 Q67 56 65 68" stroke="#18263e" stroke-width="8" stroke-linecap="round" fill="none"/>
-        <path d="M24 38 Q45 30 66 38" stroke="#c4a028" stroke-width="1.3" fill="none"/>
-        <ellipse cx="45" cy="48" rx="14" ry="16" fill="url(#an-sk)"/>
-        <path d="M34 40 Q39 37 44 40" stroke="#2c2840" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-        <path d="M46 40 Q51 37 56 40" stroke="#2c2840" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-        <ellipse cx="39" cy="45" rx="4.5" ry="3.5" fill="#d8d0e8"/>
-        <ellipse cx="51" cy="45" rx="4.5" ry="3.5" fill="#d8d0e8"/>
-        <ellipse cx="39.5" cy="45" rx="2.6" ry="2.8" fill="#2a2840"/>
-        <ellipse cx="51.5" cy="45" rx="2.6" ry="2.8" fill="#2a2840"/>
-        <ellipse cx="40" cy="45" rx="1.3" ry="1.4" fill="#070610"/>
-        <ellipse cx="52" cy="45" rx="1.3" ry="1.4" fill="#070610"/>
-        <circle cx="41" cy="43.8" r="0.8" fill="rgba(255,255,255,0.7)"/>
-        <circle cx="53" cy="43.8" r="0.8" fill="rgba(255,255,255,0.7)"/>
-        <path d="M43 52 Q40 58 38 61 Q44 63 52 61 Q50 58 47 52 Z" fill="rgba(30,20,40,0.2)"/>
-        <path d="M38 61 Q44 63 52 61" stroke="rgba(60,40,70,0.5)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-        <path d="M38 66 Q45 64 52 66" stroke="#6c5875" stroke-width="1.9" fill="none" stroke-linecap="round"/>
-        <ellipse cx="45" cy="48" rx="14" ry="16" fill="url(#an-rim)" opacity="0.55"/>
-        <path d="M24 34 Q22 54 26 68" stroke="rgba(195,210,250,0.18)" stroke-width="2.5" fill="none"/>
-      </svg>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 92% 88% at 50% 48%,transparent 42%,rgba(1,2,8,0.72) 100%);pointer-events:none;"></div>`,
+document.getElementById('council-btn').addEventListener('click', showFinalEnding);
 
-    'storm-hits': `
-      <div style="position:absolute;inset:0;background:linear-gradient(185deg,#030108 0%,#0a0412 25%,#16071c 52%,#0c0410 80%,#060208 100%);"></div>
-      <div style="position:absolute;top:0;left:0;width:100%;height:55%;background:radial-gradient(ellipse 150% 80% at 28% 0%,rgba(55,18,75,0.85) 0%,transparent 52%),radial-gradient(ellipse 100% 65% at 78% 8%,rgba(42,12,58,0.72) 0%,transparent 48%);"></div>
-      <div class="cs-rain"></div>
-      <div class="cs-rain" style="opacity:0.55;animation-delay:-0.28s;transform:rotate(4deg) scale(1.1);"></div>
-      <div class="cs-lightning-overlay"></div>
-      <svg style="position:absolute;top:4%;left:62%;width:5%;height:30%;opacity:0.68;" viewBox="0 0 40 125" fill="none"><polygon points="26,0 6,58 20,58 12,125 42,50 26,50" fill="rgba(200,200,255,0.6)"/></svg>
-      <div style="position:absolute;bottom:28%;left:0;width:100%;height:18%;">
-        <div style="position:absolute;bottom:0;left:5%;width:8%;height:62%;background:#06060c;"></div>
-        <div style="position:absolute;bottom:0;left:7%;width:3%;height:88%;background:#050508;transform:rotate(-3deg);transform-origin:bottom left;"></div>
-        <div style="position:absolute;bottom:0;left:18%;width:9%;height:52%;background:#060608;"></div>
-        <div style="position:absolute;bottom:0;left:30%;width:7%;height:75%;background:#05050a;"></div>
-        <div style="position:absolute;bottom:0;left:40%;width:12%;height:48%;background:#060608;border-radius:2px 2px 0 0;"></div>
-        <div style="position:absolute;bottom:0;left:55%;width:8%;height:65%;background:#05050a;"></div>
-        <div style="position:absolute;bottom:0;left:66%;width:5%;height:42%;background:#060608;"></div>
-        <div style="position:absolute;bottom:0;left:75%;width:9%;height:56%;background:#05050a;transform:rotate(2deg);transform-origin:bottom right;"></div>
-        <div style="position:absolute;bottom:0;left:86%;width:6%;height:70%;background:#050508;"></div>
-      </div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:30%;background:linear-gradient(0deg,#050812 0%,#08101e 52%,#0c162a 80%,#10182e 100%);"></div>
-      <div class="cs-wave-band-fast" style="position:absolute;bottom:27%;left:0;width:200%;height:6%;background:repeating-linear-gradient(90deg,transparent 0,transparent 40px,rgba(90,110,160,0.07) 42px,transparent 44px);"></div>
-      <svg style="position:absolute;bottom:27%;left:20%;width:13%;height:54%;animation:cs-breathe 3.2s ease-in-out infinite;" viewBox="0 0 105 200" fill="none">
-        <defs>
-          <linearGradient id="st-sk" x1="0.25" y1="0" x2="0.75" y2="1"><stop offset="0%" stop-color="#a89070"/><stop offset="48%" stop-color="#887058"/><stop offset="100%" stop-color="#503828"/></linearGradient>
-          <linearGradient id="st-dr" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stop-color="#3c3028"/><stop offset="100%" stop-color="#1e1a12"/></linearGradient>
-          <radialGradient id="st-rim" cx="0.85" cy="0.2" r="0.65"><stop offset="0%" stop-color="rgba(200,180,255,0.2)"/><stop offset="100%" stop-color="rgba(200,180,255,0)"/></radialGradient>
-        </defs>
-        <ellipse cx="46" cy="197" rx="30" ry="5" fill="rgba(0,0,0,0.55)"/>
-        <path d="M35 95 Q21 148 17 196 L55 196 L59 178 L67 196 L90 196 Q82 148 73 98 Z" fill="url(#st-dr)"/>
-        <path d="M73 98 Q91 132 95 196 L90 196 Q82 148 73 98 Z" fill="#2e2820" opacity="0.75"/>
-        <path d="M35 65 Q29 98 35 98 L73 98 Q79 98 73 65 Z" fill="#2c2618"/>
-        <path d="M29 65 Q11 78 7 100 L19 106 Q23 88 35 74 Z" fill="#221e12" opacity="0.8"/>
-        <path d="M35 68 Q17 88 9 112 L19 118 Q29 96 39 78 Z" fill="#26201a"/>
-        <ellipse cx="14" cy="118" rx="8.5" ry="5.5" fill="url(#st-sk)" transform="rotate(-25 14 118)"/>
-        <path d="M71 68 Q81 85 79 108 L69 104 Q71 86 63 74 Z" fill="#201a14"/>
-        <ellipse cx="75" cy="112" rx="7.5" ry="5" fill="url(#st-sk)" transform="rotate(18 75 112)"/>
-        <rect x="45" y="49" width="11" height="18" rx="5" fill="url(#st-sk)"/>
-        <ellipse cx="53" cy="35" rx="17" ry="19" fill="url(#st-sk)"/>
-        <path d="M36 20 Q53 8 69 16 Q79 22 81 34 Q75 26 66 22 Q53 14 37 22 Z" fill="#180e05"/>
-        <path d="M37 22 Q23 14 13 20 Q19 27 13 36" stroke="#1a1006" stroke-width="7" stroke-linecap="round" fill="none"/>
-        <path d="M39 20 Q29 12 21 18 Q26 26 19 34" stroke="#160d05" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-        <path d="M68 20 Q85 12 101 10 Q91 20 87 32" stroke="#1a1006" stroke-width="7" stroke-linecap="round" fill="none"/>
-        <path d="M71 24 Q89 16 103 16 Q95 26 91 36" stroke="#160c04" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-        <path d="M65 18 Q81 8 97 6" stroke="#1a1006" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.85"/>
-        <ellipse cx="36" cy="35" rx="4" ry="5.5" fill="#80603a"/>
-        <path d="M43 24 Q50 19 57 22" stroke="#2a1408" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-        <path d="M58 22 Q64 19 69 24" stroke="#2a1408" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-        <ellipse cx="48" cy="31" rx="5.5" ry="5" fill="#d8c8a0"/>
-        <ellipse cx="48.5" cy="31" rx="3.5" ry="4" fill="#3c2010"/>
-        <ellipse cx="49" cy="31" rx="1.7" ry="2" fill="#060402"/>
-        <circle cx="50.2" cy="29.5" r="1.1" fill="rgba(255,255,255,0.8)"/>
-        <path d="M42.5 26.5 Q48 23 53.5 26.5" stroke="#2a1408" stroke-width="1.7" fill="none" stroke-linecap="round"/>
-        <path d="M43 35.5 Q48 38 53 35.5" stroke="rgba(70,30,10,0.4)" stroke-width="1" fill="none" stroke-linecap="round"/>
-        <ellipse cx="61" cy="31" rx="5.5" ry="5" fill="#d8c8a0"/>
-        <ellipse cx="61.5" cy="31" rx="3.5" ry="4" fill="#3c2010"/>
-        <ellipse cx="62" cy="31" rx="1.7" ry="2" fill="#060402"/>
-        <circle cx="63.2" cy="29.5" r="1.1" fill="rgba(255,255,255,0.8)"/>
-        <path d="M55.5 26.5 Q61 23 66.5 26.5" stroke="#2a1408" stroke-width="1.7" fill="none" stroke-linecap="round"/>
-        <path d="M51 37 Q48 44 45 47 Q53 49 61 47 Q58 44 55 37 Z" fill="rgba(50,20,5,0.18)"/>
-        <path d="M45 47 Q53 49 61 47" stroke="rgba(80,35,10,0.52)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-        <path d="M46 53 Q54 49 62 53 Q59 59 54 61 Q49 59 46 53 Z" fill="#882015"/>
-        <path d="M48 55.5 L50 58 M53 54.5 L53 58 M57 55.5 L59 58" stroke="#ccc8b8" stroke-width="1.1" stroke-linecap="round"/>
-        <path d="M46 53 Q54 49 62 53" stroke="rgba(0,0,0,0.25)" stroke-width="1" fill="none"/>
-        <ellipse cx="53" cy="35" rx="17" ry="19" fill="url(#st-rim)" opacity="0.45"/>
-        <ellipse cx="53" cy="35" rx="17" ry="19" fill="rgba(55,35,75,0.2)"/>
-      </svg>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 90% 85% at 50% 45%,transparent 38%,rgba(3,1,6,0.78) 100%);pointer-events:none;"></div>`,
+document.getElementById('ending-replay-btn').addEventListener('click', () => {
+  showScreen('char-screen');
+  renderCharSelect();
+});
 
-    'veyra-ruins': `
-      <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1e1008 0%,#3c1c08 18%,#6e2c0a 34%,#a85e24 50%,#c87e32 62%,#a06026 72%,#3a1c08 85%,#0c0606 100%);"></div>
-      <div style="position:absolute;top:35%;left:0;width:100%;height:20%;background:linear-gradient(180deg,transparent,rgba(180,100,30,0.07),transparent);"></div>
-      <div style="position:absolute;bottom:34%;left:0;right:0;height:5%;background:linear-gradient(0deg,rgba(180,120,40,0.12) 0%,transparent 100%);"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:36%;background:linear-gradient(0deg,#060c14 0%,#0a1424 42%,#0d1a30 72%,#101e3a 100%);"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:36%;background:linear-gradient(0deg,transparent,rgba(130,70,15,0.07) 60%,rgba(160,80,20,0.05) 100%);"></div>
-      <div class="cs-shimmer-layer cs-shimmer-warm" style="height:36%;opacity:0.55;"></div>
-      <div style="position:absolute;bottom:34%;left:5%;width:10%;height:26%;background:#0a0c12;"></div>
-      <div style="position:absolute;bottom:58%;left:6%;width:3.5%;height:10%;background:#090b11;"></div>
-      <div style="position:absolute;bottom:50%;left:8%;width:5%;height:5%;background:#05070f;"></div>
-      <div style="position:absolute;bottom:34%;left:20%;width:7%;height:34%;background:#090c13;"></div>
-      <div style="position:absolute;bottom:50%;left:22%;width:0.8px;height:16%;background:#050810;transform:rotate(2.5deg);"></div>
-      <div style="position:absolute;bottom:34%;left:32%;width:16%;height:9%;background:#0a0c12;border-radius:3px 3px 0 0;clip-path:polygon(0% 0%,38% 0%,38% 100%,62% 100%,62% 0%,100% 0%,100% 55%,62% 100%,38% 100%,0% 55%);"></div>
-      <div style="position:absolute;bottom:34%;left:52%;width:8%;height:20%;background:#09090e;"></div>
-      <div style="position:absolute;bottom:34%;left:64%;width:1.6%;height:15%;background:#080a10;"></div>
-      <div style="position:absolute;bottom:34%;left:69%;width:1.6%;height:10%;background:#080a10;transform:rotate(5deg);"></div>
-      <div style="position:absolute;bottom:34%;left:74%;width:1.6%;height:17%;background:#080a10;"></div>
-      <div style="position:absolute;bottom:34%;left:82%;width:9%;height:14%;background:#0a0c14;opacity:0.7;"></div>
-      <div style="position:absolute;bottom:34%;left:93%;width:6%;height:18%;background:#090b12;opacity:0.58;"></div>
-      <svg style="position:absolute;bottom:34%;left:31%;width:12%;height:48%;animation:cs-breathe 6s ease-in-out infinite;" viewBox="0 0 105 185" fill="none">
-        <defs>
-          <linearGradient id="vr-sk" x1="0.8" y1="0" x2="0.2" y2="1"><stop offset="0%" stop-color="#c87840"/><stop offset="45%" stop-color="#a05828"/><stop offset="100%" stop-color="#5a2e12"/></linearGradient>
-          <linearGradient id="vr-ct" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#1e2640"/><stop offset="100%" stop-color="#0c1228"/></linearGradient>
-          <radialGradient id="vr-dawn" cx="0.9" cy="0.4" r="0.7"><stop offset="0%" stop-color="rgba(220,140,60,0.35)"/><stop offset="100%" stop-color="rgba(220,140,60,0)"/></radialGradient>
-        </defs>
-        <ellipse cx="52" cy="183" rx="28" ry="5" fill="rgba(0,0,0,0.5)"/>
-        <ellipse cx="32" cy="182" rx="13" ry="5" fill="#160e08"/>
-        <ellipse cx="56" cy="182" rx="13" ry="5" fill="#120c06"/>
-        <rect x="25" y="130" width="16" height="52" rx="6" fill="#16202c"/>
-        <rect x="48" y="130" width="16" height="52" rx="6" fill="#121a24"/>
-        <path d="M16 70 Q12 132 14 182 L32 182 L32 130 L56 130 L56 182 L74 182 Q76 132 72 70 Z" fill="url(#vr-ct)"/>
-        <path d="M22 70 Q20 106 22 128 L52 128 L72 128 Q74 106 72 70 Q52 64 22 70 Z" fill="#202e48"/>
-        <path d="M72 72 Q78 104 76 128" stroke="rgba(220,140,60,0.18)" stroke-width="3" fill="none"/>
-        <rect x="14" y="122" width="60" height="10" rx="2" fill="#12182a"/>
-        <path d="M22 72 Q4 100 2 148 Q16 144 22 128 Q18 106 24 78 Z" fill="#0e1828" opacity="0.9"/>
-        <ellipse cx="20" cy="74" rx="12" ry="6.5" fill="#1a2840"/>
-        <ellipse cx="68" cy="74" rx="12" ry="6.5" fill="#182440"/>
-        <path d="M18 76 Q8 112 10 132 L22 130 Q22 110 26 80 Z" fill="#121e36"/>
-        <path d="M70 76 Q80 112 78 132 L66 130 Q66 110 62 80 Z" fill="#0e1830"/>
-        <ellipse cx="14" cy="134" rx="8" ry="5.5" fill="url(#vr-sk)"/>
-        <ellipse cx="78" cy="134" rx="8" ry="5.5" fill="url(#vr-sk)"/>
-        <rect x="43" y="53" width="13" height="19" rx="5" fill="url(#vr-sk)"/>
-        <ellipse cx="52" cy="35" rx="17" ry="20" fill="url(#vr-sk)"/>
-        <path d="M35 18 Q52 10 68 18 Q65 22 52 20 Q39 22 35 18 Z" fill="#2a1a0a"/>
-        <path d="M35 20 Q28 26 28 35 Q28 24 34 20 Z" fill="#2a1a0a"/>
-        <path d="M68 20 Q74 26 74 35 Q74 24 68 20 Z" fill="#221608"/>
-        <path d="M35 22 Q30 30 30 40" stroke="#2a1a0a" stroke-width="6" stroke-linecap="round" fill="none"/>
-        <path d="M68 22 Q72 30 72 40" stroke="#221608" stroke-width="5" stroke-linecap="round" fill="none"/>
-        <ellipse cx="35" cy="36" rx="4" ry="5.5" fill="#8a5828"/>
-        <path d="M40 27 Q46 24 52 27" stroke="#2c1808" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-        <path d="M53 27 Q58 24 63 27" stroke="#2c1808" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-        <ellipse cx="44" cy="34" rx="4.5" ry="3.5" fill="#c8a880"/>
-        <ellipse cx="57" cy="34" rx="4.5" ry="3.5" fill="#c8a880"/>
-        <ellipse cx="44.5" cy="34" rx="2.6" ry="2.8" fill="#3a2010"/>
-        <ellipse cx="57.5" cy="34" rx="2.6" ry="2.8" fill="#3a2010"/>
-        <ellipse cx="45" cy="34" rx="1.3" ry="1.4" fill="#0a0605"/>
-        <ellipse cx="58" cy="34" rx="1.3" ry="1.4" fill="#0a0605"/>
-        <circle cx="46" cy="32.8" r="0.9" fill="rgba(255,255,255,0.72)"/>
-        <circle cx="59" cy="32.8" r="0.9" fill="rgba(255,255,255,0.72)"/>
-        <path d="M50 41 Q47 47 44 50 Q52 52 60 50 Q57 47 54 41 Z" fill="rgba(80,30,8,0.2)"/>
-        <path d="M44 50 Q52 52 60 50" stroke="rgba(100,45,12,0.5)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-        <path d="M44 57 Q52 55 60 57" stroke="#8a4820" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <ellipse cx="52" cy="35" rx="17" ry="20" fill="url(#vr-dawn)" opacity="0.6"/>
-      </svg>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 94% 90% at 50% 50%,transparent 40%,rgba(4,2,2,0.65) 100%);pointer-events:none;"></div>`,
-
-    'marenic-fleet': `
-      <div style="position:absolute;inset:0;background:linear-gradient(185deg,#070c14 0%,#0d162a 28%,#12203e 58%,#101828 78%,#080e1c 100%);"></div>
-      <div id="cs-sf" style="position:absolute;top:0;left:0;width:1px;height:1px;"></div>
-      <div style="position:absolute;top:5%;left:10%;width:4%;padding-top:4%;background:radial-gradient(circle at 38% 38%,#d8d0c0,#b8b0a8);border-radius:50%;box-shadow:0 0 16px 8px rgba(210,200,170,0.2),0 0 45px 22px rgba(190,180,150,0.09);"></div>
-      <div style="position:absolute;top:42%;left:0;width:100%;height:8%;background:linear-gradient(0deg,transparent,rgba(28,42,80,0.16),transparent);"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:52%;background:linear-gradient(0deg,#04080e 0%,#08102a 42%,#0c1838 80%,#0e1c42 100%);"></div>
-      <div class="cs-shimmer-layer" style="height:52%;opacity:0.32;"></div>
-      <div class="cs-wave-band" style="position:absolute;bottom:49%;left:0;width:200%;height:6%;background:repeating-linear-gradient(90deg,transparent 0,transparent 42px,rgba(70,100,160,0.05) 44px,transparent 46px);"></div>
-      <svg style="position:absolute;bottom:53%;left:4%;width:8%;opacity:0.4;" viewBox="0 0 120 68" fill="none"><path d="M5 44 Q60 53 115 44 L108 65 Q60 72 12 65 Z" fill="#070c18"/><line x1="36" y1="44" x2="36" y2="7" stroke="#070c18" stroke-width="2.5"/><line x1="70" y1="44" x2="70" y2="2" stroke="#070c18" stroke-width="2.5"/><polygon points="36,9 56,20 36,42" fill="#0c1430"/><polygon points="70,4 96,17 70,41" fill="#0c1430"/></svg>
-      <svg style="position:absolute;bottom:53%;left:18%;width:10%;opacity:0.52;" viewBox="0 0 120 68" fill="none"><path d="M5 44 Q60 53 115 44 L108 65 Q60 72 12 65 Z" fill="#07090f"/><line x1="36" y1="44" x2="36" y2="7" stroke="#07090f" stroke-width="2.5"/><line x1="70" y1="44" x2="70" y2="2" stroke="#07090f" stroke-width="2.5"/><polygon points="36,9 56,20 36,42" fill="#0b1225"/><polygon points="70,4 96,17 70,41" fill="#0b1225"/></svg>
-      <svg style="position:absolute;bottom:52%;left:32%;width:13%;opacity:0.68;" viewBox="0 0 140 78" fill="none"><path d="M5 50 Q70 60 135 50 L126 74 Q70 82 14 74 Z" fill="#060910"/><line x1="40" y1="50" x2="40" y2="9" stroke="#060910" stroke-width="3"/><line x1="80" y1="50" x2="80" y2="3" stroke="#060910" stroke-width="3"/><polygon points="40,11 62,24 40,48" fill="#0a1322"/><polygon points="80,5 110,20 80,47" fill="#0a1322"/></svg>
-      <svg style="position:absolute;bottom:51%;left:50%;width:16%;opacity:0.82;" viewBox="0 0 170 88" fill="none"><path d="M6 56 Q85 68 164 56 L154 82 Q85 92 16 82 Z" fill="#050810"/><line x1="50" y1="56" x2="50" y2="10" stroke="#050810" stroke-width="3.5"/><line x1="98" y1="56" x2="98" y2="3" stroke="#050810" stroke-width="3.5"/><line x1="140" y1="54" x2="140" y2="17" stroke="#050810" stroke-width="3"/><polygon points="50,12 80,27 50,54" fill="#091020"/><polygon points="98,5 134,24 98,53" fill="#091020"/><polygon points="50,12 78,18 50,27" fill="#440a0a" opacity="0.95"/></svg>
-      <svg style="position:absolute;bottom:44%;left:68%;width:24%;" viewBox="0 0 240 110" fill="none"><path d="M8 74 Q120 90 232 74 L220 104 Q120 114 20 104 Z" fill="#040810"/><line x1="72" y1="74" x2="72" y2="16" stroke="#040810" stroke-width="4"/><line x1="138" y1="74" x2="138" y2="5" stroke="#040810" stroke-width="4"/><line x1="195" y1="72" x2="195" y2="26" stroke="#040810" stroke-width="3.5"/><polygon points="72,18 112,36 72,70" fill="#09101e"/><polygon points="138,7 186,30 138,71" fill="#09101e"/><polygon points="72,18 110,24 72,34" fill="#560c0c" opacity="0.92"/></svg>
-      <div style="position:absolute;bottom:0;left:0;width:22%;height:58%;background:#030408;clip-path:polygon(0% 100%,0% 35%,6% 25%,12% 20%,18% 30%,22% 100%);"></div>
-      <svg style="position:absolute;bottom:44%;left:12%;width:9%;height:38%;animation:cs-breathe 5.5s ease-in-out infinite;" viewBox="0 0 80 155" fill="none">
-        <defs>
-          <linearGradient id="mf-sk" x1="0.75" y1="0" x2="0.25" y2="1"><stop offset="0%" stop-color="#9898c0"/><stop offset="45%" stop-color="#787098"/><stop offset="100%" stop-color="#363054"/></linearGradient>
-          <linearGradient id="mf-cl" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0%" stop-color="#18243c"/><stop offset="100%" stop-color="#0a1028"/></linearGradient>
-          <radialGradient id="mf-moon" cx="0.2" cy="0.3" r="0.65"><stop offset="0%" stop-color="rgba(190,210,255,0.28)"/><stop offset="100%" stop-color="rgba(190,210,255,0)"/></radialGradient>
-        </defs>
-        <ellipse cx="40" cy="152" rx="22" ry="4.5" fill="rgba(0,0,0,0.6)"/>
-        <ellipse cx="28" cy="150" rx="11" ry="4.5" fill="#0e0e18"/>
-        <ellipse cx="52" cy="150" rx="11" ry="4.5" fill="#0c0c14"/>
-        <rect x="22" y="105" width="13" height="46" rx="5" fill="#12203a"/>
-        <rect x="44" y="105" width="13" height="46" rx="5" fill="#0e1c34"/>
-        <path d="M14 57 Q11 106 12 150 L28 150 L28 105 L52 105 L52 150 L68 150 Q69 106 66 57 Z" fill="url(#mf-cl)"/>
-        <path d="M20 57 Q18 90 20 104 L40 104 L62 104 Q64 90 62 57 Q40 52 20 57 Z" fill="#1a2848"/>
-        <path d="M62 59 Q67 88 66 102" stroke="rgba(190,210,255,0.15)" stroke-width="3" fill="none"/>
-        <rect x="12" y="98" width="56" height="9" rx="2" fill="#101828"/>
-        <path d="M20 59 Q2 80 0 115 Q12 112 20 100 Q16 82 22 64 Z" fill="#0c1830" opacity="0.92"/>
-        <ellipse cx="18" cy="62" rx="10" ry="5.5" fill="#162240"/>
-        <ellipse cx="62" cy="62" rx="10" ry="5.5" fill="#122040"/>
-        <path d="M14 64 Q4 92 6 106 L18 104 Q18 82 22 68 Z" fill="#10203a"/>
-        <path d="M64 64 Q74 92 72 106 L60 104 Q60 82 56 68 Z" fill="#0e1c36"/>
-        <ellipse cx="10" cy="108" rx="7" ry="5" fill="url(#mf-sk)"/>
-        <ellipse cx="70" cy="108" rx="7" ry="5" fill="url(#mf-sk)"/>
-        <rect x="35" y="42" width="11" height="17" rx="4" fill="url(#mf-sk)"/>
-        <ellipse cx="40" cy="28" rx="16" ry="18" fill="url(#mf-sk)"/>
-        <path d="M24 14 Q40 6 56 14 Q52 18 40 16 Q28 18 24 14 Z" fill="#16100a"/>
-        <path d="M24 15 Q20 23 20 30" stroke="#16100a" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-        <path d="M56 15 Q60 23 60 30" stroke="#14100a" stroke-width="5" stroke-linecap="round" fill="none"/>
-        <ellipse cx="25" cy="29" rx="3.5" ry="5" fill="#706088"/>
-        <path d="M30 20 Q36 16 42 19" stroke="#201a28" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-        <path d="M43 19 Q48 16 53 20" stroke="#201a28" stroke-width="2.1" stroke-linecap="round" fill="none"/>
-        <ellipse cx="33" cy="27" rx="4.5" ry="3.5" fill="#c8c0d8"/>
-        <ellipse cx="47" cy="27" rx="4.5" ry="3.5" fill="#c8c0d8"/>
-        <ellipse cx="33.5" cy="27" rx="2.5" ry="2.7" fill="#24203c"/>
-        <ellipse cx="47.5" cy="27" rx="2.5" ry="2.7" fill="#24203c"/>
-        <ellipse cx="34" cy="27" rx="1.2" ry="1.3" fill="#060610"/>
-        <ellipse cx="48" cy="27" rx="1.2" ry="1.3" fill="#060610"/>
-        <circle cx="35" cy="26" r="0.8" fill="rgba(255,255,255,0.68)"/>
-        <circle cx="49" cy="26" r="0.8" fill="rgba(255,255,255,0.68)"/>
-        <path d="M38 33 Q35 39 32 42 Q40 44 48 42 Q45 39 42 33 Z" fill="rgba(30,20,45,0.2)"/>
-        <path d="M32 42 Q40 44 48 42" stroke="rgba(55,35,70,0.5)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-        <path d="M33 47 Q40 45 47 47" stroke="#5a5068" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-        <ellipse cx="40" cy="28" rx="16" ry="18" fill="url(#mf-moon)" opacity="0.55"/>
-      </svg>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 95% 90% at 52% 50%,transparent 42%,rgba(2,3,8,0.75) 100%);pointer-events:none;"></div>`,
-
-    'council-chamber': `
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 46%,#141008 0%,#07070a 50%,#030305 100%);"></div>
-      <div style="position:absolute;top:10%;left:4%;width:24%;height:44%;background:radial-gradient(ellipse at 0% 50%,rgba(215,140,28,0.16) 0%,transparent 65%);"></div>
-      <div style="position:absolute;top:10%;right:4%;width:24%;height:44%;background:radial-gradient(ellipse at 100% 50%,rgba(215,140,28,0.13) 0%,transparent 65%);"></div>
-      <div style="position:absolute;top:0;left:24%;width:52%;height:35%;background:radial-gradient(ellipse at 50% 0%,rgba(170,120,24,0.1) 0%,transparent 55%);"></div>
-      <div style="position:absolute;top:14%;left:7%;width:1.6%;height:10%;background:#1c1005;border-radius:1px;"></div>
-      <div style="position:absolute;top:12%;left:6.5%;width:2.4%;height:3.8%;background:#180d04;border-radius:2px;"></div>
-      <div style="position:absolute;top:10.5%;left:6.8%;width:2%;height:2.8%;background:#f09020;border-radius:50%;box-shadow:0 0 18px 10px rgba(230,150,20,0.42),0 0 36px 18px rgba(200,120,10,0.18);animation:cs-pulse 1.9s ease-in-out infinite;"></div>
-      <div style="position:absolute;top:14%;right:7%;width:1.6%;height:10%;background:#1c1005;border-radius:1px;"></div>
-      <div style="position:absolute;top:12%;right:6.5%;width:2.4%;height:3.8%;background:#180d04;border-radius:2px;"></div>
-      <div style="position:absolute;top:10.5%;right:6.8%;width:2%;height:2.8%;background:#f09020;border-radius:50%;box-shadow:0 0 18px 10px rgba(230,150,20,0.42),0 0 36px 18px rgba(200,120,10,0.18);animation:cs-pulse 1.9s ease-in-out 0.45s infinite;"></div>
-      <div style="position:absolute;top:14%;left:20%;width:1.6%;height:10%;background:#1c1005;border-radius:1px;"></div>
-      <div style="position:absolute;top:12%;left:19.5%;width:2.4%;height:3.8%;background:#180d04;border-radius:2px;"></div>
-      <div style="position:absolute;top:10.5%;left:19.8%;width:2%;height:2.8%;background:#d07818;border-radius:50%;box-shadow:0 0 16px 9px rgba(215,140,18,0.38),0 0 32px 16px rgba(185,110,10,0.15);animation:cs-pulse 2.3s ease-in-out 0.9s infinite;"></div>
-      <div style="position:absolute;top:14%;right:20%;width:1.6%;height:10%;background:#1c1005;border-radius:1px;"></div>
-      <div style="position:absolute;top:12%;right:19.5%;width:2.4%;height:3.8%;background:#180d04;border-radius:2px;"></div>
-      <div style="position:absolute;top:10.5%;right:19.8%;width:2%;height:2.8%;background:#d07818;border-radius:50%;box-shadow:0 0 16px 9px rgba(215,140,18,0.38),0 0 32px 16px rgba(185,110,10,0.15);animation:cs-pulse 2.3s ease-in-out 1.3s infinite;"></div>
-      <div style="position:absolute;top:4%;left:36%;width:28%;height:28%;background:radial-gradient(ellipse at 50% 100%,rgba(90,65,14,0.08) 0%,transparent 62%);border:1px solid rgba(90,65,14,0.09);border-radius:50%;"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:30%;overflow:hidden;">
-        <div style="position:absolute;bottom:0;left:-10%;width:120%;height:150%;background:repeating-linear-gradient(90deg,rgba(18,14,6,0.7) 0,rgba(18,14,6,0.7) 1px,transparent 1px,transparent 90px),repeating-linear-gradient(0deg,rgba(18,14,6,0.7) 0,rgba(18,14,6,0.7) 1px,transparent 1px,transparent 90px),#0a0806;transform:perspective(480px) rotateX(64deg);transform-origin:50% 100%;"></div>
-      </div>
-      <div style="position:absolute;bottom:8%;left:8%;width:84%;height:46%;overflow:hidden;border-radius:30px 30px 0 0;">
-        <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1a1508 0%,#120e04 38%,#0c0a02 100%);transform:perspective(460px) rotateX(58deg);transform-origin:50% 100%;box-shadow:0 -8px 30px rgba(0,0,0,0.85);border-radius:30px 30px 0 0;"></div>
-        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,0),rgba(200,160,30,0.04) 60%,rgba(200,160,30,0.07) 100%);pointer-events:none;"></div>
-      </div>
-      <svg style="position:absolute;bottom:22%;left:8%;width:6%;height:20%;" viewBox="0 0 52 95" fill="none">
-        <defs><linearGradient id="cc-sk1" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stop-color="#c88040"/><stop offset="45%" stop-color="#a06028"/><stop offset="100%" stop-color="#5a3010"/></linearGradient></defs>
-        <ellipse cx="26" cy="93" rx="16" ry="4" fill="rgba(0,0,0,0.55)"/>
-        <rect x="16" y="58" width="10" height="34" rx="4" fill="#12182a"/>
-        <rect x="28" y="58" width="10" height="34" rx="4" fill="#0e1424"/>
-        <path d="M10 28 Q8 60 10 92 L20 92 L20 58 L34 58 L34 92 L44 92 Q46 60 44 28 Z" fill="#161e34"/>
-        <path d="M14 28 Q12 44 14 56 L26 56 L40 56 Q42 44 40 28 Q26 24 14 28 Z" fill="#1e2a48"/>
-        <path d="M40 30 Q44 44 43 54" stroke="rgba(220,150,30,0.22)" stroke-width="2.5" fill="none"/>
-        <ellipse cx="12" cy="58" rx="6" ry="4.5" fill="url(#cc-sk1)"/>
-        <ellipse cx="40" cy="58" rx="6" ry="4.5" fill="url(#cc-sk1)"/>
-        <rect x="22" y="19" width="8" height="11" rx="3" fill="url(#cc-sk1)"/>
-        <ellipse cx="26" cy="12" rx="11" ry="12" fill="url(#cc-sk1)"/>
-        <path d="M15 3 Q26 -2 37 3 Q34 7 26 5 Q18 7 15 3 Z" fill="#1c1008"/>
-        <path d="M15 4 Q12 10 12 15" stroke="#1c1008" stroke-width="4.5" stroke-linecap="round" fill="none"/>
-        <path d="M37 4 Q40 10 40 15" stroke="#181008" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <path d="M18 7 Q22 5 26 7" stroke="#2a1808" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-        <path d="M26 7 Q30 5 34 7" stroke="#2a1808" stroke-width="1.7" stroke-linecap="round" fill="none"/>
-        <ellipse cx="20" cy="11" rx="3.8" ry="3" fill="#d8c890"/>
-        <ellipse cx="32" cy="11" rx="3.8" ry="3" fill="#d8c890"/>
-        <ellipse cx="20.5" cy="11" rx="2.2" ry="2.4" fill="#3c2810"/>
-        <ellipse cx="32.5" cy="11" rx="2.2" ry="2.4" fill="#3c2810"/>
-        <ellipse cx="21" cy="11" rx="1.1" ry="1.2" fill="#080504"/>
-        <ellipse cx="33" cy="11" rx="1.1" ry="1.2" fill="#080504"/>
-        <circle cx="22" cy="10.2" r="0.7" fill="rgba(255,255,255,0.7)"/>
-        <circle cx="34" cy="10.2" r="0.7" fill="rgba(255,255,255,0.7)"/>
-        <path d="M37 14 Q34 18 30 21 Q26 23 22 21 Q18 18 15 14" fill="rgba(50,20,5,0.22)"/>
-        <path d="M19 21 Q26 23 33 21" stroke="rgba(100,45,12,0.48)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-        <path d="M20 25 Q26 23 32 25" stroke="#8a4820" stroke-width="1.7" fill="none" stroke-linecap="round"/>
-      </svg>
-      <svg style="position:absolute;bottom:22%;right:6%;width:5.5%;height:18%;" viewBox="0 0 48 88" fill="none">
-        <defs><linearGradient id="cc-sk2" x1="0.8" y1="0" x2="0.2" y2="1"><stop offset="0%" stop-color="#c07838"/><stop offset="45%" stop-color="#985820"/><stop offset="100%" stop-color="#542c0e"/></linearGradient></defs>
-        <ellipse cx="24" cy="86" rx="14" ry="3.5" fill="rgba(0,0,0,0.5)"/>
-        <rect x="14" y="54" width="9" height="31" rx="3.5" fill="#101828"/>
-        <rect x="25" y="54" width="9" height="31" rx="3.5" fill="#0c1422"/>
-        <path d="M8 26 Q6 56 8 84 L18 84 L18 54 L32 54 L32 84 L42 84 Q44 56 42 26 Z" fill="#141e34"/>
-        <path d="M12 26 Q10 40 12 52 L24 52 L38 52 Q40 40 38 26 Q24 22 12 26 Z" fill="#1c2844"/>
-        <rect x="8" y="46" width="34" height="8" rx="2" fill="#10182e"/>
-        <ellipse cx="8" cy="54" rx="5.5" ry="4" fill="url(#cc-sk2)"/>
-        <ellipse cx="38" cy="54" rx="5.5" ry="4" fill="url(#cc-sk2)"/>
-        <rect x="20" y="18" width="7" height="10" rx="3" fill="url(#cc-sk2)"/>
-        <ellipse cx="24" cy="11" rx="10" ry="11" fill="url(#cc-sk2)"/>
-        <path d="M14 3 Q24 -2 34 3 Q31 7 24 5 Q17 7 14 3 Z" fill="#181008"/>
-        <path d="M14 4 Q11 9 11 14" stroke="#181008" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <path d="M34 4 Q37 9 37 14" stroke="#141008" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-        <path d="M16 7 Q20 5 24 6" stroke="#281408" stroke-width="1.7" stroke-linecap="round" fill="none"/>
-        <path d="M24 6 Q28 5 32 7" stroke="#281408" stroke-width="1.6" stroke-linecap="round" fill="none"/>
-        <ellipse cx="18" cy="10" rx="3.5" ry="2.8" fill="#d4c888"/>
-        <ellipse cx="30" cy="10" rx="3.5" ry="2.8" fill="#d4c888"/>
-        <ellipse cx="18.5" cy="10" rx="2" ry="2.2" fill="#38240e"/>
-        <ellipse cx="30.5" cy="10" rx="2" ry="2.2" fill="#38240e"/>
-        <ellipse cx="19" cy="10" rx="1" ry="1.1" fill="#060403"/>
-        <ellipse cx="31" cy="10" rx="1" ry="1.1" fill="#060403"/>
-        <circle cx="20" cy="9.2" r="0.7" fill="rgba(255,255,255,0.68)"/>
-        <circle cx="32" cy="9.2" r="0.7" fill="rgba(255,255,255,0.68)"/>
-        <path d="M18 19 Q24 21 30 19" stroke="rgba(95,42,10,0.45)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-        <path d="M19 22 Q24 20 29 22" stroke="#8a4620" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-      </svg>
-      <svg style="position:absolute;bottom:22%;left:26%;width:4.8%;height:16%;" viewBox="0 0 44 82" fill="none"><ellipse cx="22" cy="9" rx="9" ry="9.5" fill="#090806"/><path d="M14 18 Q10 56 9 80 L35 80 Q34 56 30 18 Z" fill="#0b0a07"/><path d="M15 26 Q6 34 5 48" stroke="#090806" stroke-width="4.5" stroke-linecap="round"/><path d="M29 26 Q38 34 39 48" stroke="#090806" stroke-width="4.5" stroke-linecap="round"/></svg>
-      <svg style="position:absolute;bottom:22%;left:38%;width:4.5%;height:15%;" viewBox="0 0 42 78" fill="none"><ellipse cx="21" cy="8.5" rx="8.5" ry="9" fill="#080705"/><path d="M13 17 Q9 52 8 76 L34 76 Q33 52 29 17 Z" fill="#0a0906"/><path d="M13 24 Q1 36 1 50" stroke="#080705" stroke-width="4" stroke-linecap="round"/><path d="M29 24 Q41 36 41 50" stroke="#080705" stroke-width="4" stroke-linecap="round"/></svg>
-      <svg style="position:absolute;bottom:22%;left:52%;width:5%;height:17%;" viewBox="0 0 46 84" fill="none"><ellipse cx="23" cy="9" rx="9.5" ry="10" fill="#090806"/><rect x="18" y="0" width="10" height="10" rx="2" fill="#0a0806"/><path d="M14 18 Q10 58 9 82 L37 82 Q36 58 32 18 Z" fill="#0c0a07"/><path d="M15 26 Q4 36 3 52" stroke="#090806" stroke-width="4.5" stroke-linecap="round"/><path d="M31 26 Q42 36 43 52" stroke="#090806" stroke-width="4.5" stroke-linecap="round"/></svg>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 90% 85% at 50% 46%,transparent 38%,rgba(2,1,2,0.8) 100%);pointer-events:none;"></div>`,
-
-    'emissary-dock': `
-      <div style="position:absolute;inset:0;background:linear-gradient(185deg,#060210 0%,#150508 14%,#380e06 28%,#6e1a08 42%,#a02c0e 55%,#6e1a08 65%,#380e06 78%,#080410 100%);"></div>
-      <div style="position:absolute;bottom:36%;left:40%;width:20%;height:12%;background:radial-gradient(circle,rgba(230,130,20,0.88) 0%,rgba(205,90,12,0.52) 38%,transparent 68%);"></div>
-      <div style="position:absolute;bottom:33%;left:0;width:100%;height:12%;background:linear-gradient(0deg,rgba(190,86,16,0.22) 0%,rgba(210,105,20,0.14) 52%,transparent 100%);"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:36%;background:linear-gradient(0deg,#060a10 0%,#0a1018 42%,#10182c 70%,#14203c 100%);"></div>
-      <div style="position:absolute;bottom:0;left:26%;width:42%;height:36%;background:linear-gradient(0deg,transparent,rgba(130,55,12,0.1) 58%,rgba(190,86,16,0.07) 100%);"></div>
-      <div class="cs-shimmer-layer cs-shimmer-warm" style="height:36%;opacity:0.52;"></div>
-      <svg style="position:absolute;bottom:36%;left:2%;width:14%;height:10%;" viewBox="0 0 155 58" fill="none"><path d="M4 36 Q77 46 151 36 L142 54 Q77 61 13 54 Z" fill="#050609"/><line x1="50" y1="36" x2="50" y2="6" stroke="#050609" stroke-width="3"/><line x1="90" y1="36" x2="90" y2="1" stroke="#050609" stroke-width="3"/><polygon points="50,8 74,18 50,34" fill="#0a1020"/><polygon points="90,3 118,16 90,34" fill="#0a1020"/><polygon points="50,8 76,14 50,20" fill="#e8e0c0" opacity="0.78"/></svg>
-      <div style="position:absolute;bottom:34%;left:16%;width:62%;height:4.2%;background:#07090e;"></div>
-      <div style="position:absolute;bottom:34%;left:20%;width:2%;height:9%;background:#05070c;"></div>
-      <div style="position:absolute;bottom:34%;left:28%;width:2%;height:8%;background:#05070c;"></div>
-      <div style="position:absolute;bottom:34%;left:36%;width:2%;height:10%;background:#05070c;transform:rotate(-2deg);"></div>
-      <div style="position:absolute;bottom:34%;left:50%;width:2%;height:9%;background:#05070c;"></div>
-      <div style="position:absolute;bottom:34%;left:58%;width:2%;height:8%;background:#05070c;"></div>
-      <div style="position:absolute;bottom:34%;left:66%;width:2%;height:10%;background:#05070c;"></div>
-      <div style="position:absolute;bottom:28%;left:41%;width:2.8%;height:7.5%;background:#07090e;transform:rotate(-44deg);transform-origin:top right;"></div>
-      <div style="position:absolute;bottom:36%;left:63%;width:9%;height:15%;background:#07080c;opacity:0.8;"></div>
-      <div style="position:absolute;bottom:36%;left:74%;width:6%;height:10%;background:#06070f;opacity:0.62;"></div>
-      <div style="position:absolute;bottom:36%;left:82%;width:8%;height:13%;background:#07080c;opacity:0.5;"></div>
-      <svg style="position:absolute;bottom:34%;left:38%;width:13%;height:50%;animation:cs-breathe 5s ease-in-out infinite;" viewBox="0 0 110 190" fill="none">
-        <defs>
-          <linearGradient id="ed-sk" x1="0.75" y1="0" x2="0.25" y2="1"><stop offset="0%" stop-color="#d87840"/><stop offset="45%" stop-color="#b05822"/><stop offset="100%" stop-color="#682e0e"/></linearGradient>
-          <linearGradient id="ed-cl" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#1c1430"/><stop offset="100%" stop-color="#0c0818"/></linearGradient>
-          <radialGradient id="ed-sun" cx="0.85" cy="0.3" r="0.65"><stop offset="0%" stop-color="rgba(230,130,30,0.38)"/><stop offset="100%" stop-color="rgba(230,130,30,0)"/></radialGradient>
-        </defs>
-        <ellipse cx="55" cy="188" rx="28" ry="5" fill="rgba(0,0,0,0.55)"/>
-        <ellipse cx="36" cy="186" rx="12" ry="5" fill="#14100c"/>
-        <ellipse cx="60" cy="186" rx="12" ry="5" fill="#100c08"/>
-        <rect x="28" y="138" width="16" height="50" rx="6" fill="#181028"/>
-        <rect x="52" y="138" width="16" height="50" rx="6" fill="#140e22"/>
-        <path d="M18 78 Q14 140 16 186 L34 186 L34 138 L58 138 L58 186 L76 186 Q78 140 74 78 Z" fill="url(#ed-cl)"/>
-        <path d="M24 78 Q22 112 24 136 L55 136 L78 136 Q80 112 78 78 Q55 72 24 78 Z" fill="#24184a"/>
-        <path d="M78 80 Q84 112 82 132" stroke="rgba(230,130,30,0.22)" stroke-width="3" fill="none"/>
-        <path d="M24 80 Q22 110 24 128" stroke="rgba(255,255,255,0.05)" stroke-width="2.5" fill="none"/>
-        <rect x="14" y="128" width="64" height="11" rx="2" fill="#16102e"/>
-        <rect x="40" y="127" width="16" height="13" rx="2" fill="#c0940c"/>
-        <path d="M24 80 Q6 105 4 155 Q18 150 24 134 Q20 112 26 86 Z" fill="#140e28" opacity="0.92"/>
-        <ellipse cx="22" cy="82" rx="12" ry="6.5" fill="#201840"/>
-        <ellipse cx="70" cy="82" rx="12" ry="6.5" fill="#1c1438"/>
-        <path d="M10 82 Q22 75 34 82" stroke="#c0940c" stroke-width="1.5" fill="none"/>
-        <path d="M58 82 Q70 75 82 82" stroke="#c0940c" stroke-width="1.5" fill="none"/>
-        <path d="M20 84 Q10 116 12 136 L24 134 Q24 112 28 88 Z" fill="#161030"/>
-        <path d="M72 84 Q82 116 80 136 L68 134 Q68 112 64 88 Z" fill="#12102c"/>
-        <path d="M80 88 Q92 96 96 92" stroke="#1c1838" stroke-width="6" stroke-linecap="round"/>
-        <ellipse cx="96" cy="93" rx="7.5" ry="5" fill="url(#ed-sk)"/>
-        <rect x="90" y="90" width="14" height="22" rx="2.5" fill="#22180c" opacity="0.9"/>
-        <rect x="92" y="96" width="10" height="1.5" rx="1" fill="#4a3818" opacity="0.8"/>
-        <rect x="92" y="100" width="10" height="1.5" rx="1" fill="#4a3818" opacity="0.7"/>
-        <rect x="92" y="104" width="8" height="1.5" rx="1" fill="#4a3818" opacity="0.6"/>
-        <ellipse cx="16" cy="138" rx="7.5" ry="5" fill="url(#ed-sk)"/>
-        <rect x="43" y="59" width="12" height="21" rx="5" fill="url(#ed-sk)"/>
-        <ellipse cx="55" cy="42" rx="18" ry="20" fill="url(#ed-sk)"/>
-        <path d="M37 26 Q55 16 73 26 Q69 30 55 28 Q41 30 37 26 Z" fill="#1a1008"/>
-        <path d="M37 28 Q30 34 30 44" stroke="#1a1008" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-        <path d="M73 28 Q80 34 80 44" stroke="#181008" stroke-width="5" stroke-linecap="round" fill="none"/>
-        <path d="M38 30 Q44 32 50 31" stroke="#241408" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-        <ellipse cx="45" cy="38" rx="5" ry="3.8" fill="#d0c090"/>
-        <ellipse cx="65" cy="38" rx="5" ry="3.8" fill="#d0c090"/>
-        <ellipse cx="45.5" cy="38" rx="2.9" ry="3.2" fill="#3a2010"/>
-        <ellipse cx="65.5" cy="38" rx="2.9" ry="3.2" fill="#3a2010"/>
-        <ellipse cx="46" cy="38" rx="1.4" ry="1.6" fill="#080404"/>
-        <ellipse cx="66" cy="38" rx="1.4" ry="1.6" fill="#080404"/>
-        <circle cx="47" cy="36.5" r="0.9" fill="rgba(255,255,255,0.72)"/>
-        <circle cx="67" cy="36.5" r="0.9" fill="rgba(255,255,255,0.72)"/>
-        <ellipse cx="37" cy="43" rx="4" ry="5.5" fill="#a05828"/>
-        <path d="M41 30 Q47 27 53 29" stroke="#2c1608" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-        <path d="M57 29 Q62 27 67 30" stroke="#2c1608" stroke-width="2.1" stroke-linecap="round" fill="none"/>
-        <path d="M52 46 Q48 52 45 55 Q55 57 65 55 Q62 52 58 46 Z" fill="rgba(80,30,8,0.18)"/>
-        <path d="M45 55 Q55 57 65 55" stroke="rgba(105,45,12,0.5)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-        <path d="M47 61 Q55 64 63 61" stroke="#c87850" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <path d="M48 63 Q55 65.5 62 63" stroke="rgba(0,0,0,0.12)" stroke-width="1" fill="none" stroke-linecap="round"/>
-        <ellipse cx="55" cy="42" rx="18" ry="20" fill="url(#ed-sun)" opacity="0.6"/>
-      </svg>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 92% 88% at 50% 50%,transparent 40%,rgba(2,1,4,0.72) 100%);pointer-events:none;"></div>`,
-
-    'secret-meeting': `
-      <div style="position:absolute;inset:0;background:#010104;"></div>
-      <div style="position:absolute;top:24%;left:40%;width:20%;height:24%;background:radial-gradient(ellipse,rgba(232,175,30,0.95) 0%,rgba(208,140,20,0.6) 16%,rgba(170,100,12,0.24) 40%,rgba(110,62,6,0.08) 62%,transparent 78%);animation:cs-pulse 2.8s ease-in-out infinite;"></div>
-      <div style="position:absolute;bottom:20%;left:26%;width:48%;height:22%;background:radial-gradient(ellipse at 50% 0%,rgba(150,98,16,0.14) 0%,transparent 68%);"></div>
-      <div style="position:absolute;top:0;left:28%;width:44%;height:28%;background:radial-gradient(ellipse at 50% 100%,rgba(125,85,12,0.08) 0%,transparent 58%);"></div>
-      <div style="position:absolute;top:0;left:0;width:10%;height:100%;background:linear-gradient(90deg,#010103,transparent);"></div>
-      <div style="position:absolute;top:0;right:0;width:10%;height:100%;background:linear-gradient(270deg,#010103,transparent);"></div>
-      <div style="position:absolute;top:0;left:0;right:0;height:12%;background:linear-gradient(180deg,#010104,transparent);"></div>
-      <div style="position:absolute;top:24%;left:45.5%;width:9%;height:10%;background:#1e1408;border:1px solid #302008;border-radius:5px;box-shadow:0 3px 10px rgba(0,0,0,0.9);"></div>
-      <div style="position:absolute;top:25.5%;left:48.5%;width:4%;height:5.5%;background:radial-gradient(circle,#fad848 0%,#eca025 52%,transparent 72%);border-radius:50% 50% 32% 32%;animation:cs-flicker 0.9s ease-in-out infinite;"></div>
-      <div style="position:absolute;top:18%;left:50%;width:0.6%;height:8%;background:#100a04;"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:28%;background:linear-gradient(0deg,#020206 0%,#050408 100%);"></div>
-      <div style="position:absolute;bottom:22%;left:28%;width:44%;height:4%;background:#100e08;border-top:1px solid #1c1810;"></div>
-      <div style="position:absolute;bottom:18%;left:28%;width:44%;height:3.5%;background:#0c0a06;"></div>
-      <div style="position:absolute;bottom:23.5%;left:45%;width:3%;height:4%;background:#0e0c08;border-radius:1px;"></div>
-      <svg style="position:absolute;bottom:21%;left:8%;width:16%;height:48%;animation:cs-breathe 4.5s ease-in-out infinite;" viewBox="0 0 130 175" fill="none">
-        <defs>
-          <radialGradient id="sm-sk1" cx="0.6" cy="0.3" r="0.7"><stop offset="0%" stop-color="#d4904a"/><stop offset="45%" stop-color="#a86830"/><stop offset="100%" stop-color="#6a3818"/></radialGradient>
-          <linearGradient id="sm-cl1" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#1a2038"/><stop offset="100%" stop-color="#0a0e1c"/></linearGradient>
-          <radialGradient id="sm-lntrn1" cx="0.55" cy="0.8" r="0.65"><stop offset="0%" stop-color="rgba(230,160,30,0.42)"/><stop offset="100%" stop-color="rgba(230,160,30,0)"/></radialGradient>
-        </defs>
-        <ellipse cx="64" cy="173" rx="30" ry="5" fill="rgba(0,0,0,0.55)"/>
-        <rect x="38" y="130" width="14" height="42" rx="5" fill="#131a2c"/>
-        <rect x="60" y="130" width="14" height="42" rx="5" fill="#0f1626"/>
-        <path d="M22 72 Q18 132 20 172 L38 172 L38 130 L62 130 L62 172 L80 172 Q82 132 80 72 Z" fill="url(#sm-cl1)"/>
-        <path d="M28 72 Q26 106 28 128 L50 128 L74 128 Q76 106 74 72 Q50 66 28 72 Z" fill="#1e2840"/>
-        <path d="M74 74 Q80 106 78 124" stroke="rgba(220,155,30,0.2)" stroke-width="3" fill="none"/>
-        <path d="M74 80 Q94 95 102 100" stroke="#1a2038" stroke-width="8" stroke-linecap="round"/>
-        <ellipse cx="103" cy="104" rx="9" ry="6" fill="url(#sm-sk1)"/>
-        <rect x="14" y="122" width="64" height="10" rx="2" fill="#10162a"/>
-        <path d="M26 74 Q8 98 6 140 Q20 136 26 122 Q22 104 28 80 Z" fill="#0e1628" opacity="0.9"/>
-        <ellipse cx="24" cy="76" rx="12" ry="6" fill="#182038"/>
-        <ellipse cx="72" cy="76" rx="12" ry="6" fill="#14182e"/>
-        <path d="M14 78 Q6 106 8 124 L20 122 Q20 104 24 82 Z" fill="#12203a"/>
-        <ellipse cx="14" cy="126" rx="7" ry="5" fill="url(#sm-sk1)"/>
-        <rect x="44" y="54" width="12" height="20" rx="5" fill="url(#sm-sk1)"/>
-        <ellipse cx="52" cy="36" rx="18" ry="20" fill="url(#sm-sk1)"/>
-        <path d="M34 19 Q52 10 70 19 Q66 24 52 22 Q38 24 34 19 Z" fill="#180e06"/>
-        <path d="M34 21 Q28 28 28 36" stroke="#180e06" stroke-width="6" stroke-linecap="round" fill="none"/>
-        <path d="M70 21 Q76 28 76 36" stroke="#160e06" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-        <ellipse cx="34" cy="37" rx="4" ry="5.5" fill="#9a6030"/>
-        <path d="M40 24 Q47 20 54 23" stroke="#2a1608" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-        <path d="M55 23 Q61 20 66 24" stroke="#2a1608" stroke-width="2.3" stroke-linecap="round" fill="none"/>
-        <ellipse cx="44" cy="31" rx="5" ry="4" fill="#d8b880"/>
-        <ellipse cx="60" cy="31" rx="5" ry="4" fill="#d8b880"/>
-        <ellipse cx="44.5" cy="31" rx="2.8" ry="3.2" fill="#3c2010"/>
-        <ellipse cx="60.5" cy="31" rx="2.8" ry="3.2" fill="#3c2010"/>
-        <ellipse cx="45" cy="31" rx="1.4" ry="1.6" fill="#060404"/>
-        <ellipse cx="61" cy="31" rx="1.4" ry="1.6" fill="#060404"/>
-        <circle cx="46.2" cy="29.5" r="1" fill="rgba(255,255,255,0.72)"/>
-        <circle cx="62.2" cy="29.5" r="1" fill="rgba(255,255,255,0.72)"/>
-        <path d="M50 39 Q46 45 43 48 Q52 50 61 48 Q58 45 54 39 Z" fill="rgba(60,25,5,0.2)"/>
-        <path d="M43 48 Q52 50 61 48" stroke="rgba(100,45,12,0.48)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-        <path d="M44 54 Q52 52 60 54" stroke="#a06030" stroke-width="1.9" fill="none" stroke-linecap="round"/>
-        <ellipse cx="52" cy="36" rx="18" ry="20" fill="url(#sm-lntrn1)" opacity="0.52"/>
-        <ellipse cx="52" cy="36" rx="18" ry="20" fill="rgba(5,3,8,0.25)"/>
-      </svg>
-      <svg style="position:absolute;bottom:21%;right:6%;width:14%;height:46%;animation:cs-breathe 5.2s ease-in-out 0.6s infinite;" viewBox="0 0 115 165" fill="none">
-        <defs>
-          <radialGradient id="sm-sk2" cx="0.45" cy="0.3" r="0.7"><stop offset="0%" stop-color="#c8804a"/><stop offset="45%" stop-color="#9c5c2e"/><stop offset="100%" stop-color="#5e2e12"/></radialGradient>
-          <linearGradient id="sm-cl2" x1="0.5" y1="0" x2="0.1" y2="1"><stop offset="0%" stop-color="#2a1c38"/><stop offset="100%" stop-color="#14101e"/></linearGradient>
-          <radialGradient id="sm-lntrn2" cx="0.45" cy="0.75" r="0.6"><stop offset="0%" stop-color="rgba(230,160,30,0.38)"/><stop offset="100%" stop-color="rgba(230,160,30,0)"/></radialGradient>
-        </defs>
-        <ellipse cx="57" cy="163" rx="28" ry="4.5" fill="rgba(0,0,0,0.5)"/>
-        <rect x="36" y="122" width="13" height="40" rx="5" fill="#14101c"/>
-        <rect x="56" y="122" width="13" height="40" rx="5" fill="#100e18"/>
-        <path d="M20 66 Q16 124 18 162 L36 162 L36 122 L58 122 L58 162 L76 162 Q78 124 76 66 Z" fill="url(#sm-cl2)"/>
-        <path d="M26 66 Q24 98 26 120 L48 120 L72 120 Q74 98 72 66 Q48 60 26 66 Z" fill="#32203a"/>
-        <path d="M26 68 Q22 98 24 116" stroke="rgba(230,160,30,0.18)" stroke-width="3" fill="none"/>
-        <rect x="16" y="114" width="60" height="10" rx="2" fill="#12101a"/>
-        <path d="M72 68 Q90 90 96 104" stroke="#2a1c38" stroke-width="7" stroke-linecap="round"/>
-        <ellipse cx="98" cy="108" rx="8" ry="5.5" fill="url(#sm-sk2)"/>
-        <path d="M20 70 Q2 92 0 130 Q14 126 20 114 Q16 96 22 76 Z" fill="#1a1028" opacity="0.9"/>
-        <ellipse cx="20" cy="72" rx="11" ry="6" fill="#241840"/>
-        <ellipse cx="72" cy="72" rx="11" ry="6" fill="#20163c"/>
-        <path d="M16 74 Q6 100 8 116 L20 114 Q20 96 24 78 Z" fill="#18163a"/>
-        <ellipse cx="12" cy="118" rx="7" ry="5" fill="url(#sm-sk2)"/>
-        <rect x="43" y="50" width="11" height="18" rx="4.5" fill="url(#sm-sk2)"/>
-        <ellipse cx="50" cy="33" rx="17" ry="19" fill="url(#sm-sk2)"/>
-        <path d="M33 18 Q50 10 67 18 Q63 22 50 20 Q37 22 33 18 Z" fill="#1c0e08"/>
-        <path d="M33 20 Q27 27 27 34" stroke="#1c0e08" stroke-width="6" stroke-linecap="round" fill="none"/>
-        <path d="M67 20 Q73 27 73 34" stroke="#180e08" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-        <path d="M33 20 Q24 18 16 22 Q22 25 17 30" stroke="#1c0e08" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <ellipse cx="67" cy="34" rx="4" ry="5.5" fill="#906030"/>
-        <path d="M38 22 Q44 19 50 21" stroke="#2a1408" stroke-width="2.3" stroke-linecap="round" fill="none"/>
-        <path d="M51 21 Q57 19 62 22" stroke="#2a1408" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-        <ellipse cx="42" cy="29" rx="5" ry="3.8" fill="#d4bc88"/>
-        <ellipse cx="58" cy="29" rx="5" ry="3.8" fill="#d4bc88"/>
-        <ellipse cx="42.5" cy="29" rx="2.8" ry="3.1" fill="#38200e"/>
-        <ellipse cx="58.5" cy="29" rx="2.8" ry="3.1" fill="#38200e"/>
-        <ellipse cx="43" cy="29" rx="1.4" ry="1.5" fill="#060404"/>
-        <ellipse cx="59" cy="29" rx="1.4" ry="1.5" fill="#060404"/>
-        <circle cx="44.2" cy="27.8" r="0.9" fill="rgba(255,255,255,0.7)"/>
-        <circle cx="60.2" cy="27.8" r="0.9" fill="rgba(255,255,255,0.7)"/>
-        <path d="M48 37 Q44 43 41 46 Q50 48 59 46 Q56 43 52 37 Z" fill="rgba(50,20,5,0.2)"/>
-        <path d="M41 46 Q50 48 59 46" stroke="rgba(95,40,10,0.48)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-        <path d="M43 51 Q50 49 57 51" stroke="#984830" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-        <ellipse cx="50" cy="33" rx="17" ry="19" fill="url(#sm-lntrn2)" opacity="0.5"/>
-      </svg>
-      <div style="position:absolute;bottom:0;left:7%;width:22%;height:25%;background:linear-gradient(135deg,rgba(0,0,0,0.55) 0%,transparent 60%);transform:skewX(-18deg);"></div>
-      <div style="position:absolute;bottom:0;right:7%;width:22%;height:25%;background:linear-gradient(225deg,rgba(0,0,0,0.55) 0%,transparent 60%);transform:skewX(18deg);"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 85% 80% at 50% 46%,transparent 32%,rgba(1,1,4,0.88) 100%);pointer-events:none;"></div>`,
-
-    'blockade-shore': `
-      <div style="position:absolute;inset:0;background:linear-gradient(185deg,#030610 0%,#060b18 22%,#0a1430 48%,#0e1a3c 62%,#0a1228 78%,#060e1e 100%);"></div>
-      <div id="cs-sf" style="position:absolute;top:0;left:0;width:1px;height:1px;opacity:0.45;"></div>
-      <div style="position:absolute;top:5%;right:15%;width:3.2%;padding-top:3.2%;background:radial-gradient(circle at 38% 38%,#dcdad0,#c0b8b0);border-radius:50%;box-shadow:0 0 15px 7px rgba(208,200,175,0.2),0 0 40px 20px rgba(188,180,155,0.09);"></div>
-      <div style="position:absolute;bottom:38%;right:0;width:48%;height:22%;background:radial-gradient(ellipse 80% 50% at 100% 50%,rgba(26,46,105,0.16) 0%,transparent 68%);"></div>
-      <div style="position:absolute;bottom:36%;left:0;width:100%;height:10%;background:linear-gradient(0deg,rgba(38,58,105,0.12) 0%,transparent 100%);"></div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;height:40%;background:linear-gradient(0deg,#030708 0%,#070c1c 46%,#0a1226 80%,#0c1630 100%);"></div>
-      <div class="cs-shimmer-layer" style="height:40%;opacity:0.25;"></div>
-      <div style="position:absolute;bottom:1%;right:12%;width:4.5%;height:28%;background:radial-gradient(ellipse 50% 100% at 50% 100%,rgba(200,192,168,0.09) 0%,transparent 65%);"></div>
-      <div style="position:absolute;bottom:0;left:0;width:34%;height:65%;background:#020308;clip-path:polygon(0% 100%,0% 30%,8% 18%,16% 12%,22% 18%,28% 10%,34% 100%);"></div>
-      <div style="position:absolute;bottom:38%;left:4%;width:24%;height:18%;background:linear-gradient(135deg,rgba(10,14,24,0.55) 0%,transparent 50%);"></div>
-      <svg style="position:absolute;bottom:39%;left:20%;width:8%;opacity:0.58;" viewBox="0 0 105 58" fill="none"><path d="M3 36 Q52 46 102 36 L95 54 Q52 60 10 54 Z" fill="#06090e"/><line x1="28" y1="36" x2="28" y2="8" stroke="#06090e" stroke-width="2.5"/><line x1="60" y1="36" x2="60" y2="3" stroke="#06090e" stroke-width="2.5"/><polygon points="28,10 47,20 28,34" fill="#0a1020"/><polygon points="60,5 84,17 60,34" fill="#0a1020"/></svg>
-      <svg style="position:absolute;bottom:39%;left:32%;width:9%;opacity:0.68;" viewBox="0 0 115 62" fill="none"><path d="M4 42 Q57 52 110 42 L103 59 Q57 66 11 59 Z" fill="#050810"/><line x1="32" y1="42" x2="32" y2="8" stroke="#050810" stroke-width="3"/><line x1="68" y1="42" x2="68" y2="3" stroke="#050810" stroke-width="3"/><polygon points="32,10 53,22 32,40" fill="#090e1c"/><polygon points="68,5 92,20 68,40" fill="#090e1c"/></svg>
-      <svg style="position:absolute;bottom:38.5%;left:44%;width:14%;opacity:0.82;" viewBox="0 0 155 74" fill="none"><path d="M5 52 Q77 63 150 52 L140 70 Q77 78 15 70 Z" fill="#050810"/><line x1="46" y1="52" x2="46" y2="10" stroke="#050810" stroke-width="3.5"/><line x1="92" y1="52" x2="92" y2="3" stroke="#050810" stroke-width="3.5"/><line x1="130" y1="52" x2="130" y2="18" stroke="#050810" stroke-width="3"/><polygon points="46,12 72,26 46,50" fill="#090e1c"/><polygon points="92,5 124,22 92,50" fill="#090e1c"/><polygon points="46,12 72,18 46,26" fill="#440a0a" opacity="0.92"/></svg>
-      <svg style="position:absolute;bottom:39%;left:61%;width:9%;opacity:0.65;" viewBox="0 0 115 62" fill="none"><path d="M4 42 Q57 52 110 42 L103 59 Q57 66 11 59 Z" fill="#050810"/><line x1="32" y1="42" x2="32" y2="8" stroke="#050810" stroke-width="3"/><line x1="68" y1="42" x2="68" y2="3" stroke="#050810" stroke-width="3"/><polygon points="32,10 53,22 32,40" fill="#090e1c"/><polygon points="68,5 92,20 68,40" fill="#090e1c"/></svg>
-      <svg style="position:absolute;bottom:39.5%;left:73%;width:8%;opacity:0.5;" viewBox="0 0 105 58" fill="none"><path d="M3 36 Q52 46 102 36 L95 54 Q52 60 10 54 Z" fill="#06090e"/><line x1="28" y1="36" x2="28" y2="8" stroke="#06090e" stroke-width="2.5"/><line x1="60" y1="36" x2="60" y2="3" stroke="#06090e" stroke-width="2.5"/><polygon points="28,10 47,20 28,34" fill="#0a1020"/><polygon points="60,5 84,17 60,34" fill="#0a1020"/></svg>
-      <svg style="position:absolute;bottom:40%;left:84%;width:7%;opacity:0.36;" viewBox="0 0 95 54" fill="none"><path d="M3 34 Q47 42 92 34 L86 50 Q47 56 9 50 Z" fill="#07090e"/><line x1="26" y1="34" x2="26" y2="8" stroke="#07090e" stroke-width="2"/><line x1="55" y1="34" x2="55" y2="3" stroke="#07090e" stroke-width="2"/><polygon points="26,10 42,18 26,32" fill="#0b1020"/><polygon points="55,5 74,15 55,32" fill="#0b1020"/></svg>
-      <div style="position:absolute;bottom:37%;left:2%;width:30%;height:1.2%;background:#040710;"></div>
-      <svg style="position:absolute;bottom:38%;left:11%;width:10%;height:40%;animation:cs-breathe 5.8s ease-in-out infinite;" viewBox="0 0 88 155" fill="none">
-        <defs>
-          <linearGradient id="bs-sk" x1="0.7" y1="0" x2="0.3" y2="1"><stop offset="0%" stop-color="#9898b8"/><stop offset="45%" stop-color="#707090"/><stop offset="100%" stop-color="#303050"/></linearGradient>
-          <linearGradient id="bs-cl" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0%" stop-color="#242c1e"/><stop offset="100%" stop-color="#14180c"/></linearGradient>
-          <radialGradient id="bs-moon" cx="0.75" cy="0.25" r="0.65"><stop offset="0%" stop-color="rgba(192,204,240,0.28)"/><stop offset="100%" stop-color="rgba(192,204,240,0)"/></radialGradient>
-        </defs>
-        <ellipse cx="44" cy="153" rx="26" ry="4.5" fill="rgba(0,0,0,0.6)"/>
-        <ellipse cx="28" cy="151" rx="12" ry="5" fill="#10100c"/>
-        <ellipse cx="54" cy="151" rx="12" ry="5" fill="#0c0c08"/>
-        <rect x="22" y="110" width="14" height="42" rx="5" fill="#1e1c10"/>
-        <rect x="46" y="110" width="14" height="42" rx="5" fill="#1a1810"/>
-        <path d="M14 64 Q10 112 12 152 L28 152 L28 110 L52 110 L52 152 L68 152 Q70 112 66 64 Z" fill="url(#bs-cl)"/>
-        <path d="M20 64 Q18 96 20 108 L44 108 L66 108 Q68 96 66 64 Q44 58 20 64 Z" fill="#2c2a1c"/>
-        <path d="M20 66 Q18 94 20 106" stroke="rgba(192,204,240,0.12)" stroke-width="2.5" fill="none"/>
-        <rect x="12" y="102" width="56" height="10" rx="2" fill="#181810"/>
-        <path d="M14 66 Q0 88 -2 120 Q10 116 14 104 Q10 86 16 72 Z" fill="#181606" opacity="0.88"/>
-        <ellipse cx="14" cy="68" rx="10" ry="5.5" fill="#22201a"/>
-        <ellipse cx="62" cy="68" rx="10" ry="5.5" fill="#201e16"/>
-        <path d="M10 70 Q2 96 4 108 L16 106 Q16 88 20 74 Z" fill="#1c1a14"/>
-        <path d="M62 70 Q72 96 70 108 L58 106 Q58 88 54 74 Z" fill="#18160e"/>
-        <ellipse cx="8" cy="110" rx="7" ry="5" fill="url(#bs-sk)"/>
-        <ellipse cx="68" cy="110" rx="7" ry="5" fill="url(#bs-sk)"/>
-        <rect x="38" y="48" width="11" height="18" rx="4.5" fill="url(#bs-sk)"/>
-        <ellipse cx="44" cy="32" rx="16" ry="18" fill="url(#bs-sk)"/>
-        <path d="M28 16 Q44 8 60 16 Q56 20 44 18 Q32 20 28 16 Z" fill="#18120a"/>
-        <path d="M28 18 Q22 25 22 32" stroke="#18120a" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-        <path d="M60 18 Q66 25 66 32" stroke="#140e08" stroke-width="5" stroke-linecap="round" fill="none"/>
-        <path d="M30 18 Q24 15 18 18" stroke="#18120a" stroke-width="4.5" stroke-linecap="round" fill="none"/>
-        <ellipse cx="60" cy="33" rx="3.5" ry="5" fill="#606074"/>
-        <path d="M32 21 Q38 17 44 20" stroke="#201808" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-        <path d="M45 20 Q51 17 56 21" stroke="#201808" stroke-width="2.3" stroke-linecap="round" fill="none"/>
-        <path d="M30 24 Q27 26 26 30 Q24 34 26 36" stroke="#201808" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-        <ellipse cx="37" cy="27" rx="4.5" ry="3.5" fill="#c0b8cc"/>
-        <ellipse cx="51" cy="27" rx="4.5" ry="3.5" fill="#c0b8cc"/>
-        <ellipse cx="37.5" cy="27" rx="2.6" ry="2.8" fill="#22203a"/>
-        <ellipse cx="51.5" cy="27" rx="2.6" ry="2.8" fill="#22203a"/>
-        <ellipse cx="38" cy="27" rx="1.3" ry="1.4" fill="#060610"/>
-        <ellipse cx="52" cy="27" rx="1.3" ry="1.4" fill="#060610"/>
-        <circle cx="39" cy="25.8" r="0.8" fill="rgba(255,255,255,0.68)"/>
-        <circle cx="53" cy="25.8" r="0.8" fill="rgba(255,255,255,0.68)"/>
-        <path d="M26 30 Q30 28 33 32 Q30 36 26 36 Z" fill="rgba(40,35,60,0.5)"/>
-        <path d="M41 34 Q38 40 34 43 Q44 45 54 43 Q50 40 47 34 Z" fill="rgba(30,20,45,0.2)"/>
-        <path d="M34 43 Q44 45 54 43" stroke="rgba(55,40,70,0.48)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-        <path d="M36 48 Q44 46 52 48" stroke="#5a5570" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-        <ellipse cx="44" cy="32" rx="16" ry="18" fill="url(#bs-moon)" opacity="0.52"/>
-      </svg>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 95% 90% at 50% 50%,transparent 42%,rgba(2,3,8,0.78) 100%);pointer-events:none;"></div>`,
-
-  };
-
-  return scenes[id] || '<div style="position:absolute;inset:0;background:#030507;"></div>';
-}
-
-// Cutscene state
-let csState = {
-  active:    false,
-  id:        null,
-  panelIdx:  0,
-  onComplete: null,
-  typeTimer: null,
-  ready:     false,
-};
-
-// ─── CUTSCENE PARALLAX ───────────────────────
-function csParallax(e) {
-  if (!csState.active) return;
-  const art = document.getElementById('cs-art');
-  if (!art || art.classList.contains('cs-fading') || art.classList.contains('cs-entering')) return;
-  const rx = (e.clientX / window.innerWidth  - 0.5);
-  const ry = (e.clientY / window.innerHeight - 0.5);
-  art.style.transform = `translate(${rx * -9}px, ${ry * -4}px)`;
-}
-
-// ─── CUTSCENE ART ENHANCEMENT ────────────────
-function csEnhanceArt(sceneId, artEl) {
-  // Brightness reveal entrance
-  artEl.classList.remove('cs-entering');
-  void artEl.offsetWidth;
-  artEl.classList.add('cs-entering');
-  setTimeout(() => artEl.classList.remove('cs-entering'), 950);
-
-  // Atmospheric fog for naval/night scenes
-  if (['aurelion-night', 'marenic-fleet', 'blockade-shore'].includes(sceneId)) {
-    const f1 = document.createElement('div');
-    f1.className = 'cs-fog-layer';
-    artEl.appendChild(f1);
-    const f2 = document.createElement('div');
-    f2.className = 'cs-fog-layer cs-fog-layer-2';
-    artEl.appendChild(f2);
-  }
-
-  // Rising embers for fire / ruin scenes
-  if (['veyra-ruins', 'emissary-dock'].includes(sceneId)) {
-    for (let i = 0; i < 16; i++) {
-      const em = document.createElement('div');
-      em.className = 'cs-ember';
-      const xDrift = (Math.random() - 0.5) * 52;
-      em.style.cssText = [
-        `left:${6 + Math.random() * 78}%`,
-        `bottom:${26 + Math.random() * 44}%`,
-        `width:${1.5 + Math.random() * 3}px`,
-        `height:${1.5 + Math.random() * 3}px`,
-        `--dur:${1.3 + Math.random() * 1.9}s`,
-        `--delay:${Math.random() * 2.8}s`,
-        `--x:${xDrift}px`,
-      ].join(';');
-      artEl.appendChild(em);
-    }
-  }
-
-  // Ambient warm glow pulse for interior torch scenes
-  if (['council-chamber', 'secret-meeting'].includes(sceneId)) {
-    const amb = document.createElement('div');
-    amb.className = 'cs-ambient-pulse';
-    artEl.appendChild(amb);
-  }
-
-  // Ship rocking for naval scenes
-  if (['marenic-fleet', 'blockade-shore'].includes(sceneId)) {
-    artEl.querySelectorAll('svg').forEach((svg, i) => {
-      svg.style.animation = `ship-drift ${3.2 + i * 0.55}s ease-in-out ${i * 0.3}s infinite`;
-      svg.style.transformOrigin = 'center 90%';
-    });
-  }
-}
-
-function showCutscene(id, onComplete) {
-  const panels = CUTSCENE_DATA[id];
-  if (!panels || !panels.length) { onComplete && onComplete(); return; }
-
-  csState = { active: true, id, panelIdx: 0, onComplete, typeTimer: null, ready: false };
-
-  const el = document.getElementById('cutscene');
-  el.classList.remove('hidden');
-
-  document.getElementById('cs-skip-btn').onclick = (e) => {
-    e.stopPropagation();
-    endCutscene();
-  };
-
-  document.getElementById('cs-art').addEventListener('click', handleCSClick);
-  document.addEventListener('mousemove', csParallax);
-
-  csLoadPanel(0);
-}
-
-function handleCSClick() {
-  if (!csState.active) return;
-  const panels = CUTSCENE_DATA[csState.id];
-  const panel  = panels[csState.panelIdx];
-
-  if (!csState.ready) {
-    // Finish typewriter instantly
-    clearTimeout(csState.typeTimer);
-    document.getElementById('cs-narration').textContent = panel.text;
-    csState.ready = true;
-    showCSHint();
-    return;
-  }
-
-  csState.panelIdx++;
-  if (csState.panelIdx >= panels.length) {
-    endCutscene();
-  } else {
-    csLoadPanel(csState.panelIdx);
-  }
-}
-
-function csLoadPanel(idx) {
-  const panels = CUTSCENE_DATA[csState.id];
-  const panel  = panels[idx];
-
-  csState.ready = false;
-  hideCSHint();
-
-  const art = document.getElementById('cs-art');
-  art.style.transform = '';           // reset parallax position
-  art.style.transition = 'none';
-  art.classList.add('cs-fading');
-
-  csDots(panels.length, idx);
-
-  setTimeout(() => {
-    art.innerHTML = CS_SCENE(panel.scene);
-
-    // Starfield for night scenes
-    const sf = art.querySelector('#cs-sf');
-    if (sf) {
-      const stars = [];
-      for (let i = 0; i < 85; i++) {
-        const x   = Math.random() * window.innerWidth;
-        const y   = Math.random() * (window.innerHeight * 0.46);
-        const op  = Math.random() > 0.6 ? 0.92 : 0.52;
-        const sz  = Math.random() > 0.85 ? 2 : 1;
-        const tw  = (0.8 + Math.random() * 2.4).toFixed(1);
-        stars.push(`${Math.round(x)}px ${Math.round(y)}px 0 ${sz}px rgba(255,255,255,${op})`);
-      }
-      sf.style.cssText += ';position:absolute;width:1px;height:1px;box-shadow:' + stars.join(',') +
-        ';animation:star-twinkle ' + (2.5 + Math.random()) + 's ease-in-out infinite';
-    }
-
-    art.classList.remove('cs-fading');
-    void art.offsetWidth;
-    art.style.transition = '';         // restore transition for parallax
-
-    // Apply atmosphere effects + entrance animation
-    csEnhanceArt(panel.scene, art);
-
-    document.getElementById('cs-location').textContent  = panel.location;
-    document.getElementById('cs-narration').textContent = '';
-
-    csTypeText(panel.text, 26, () => {
-      csState.ready = true;
-      showCSHint();
-    });
-  }, 540);
-}
-
-function csTypeText(text, speed, onDone) {
-  const el = document.getElementById('cs-narration');
-  el.textContent = '';
-  let i = 0;
-  function tick() {
-    if (i >= text.length) { onDone && onDone(); return; }
-    el.textContent += text[i++];
-    csState.typeTimer = setTimeout(tick, speed);
-  }
-  tick();
-}
-
-function csDots(total, active) {
-  const el = document.getElementById('cs-dots');
-  el.innerHTML = '';
-  for (let i = 0; i < total; i++) {
-    const d = document.createElement('div');
-    d.className = 'cs-dot' + (i === active ? ' cs-dot-active' : '');
-    el.appendChild(d);
-  }
-}
-
-function showCSHint() { document.getElementById('cs-hint').classList.add('show'); }
-function hideCSHint() { document.getElementById('cs-hint').classList.remove('show'); }
-
-function endCutscene() {
-  clearTimeout(csState.typeTimer);
-  const art = document.getElementById('cs-art');
-  art.style.transform = '';
-  art.removeEventListener('click', handleCSClick);
-  document.removeEventListener('mousemove', csParallax);
-  document.getElementById('cutscene').classList.add('hidden');
-  csState.active = false;
-  csState.onComplete && csState.onComplete();
-}
-
-// Override nextScene to insert Act III cutscene before scene index 4
-// (This declaration is hoisted and shadows the earlier nextScene definition)
-function nextScene() { // eslint-disable-line no-redeclare
-  gameState.sceneIndex++;
-  if (gameState.sceneIndex === 4) {
-    document.getElementById('game-screen').classList.add('hidden');
-    showCutscene('act3', () => {
-      document.getElementById('game-screen').classList.remove('hidden');
-      renderScene();
-    });
-  } else {
-    renderScene();
-  }
-}
+document.getElementById('ending-restart-btn').addEventListener('click', () => {
+  gameState.completed = {};
+  gameState.councilPlayed = false;
+  gameState.currentChar = null;
+  gameState.currentScene = 0;
+  gameState.stats = { ...INITIAL_STATS };
+  showScreen('title-screen');
+});
