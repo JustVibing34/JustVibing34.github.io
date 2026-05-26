@@ -23,11 +23,27 @@
       <p class="title-eyebrow">ILIATANIA &mdash; AN EGALITARIAN SOCIETY</p>
       <div class="title-gem">&#9670;</div>
       <h1 class="title-main">VOICES OF<br><em>ILIATANIA</em></h1>
-      <p class="title-tagline">Four lives. One society. Every choice shapes your rank.</p>
+      <p class="title-tagline">Two lives. One society. Every choice shapes what follows.</p>
       <div class="title-hr"><span></span><span class="thr-gem">&#9670;</span><span></span></div>
-      <p class="title-lore">Iliatania is built on a single promise: that rank, respect, and opportunity belong to those who earn them &mdash; not those who inherit them. Four citizens are climbing. Choices of fairness, honesty, and service determine how far they rise.</p>
+      <p class="title-lore">Iliatania is built on a single promise: that rank, respect, and opportunity belong to those who earn them &mdash; not those who inherit them. Two citizens are living that promise from opposite ends. Both choices matter.</p>
       <button id="start-btn" class="btn-primary btn-xl">&#9670;&nbsp; BEGIN</button>
-      <p class="title-note">4 characters &bull; 28 scenes &bull; Rank-up system &bull; Multiple endings</p>
+      <p class="title-note">2 characters &bull; 8 scenes each &bull; Memory system &bull; Multiple endings</p>
+    </div>
+  </div>
+
+  <!-- SOCIETY RULES SCREEN -->
+  <div id="rules-screen" class="screen hidden">
+    <div class="rules-wrap">
+      <div class="rules-header">
+        <p class="rules-eyebrow">BEFORE YOU PLAY</p>
+        <div class="rules-gem">&#9670;</div>
+        <h2 class="rules-title">How Iliatania Works</h2>
+        <p class="rules-sub">Read this once. It will make every choice feel more real.</p>
+      </div>
+      <div class="rules-content" id="rules-content"></div>
+      <div class="rules-footer">
+        <button class="btn-primary btn-xl" id="rules-continue-btn">&#9670;&nbsp; Choose Your Voice</button>
+      </div>
     </div>
   </div>
 
@@ -38,12 +54,29 @@
       <div class="char-header">
         <p class="char-eyebrow">CHOOSE YOUR VOICE</p>
         <h2 class="char-title">Who Do You Play As?</h2>
-        <p class="char-sub">Each character is climbing Iliatania's merit-based rank system from a different starting point. Their choices in exams, hospitals, trade routes, and assemblies determine how far they rise.</p>
+        <p class="char-sub">Each character experiences Iliatania from a different starting point. Their choices determine how their story ends.</p>
       </div>
       <div class="char-grid" id="char-grid"></div>
       <div class="council-unlock hidden" id="council-unlock">
-        <p class="council-unlock-note">All four voices recorded &mdash; the final scene is now unlocked.</p>
+        <p class="council-unlock-note">Both voices recorded &mdash; the council scene is now unlocked.</p>
         <button class="btn-primary btn-xl" id="council-btn">&#9670;&nbsp; COUNCIL OF VOICES</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARACTER BACKGROUND SCREEN -->
+  <div id="char-bg-screen" class="screen hidden">
+    <div class="cb-wrap">
+      <div class="cb-header">
+        <p class="cb-eyebrow">CHARACTER PROFILE</p>
+        <div class="cb-icon-gem" id="cb-icon">&#9670;</div>
+        <h2 class="cb-charname" id="cb-charname"></h2>
+        <p class="cb-chartitle" id="cb-chartitle"></p>
+        <p class="cb-classlabel" id="cb-classlabel"></p>
+      </div>
+      <div class="cb-content" id="cb-content"></div>
+      <div class="cb-footer">
+        <button class="btn-primary btn-xl" id="cb-continue">&#9670;&nbsp; Begin This Story</button>
       </div>
     </div>
   </div>
@@ -57,29 +90,30 @@
         <span class="gh-prog" id="gh-prog"></span>
       </div>
       <div class="gh-right" id="gh-right"></div>
+      <button class="btn-journal" id="journal-btn" title="Decision Journal">◆</button>
     </header>
     <div class="game-body">
 
       <!-- Full-screen scene art (background) -->
       <div class="scene-art-panel" id="scene-art"></div>
 
-      <!-- Player character silhouette — visible from behind in the scene -->
+      <!-- Player character silhouette -->
       <div class="player-silhouette" id="player-silhouette"></div>
 
-      <!-- NPC floating speech bubble (top-left of art) -->
+      <!-- NPC floating speech bubble -->
       <div class="npc-bubble" id="npc-bubble">
         <div class="npc-speaker" id="npc-speaker"></div>
         <p class="npc-line" id="npc-line"></p>
       </div>
 
-      <!-- Civic status HUD (top-right of art) -->
+      <!-- Civic status HUD -->
       <div class="stats-hud" id="stats-hud">
         <div class="shud-label">CIVIC STATUS</div>
         <div class="rank-display" id="rank-display"></div>
         <div id="ss-bars"></div>
       </div>
 
-      <!-- Cinematic cutscene overlay (full-screen, z-top) -->
+      <!-- Cinematic cutscene overlay -->
       <div class="cutscene-ov" id="cutscene-ov">
         <div class="cso-body">
           <p class="cso-eyebrow" id="cso-loc"></p>
@@ -89,7 +123,7 @@
         </div>
       </div>
 
-      <!-- Dialogue panel — bottom overlay, scrollable -->
+      <!-- Dialogue panel -->
       <div class="dialogue-panel" id="scene-card">
         <div class="dp-head">
           <span class="sc-location" id="sc-location"></span>
@@ -97,23 +131,18 @@
         </div>
         <h2 class="sc-title" id="sc-title"></h2>
         <div class="sc-body" id="sc-body"></div>
-        <!-- NPC inline quote (inside dialogue panel) -->
         <div class="dp-npc hidden" id="dp-npc">
           <span class="dp-npc-name" id="dp-npc-name"></span>
           <p class="dp-npc-text" id="dp-npc-text"></p>
         </div>
-        <!-- Inner voice — character's private thought before choices -->
         <div class="inner-voice hidden" id="inner-voice"></div>
-        <!-- Player choices -->
         <div class="choices" id="choices"></div>
-        <!-- Consequence (shown after choice) -->
         <div class="consequence hidden" id="consequence">
           <span class="consequence-label">&#9670; WHAT HAPPENS</span>
           <p class="consequence-text" id="consequence-text"></p>
           <div class="consequence-chips" id="consequence-chips"></div>
         </div>
         <button class="btn-continue hidden" id="continue-btn">Continue &#8594;</button>
-        <!-- Kept for JS compatibility -->
         <div id="ss-char-info" style="display:none"></div>
         <div id="ss-grapes" style="display:none"></div>
       </div>
