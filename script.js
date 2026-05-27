@@ -235,39 +235,53 @@ rich: `<svg viewBox="0 0 80 128" xmlns="http://www.w3.org/2000/svg" style="displ
 // ─── SOCIETY RULES ───────────────────────────────────────────
 const SOCIETY_RULES = [
   {
-    icon: '◈',
-    title: 'What Is Iliatania?',
-    body: 'Iliatania is a society built on one promise: opportunity comes from what you do, not who your parents were. No titles are inherited. Everyone starts as a Common Citizen and earns their way up — or struggles to stay where they are.',
+    icon: '🌊',
+    grapesCat: 'CIVILIZATION OVERVIEW',
+    title: 'ILIATANIA',
+    body: 'An island nation built on one promise: rank, respect, and opportunity belong to those who earn them — not those who inherit them. Two citizens live that promise from opposite ends.',
+    credit: true,
   },
   {
-    icon: '◉',
-    title: 'How Status Works',
-    body: 'There are seven civic ranks: Common Citizen → Apprentice → Certified Worker → Civic Contributor → Public Officer → Council Candidate → Imperial Representative. You rank up through civic contribution, merit exams, public service, and reputation. Rank affects what housing, healthcare, and support you can access.',
+    icon: '🗺',
+    grapesCat: 'G — GEOGRAPHY',
+    title: 'Island Nation & Colonial Empire',
+    body: 'Fortified island capital with ocean access, watchtowers, and supply routes. Each colonial territory manages one resource — spices, crops, or manufactured goods — and pays tribute in exchange for military protection and civic rights.',
   },
   {
-    icon: '⊕',
-    title: 'How Resources Are Distributed',
-    body: 'Food credits, housing allocations, and healthcare access are tiered by rank. The government manages these systems. Higher-ranked citizens get more — but the law says everyone gets enough to survive. In practice, "enough" is contested every day.',
+    icon: '⛩',
+    grapesCat: 'R — RELIGION',
+    title: 'One Dominant Faith, Many Protected',
+    body: 'The state religion shapes civic ceremonies and calendars. Anti-discrimination laws shield all minority faiths. Every citizen may practice freely — religious inequality exists, and so does legal protection against it.',
   },
   {
-    icon: '◆',
-    title: 'The Pension System',
-    body: 'Every year of documented work earns pension credits. These fund your retirement. But credits depend on how your work is classified — freelance, tribute, seasonal — and lower classifications earn fewer credits. Many people spend years fighting to have their work properly counted.',
+    icon: '🏥',
+    grapesCat: 'A — ACHIEVEMENT',
+    title: 'Hospitals, Merit & the Quota System',
+    body: 'Advanced civic hospitals keep the population and military strong. The merit system lets any citizen rise through exams and service. Colonies that meet their resource quota receive supplies, protection, and commendation from the capital.',
   },
   {
-    icon: '♦',
-    title: 'Your Rights',
-    body: 'Every citizen has the right to petition the civic assembly, appeal government decisions, and vote on local ordinances. You can challenge resource allocations, contest tax assessments, and file formal grievances. These rights exist on paper. Using them costs time, money, and courage.',
+    icon: '🏛',
+    grapesCat: 'P — POLITICS',
+    title: 'Centralized Government, Colonial Territories',
+    body: 'A central council governs Iliatania and all territories. Governors are appointed by merit. The capital controls law, redistribution, and military — colonies cannot build armies large enough to challenge the center.',
   },
   {
-    icon: '▲',
-    title: 'Your Responsibilities',
-    body: 'Citizens owe civic contribution — work, tax, or service. Wealthy citizens pay the Civic Contribution Assessment (a property and wealth tax). All citizens are expected to follow civic ordinances and participate in community systems. Ignoring these responsibilities has consequences.',
+    icon: '⚓',
+    grapesCat: 'E — ECONOMICS',
+    title: 'Diversified Trade & Shipping Networks',
+    body: 'No single resource. Oranges, sugarcane, olives, weapons, technology. Elaborate ports and shipping lanes connect every colony to the capital. This diversity prevents collapse — unlike empires that depended on one source.',
   },
   {
-    icon: '●',
-    title: 'How Your Choices Work',
-    body: 'Every decision you make changes your stats. Some choices raise one stat while lowering another. Earlier choices create memory flags — later scenes will change based on what you decided before. Your ending depends on what you built or lost over the whole story.',
+    icon: '⚖',
+    grapesCat: 'S — SOCIAL',
+    title: 'Egalitarian — Social Class Can Change',
+    body: 'No inherited titles. Rank is earned through civic contribution, merit exams, and public service. A Common Citizen can rise to Imperial Representative. This is the promise — the simulation tests whether it holds.',
+  },
+  {
+    icon: '▶',
+    grapesCat: 'HOW TO PLAY',
+    title: 'Your Choices Shape the Society',
+    body: 'Play as Lira (market vendor) or Aldric (merchant lord). Every decision changes your stats. Earlier choices affect later scenes. The Society Integrity Meter tracks whether Iliatania\'s promise is being kept or broken across both lives.',
   },
 ];
 
@@ -400,11 +414,11 @@ const CHARACTERS = [
     },
     {
       title: 'The Offer', location: 'Lower District Market — Back Room',
-      art: 'market', label: 'DAY EIGHT',
+      art: 'market', label: 'DAY EIGHT', pivotal: true,
       npcName: 'Merchant Bray',
       npcLine: '"Twenty credits a week. Steady. You work my shop, I handle the guild registration, and the housing form gets your employer stamp sorted in a day. Hours run long sometimes. I need reliability and I need discretion."',
       innerVoice: '"Discretion" is the word. That\'s the word you need to sit with.',
-      body: `<p>Merchant Bray has a warm office and a cold smile. The offer is real — twenty credits is almost double your best market week. He\'d sort your housing form. <em>Everyone in the lower district knows Bray pays late, tracks the extra hours wrong, and fires anyone who files a complaint. Everyone knows, and half of them work for him anyway.</em></p>`,
+      body: `<p>Merchant Bray has a warm office and a cold smile. Twenty credits — double your best week. Housing form sorted. <em>Everyone knows he pays late and fires anyone who complains. Half the district works for him anyway.</em></p>`,
       choices: [
         { text: 'Accept — you need the stability.',
           sub: '(You shake his hand before you can think about it too long.)',
@@ -422,7 +436,7 @@ const CHARACTERS = [
     },
     {
       title: 'The Meeting', location: 'Neighborhood Cooperative Hall',
-      art: 'assembly', label: 'DAY TWELVE',
+      art: 'assembly', label: 'DAY TWELVE', pivotal: true,
       npcName: 'Organizer Fenn',
       npcLine: '"We have eleven members. The petition needs twelve to file. Two evenings a week — you come to meetings and you sign the documents. Without you, we can\'t submit the housing condition complaint."',
       innerVoice: 'Two evenings a week is two evenings you\'re not at the market, not with Tam, not resting.',
@@ -472,7 +486,7 @@ const CHARACTERS = [
       npcName: 'Assembly Caller',
       npcLine: '"The housing security bill — lower district provisions. Citizens are invited to address the assembly. Three minutes each. The vote follows public comment."',
       innerVoice: 'Three minutes to say twenty days. Three minutes to say a whole life.',
-      body: `<p>The housing security bill would expand the support program to include freelance workers, reduce the employer verification requirement, and add an emergency credit provision for families with children. If it passes, people like you become visible to the system. If it fails, nothing changes except you spent a day here instead of at the market.</p>`,
+      body: `<p>The housing security bill: expand support to freelance workers, reduce verification barriers, add emergency credit for families. <em>If it passes, people like you finally become visible to the system.</em></p>`,
       memoryLines: {
         joinedCooperative: `<p><em>Fenn and four cooperative members are in the gallery. They came to see what you do with the platform they helped build.</em></p>`,
         helpedMaren: `<p><em>Maren is in the back row with Sera. She nods at you once when you walk in.</em></p>`,
@@ -576,11 +590,11 @@ const CHARACTERS = [
     },
     {
       title: 'The Petition', location: 'Marsh Trading Company — Assembly Room',
-      art: 'assembly', label: 'WEEK THREE',
+      art: 'assembly', label: 'WEEK THREE', pivotal: true,
       npcName: 'Foreman Cassev',
       npcLine: '"Forty workers. Fifteen combined years of service each, average. We are petitioning for pension credit reclassification — seasonal work counted at full rate, not the partial rate. This is a legal petition under Article 14."',
       innerVoice: 'He has read the charter more carefully than you expected. He is correct, and he knows it, and he knows you know it.',
-      body: `<p>Forty workers. You employ them. They also, apparently, have a foreman who spent three months reading civic labour law. The petition is legally filed, properly formatted, and asks for something the charter arguably supports. <em>Granting it costs four thousand credits per year. Refusing it costs something harder to calculate.</em></p>`,
+      body: `<p>Forty workers. Foreman Cassev spent three months reading the charter — and he is right. <em>Granting the petition costs four thousand credits a year. Refusing it costs something harder to calculate.</em></p>`,
       choices: [
         { text: 'Grant the reclassification voluntarily. Set the standard yourself.',
           sub: '"The petition is correct. We\'ll implement the reclassification effective next quarter. No fight."',
@@ -643,11 +657,11 @@ const CHARACTERS = [
     },
     {
       title: 'The Deal', location: 'Civic Administration Building',
-      art: 'council', label: 'WEEK SIX',
+      art: 'council', label: 'WEEK SIX', pivotal: true,
       npcName: 'Official Drev',
       npcLine: '"Forty percent reduction on the assessment in perpetuity, in exchange for twenty percent of your largest warehouse allocated to civic storage. No interference with your commercial operations. The offer is on the table for seven days."',
       innerVoice: 'He came to you. That means he needs something. The question is whether what he\'s offering is worth what he\'s asking.',
-      body: `<p>Drev meets you in a room that has no portraits on the walls and no windows. He presents the deal the way people present things they have already approved internally. <em>Twenty percent of the warehouse is not trivial. Forty percent of the assessment is not trivial either. The math works — if you trust the "no interference" clause, which you should probably test before signing.</em></p>`,
+      body: `<p>Drev presents the deal the way someone presents a decision already made. <em>Twenty percent of your warehouse. Forty percent assessment reduction. The math works — if the "no interference" clause holds.</em></p>`,
       memoryLines: {
         metDrev: `<p><em>You\'ve met him before. He remembers. That helps — not much, but some.</em></p>`,
         investigatedCass: `<p><em>Cass got infrastructure contracts in exchange for storage access. This is the same structure. Now you know what it actually means.</em></p>`,
@@ -832,6 +846,7 @@ const gameState = {
   memory: {},
   completedMemory: {},
   societyScore: 50,
+  achievements: {},
 };
 
 // ─── UTILITIES ────────────────────────────────────────────────
@@ -999,15 +1014,23 @@ function showRulesScreen() {
   const el = document.getElementById('rules-content');
   if (el) {
     el.innerHTML = SOCIETY_RULES.map(r =>
-      `<div class="rule-card">` +
+      `<div class="rule-card${r.credit ? ' rule-civ-header' : ''}">` +
         `<div class="rule-icon">${r.icon}</div>` +
         `<div class="rule-body">` +
+          (r.grapesCat ? `<div class="rule-cat">${r.grapesCat}</div>` : '') +
           `<h3 class="rule-title">${r.title}</h3>` +
           `<p class="rule-text">${r.body}</p>` +
+          (r.credit ? `<p class="rule-credit">Project by: <strong>Tomas C &amp; Tengyi Zou</strong></p>` : '') +
         `</div>` +
       `</div>`
     ).join('');
   }
+  const hEl = document.querySelector('#rules-screen .rules-title');
+  if (hEl) hEl.textContent = 'Civilization Overview';
+  const eEl = document.querySelector('#rules-screen .rules-eyebrow');
+  if (eEl) eEl.textContent = 'ILIATANIA — GRAPES BREAKDOWN';
+  const sEl = document.querySelector('#rules-screen .rules-sub');
+  if (sEl) sEl.textContent = 'Built on merit. Tested by two lives.';
   showScreen('rules-screen');
 }
 
@@ -1164,6 +1187,8 @@ function showScene(idx) {
       requestAnimationFrame(() => requestAnimationFrame(() => silEl.classList.add('sil-vis')));
     }
     renderScene(scene);
+    const govLaw = GOV_LAWS[`${char.id}.${idx}`];
+    if (govLaw) setTimeout(() => showDispatch(govLaw), 700);
   });
 }
 
@@ -1243,6 +1268,17 @@ function renderScene(scene) {
 
   // Choices with stagger
   renderChoices(scene.choices);
+
+  // Pivotal moment banner
+  const _existPiv = document.querySelector('.pivotal-banner');
+  if (_existPiv) _existPiv.remove();
+  if (scene.pivotal) {
+    const _pivBanner = document.createElement('div');
+    _pivBanner.className = 'pivotal-banner';
+    _pivBanner.innerHTML = '<span class="piv-gem">◆</span> PIVOTAL MOMENT — This choice will echo';
+    const _choicesEl = document.getElementById('choices');
+    if (_choicesEl) _choicesEl.before(_pivBanner);
+  }
 
   // Investigation panel + countdown/mechanic (after choices rendered)
   const _extras = SCENE_EXTRAS[`${gameState.currentChar.id}.${gameState.currentScene}`];
@@ -1384,6 +1420,8 @@ function handleChoice(idx) {
     }
   }
 
+  setTimeout(checkAchievements, 1300);
+
   // Consequence display with typewriter
   const consEl = document.getElementById('consequence');
   const consText = document.getElementById('consequence-text');
@@ -1415,9 +1453,15 @@ function nextScene() {
   const nextIdx = gameState.currentScene + 1;
 
   if (nextIdx >= char.scenes.length) {
+    checkAchievements();
     finishCharacter();
   } else {
-    showScene(nextIdx);
+    if (Math.random() < 0.35 && gameState.currentScene > 0) {
+      showCityPulse();
+      setTimeout(() => showScene(nextIdx), 1800);
+    } else {
+      showScene(nextIdx);
+    }
   }
 }
 
@@ -1442,7 +1486,8 @@ function finishCharacter() {
   const bodyEl = document.getElementById('ce-body');
   const screen = document.getElementById('char-end-screen');
 
-  if (eyeEl) eyeEl.textContent = ending.eyebrow || `${char.name.toUpperCase()} — FINAL RECORD`;
+  const successPrefix = endingIdx === 0 ? '✓ SUCCESS — ' : endingIdx === 1 ? '◈ ACHIEVED — ' : '';
+  if (eyeEl) eyeEl.textContent = successPrefix + (ending.eyebrow || `${char.name.toUpperCase()} — FINAL RECORD`);
   if (ttlEl) ttlEl.textContent = ending.title;
   if (bodyEl) bodyEl.textContent = ending.body;
   if (screen) screen.style.setProperty('--char-color', char.color);
@@ -1466,6 +1511,13 @@ function showFinalEnding() {
   if (subEl) subEl.textContent = final.subtitle || '';
   if (bodyEl) bodyEl.innerHTML = final.body;
   if (bgArt) bgArt.innerHTML = SCENE_ART[final.artKey || 'council'] || '';
+  const gemEl = document.getElementById('ending-gem');
+  if (gemEl) {
+    const isBest = FINAL_ENDINGS.indexOf(final) === 0;
+    gemEl.textContent = isBest ? '✓ MISSION COMPLETE' : '◆';
+    if (isBest) gemEl.classList.add('ending-success-gem');
+    else gemEl.classList.remove('ending-success-gem');
+  }
 
   if (voicesEl) {
     voicesEl.innerHTML =
@@ -1486,6 +1538,7 @@ function showFinalEnding() {
   if (statsEl) statsEl.innerHTML = '';
 
   gameState.councilPlayed = true;
+  checkAchievements();
   showScreen('ending-screen');
 }
 
@@ -1911,6 +1964,97 @@ const DISPATCH_HEADLINES = {
   },
 };
 
+// ─── CITY PULSE EVENTS (random between scenes) ───────────────
+const CITY_PULSE = {
+  poor: [
+    { icon:'☀', title:'Good Morning', text:'Tam won a school recitation prize. No credits — just pride, and a little more of it.', changes:{hope:5} },
+    { icon:'🛒', title:'Market Luck', text:'A loyal customer paid extra for the same cloth. "For what it\'s worth," she said.', changes:{survival:4, hope:2} },
+    { icon:'🌧', title:'Slow Day', text:'Rain kept the morning crowd away. Half your usual income today.', changes:{survival:-4} },
+    { icon:'📋', title:'Civic Notice', text:'A posted notice: the cooperative food provision window opens again next month.', changes:{hope:3} },
+    { icon:'🤝', title:'Helping Hand', text:'A neighbor carried your stall frame without being asked. The district knows you.', changes:{community:5} },
+    { icon:'💊', title:'Health Scare', text:'Tam had a bad cough for three days. Cleared up on its own, but the worry cost you sleep.', changes:{health:-3, hope:-2} },
+    { icon:'📰', title:'Good News', text:'The cooperative posted a win in the civic registry. Something in the district moved forward.', changes:{hope:4, community:3} },
+    { icon:'🏪', title:'Busy Week', text:'Three new customers from the far gate. The spot is starting to feel like yours.', changes:{survival:5, hope:3} },
+  ],
+  rich: [
+    { icon:'📈', title:'Trade Wind', text:'Cargo prices stabilized for the quarter. Your shipping costs drop by a notable margin.', changes:{wealth:6} },
+    { icon:'🤝', title:'Alliance Inquiry', text:'Two merchants from the harbor district reached out about a trade coalition.', changes:{influence:5} },
+    { icon:'📰', title:'Favorable Coverage', text:'The civic gazette ran a piece on trade stability. Your name mentioned positively.', changes:{reputation:4} },
+    { icon:'⚖', title:'Review Delayed', text:'The assessment review board delayed their decision by two weeks. Time is a resource.', changes:{compliance:3} },
+    { icon:'💼', title:'Contract Win', text:'A small civic supply contract came through — routine, but real.', changes:{wealth:4, compliance:2} },
+    { icon:'📉', title:'Rough Week', text:'A shipping route dispute delayed two orders. Not serious. Annoying and visible.', changes:{wealth:-4, influence:-2} },
+    { icon:'🏛', title:'Official Contact', text:'A clerk from civic administration sent an informal note. Watching — but not unfavorably.', changes:{compliance:3, influence:2} },
+    { icon:'👥', title:'Worker Morale', text:'Cassev reported the warehouse team had their best output week in three months.', changes:{reputation:4, compliance:2} },
+  ],
+};
+
+// ─── ACHIEVEMENTS ─────────────────────────────────────────────
+const ACHIEVEMENTS = [
+  { id:'rising_tide',   charId:'poor', icon:'⊕', title:'Rising Tide',
+    text:'Lira\'s community network reached 65. She is no longer navigating this alone.',
+    check: gs => (gs.stats.community || 0) >= 65 },
+  { id:'against_grain', charId:'poor', icon:'◆', title:'Against the Grain',
+    text:'Refused the easy money and kept looking for another way. That costs more in the short term.',
+    check: gs => !!(gs.memory.refusedBray) },
+  { id:'solidarity',    charId:'poor', icon:'⊕', title:'Solidarity',
+    text:'Helped Maren AND joined the cooperative. This is what community actually means.',
+    check: gs => !!(gs.memory.helpedMaren && gs.memory.joinedCooperative) },
+  { id:'voice_heard',   charId:'poor', icon:'◈', title:'Voice Heard',
+    text:'Hope and survival both crossed 45. Lira found a real way forward.',
+    check: gs => (gs.stats.hope || 0) >= 45 && (gs.stats.survival || 0) >= 45 },
+  { id:'conciliator',   charId:'rich', icon:'◆', title:'The Conciliator',
+    text:'Granted the petition and accepted the deal. Compromise is its own kind of winning.',
+    check: gs => !!(gs.memory.grantedPetition && gs.memory.acceptedDeal) },
+  { id:'rep_restored',  charId:'rich', icon:'◉', title:'Reputation Restored',
+    text:'Aldric\'s public standing surpassed 70. The gazette story became context, not headline.',
+    check: gs => (gs.stats.reputation || 0) >= 70 },
+  { id:'power_player',  charId:'rich', icon:'◈', title:'Power Player',
+    text:'Wealth and influence both above 70. He kept what twenty years built.',
+    check: gs => (gs.stats.wealth || 0) >= 70 && (gs.stats.influence || 0) >= 70 },
+  { id:'two_cities',    charId: null,  icon:'◆', title:'Two Cities',
+    text:'Both stories complete. Two different lives — the same society.',
+    check: gs => !!(gs.completed.poor && gs.completed.rich) },
+];
+
+// ─── GOVERNMENT LAW EVENTS ────────────────────────────────────
+const GOV_LAWS = {
+  'poor.0': {
+    date: 'CIVIC HOUSING BUREAU — NEW REGULATION',
+    headline: 'Employer Verification Now Required for Housing Support',
+    body: 'Freelance workers must file cooperative employment status before hardship applications are accepted.',
+  },
+  'poor.4': {
+    date: 'LABOR BOARD — NEW LAW IN EFFECT',
+    headline: 'Private Employment Contracts Must Be Registered',
+    body: 'Workers have the legal right to request written terms. All contracts over 10 hours/week require civic filing.',
+  },
+  'poor.7': {
+    date: 'CIVIC ASSEMBLY — TODAY\'S VOTE',
+    headline: 'Housing Security Bill: Public Comment Period Open',
+    body: 'Proposed provisions: freelance worker eligibility, reduced verification barriers, emergency credit for families.',
+  },
+  'rich.0': {
+    date: 'CIVIC TREASURY — LAW NOW IN EFFECT',
+    headline: 'Civic Contribution Assessment Act Enacted',
+    body: '15% annual property tax on assets above 100,000 credits. Merchants have 30 days to pay or formally contest.',
+  },
+  'rich.2': {
+    date: 'LABOR CHARTER — ARTICLE 14 CONFIRMED',
+    headline: 'Pension Reclassification Petition Right Upheld',
+    body: 'Seasonal workers may formally petition for full credit reclassification. Employers must respond within 30 days.',
+  },
+  'rich.5': {
+    date: 'CIVIC ADMINISTRATION — PROGRAM ANNOUNCEMENT',
+    headline: 'Government Launches Warehouse Sharing Initiative',
+    body: 'Merchants may receive up to 40% assessment reduction in exchange for civic storage space. Seven-day offer window.',
+  },
+  'rich.7': {
+    date: 'CIVIC ADMINISTRATION — FINAL NOTICE',
+    headline: 'Property Conversion Program: Last Window Before Binding Review',
+    body: 'Merchants with open compliance issues have one final opportunity to negotiate. Cooperative housing conversion qualifies for full exemption.',
+  },
+};
+
 // ─── CIVIC DISPATCH & WORLD ECHO ──────────────────────────────
 function showDispatch(dispatch) {
   const existing = document.getElementById('civic-dispatch');
@@ -1934,6 +2078,73 @@ function showDispatch(dispatch) {
   };
   el.querySelector('.dispatch-close').addEventListener('click', close);
   setTimeout(close, 5500);
+}
+
+function showCityPulse() {
+  const char = gameState.currentChar;
+  if (!char) return;
+  const events = CITY_PULSE[char.id];
+  if (!events || !events.length) return;
+  const ev = events[Math.floor(Math.random() * events.length)];
+  const changes = ev.changes || {};
+  Object.entries(changes).forEach(([k, v]) => {
+    gameState.stats[k] = clamp((gameState.stats[k] || 0) + v);
+  });
+  const el = document.createElement('div');
+  el.className = 'city-pulse-popup';
+  const chipsHtml = Object.entries(changes).map(([k, v]) => {
+    const def = char.statDefs.find(d => d.key === k);
+    const label = def ? def.label : k;
+    return `<span class="chip ${v > 0 ? 'chip-pos' : 'chip-neg'} chip-pop">${label} ${v > 0 ? '+' : ''}${v}</span>`;
+  }).join('');
+  el.innerHTML =
+    `<div class="cp-icon">${ev.icon}</div>` +
+    `<div class="cp-content">` +
+      `<div class="cp-tag">CITY EVENT</div>` +
+      `<div class="cp-title">${ev.title}</div>` +
+      `<p class="cp-text">${ev.text}</p>` +
+      `<div class="cp-chips">${chipsHtml}</div>` +
+    `</div>`;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('cp-vis')));
+  Sound.play('toast');
+  setTimeout(() => {
+    el.classList.remove('cp-vis');
+    setTimeout(() => el.remove(), 400);
+  }, 3200);
+}
+
+function checkAchievements() {
+  if (!gameState.achievements) gameState.achievements = {};
+  let delay = 0;
+  ACHIEVEMENTS.forEach(ach => {
+    if (gameState.achievements[ach.id]) return;
+    if (ach.charId && gameState.currentChar?.id !== ach.charId) return;
+    if (ach.check(gameState)) {
+      gameState.achievements[ach.id] = true;
+      setTimeout(() => showAchievement(ach), delay);
+      delay += 700;
+    }
+  });
+}
+
+function showAchievement(ach) {
+  Sound.play('unlock');
+  const el = document.createElement('div');
+  el.className = 'achievement-pop';
+  el.innerHTML =
+    `<div class="ach-inner">` +
+      `<div class="ach-label">ACHIEVEMENT UNLOCKED</div>` +
+      `<div class="ach-icon">${ach.icon}</div>` +
+      `<div class="ach-title">${ach.title}</div>` +
+      `<p class="ach-text">${ach.text}</p>` +
+    `</div>`;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('ach-vis')));
+  setTimeout(() => {
+    el.classList.remove('ach-vis');
+    setTimeout(() => el.remove(), 500);
+  }, 3800);
 }
 
 function renderWorldEcho(charId, sceneIdx) {
@@ -2447,6 +2658,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gameState.completedMemory = {};
     gameState.councilPlayed = false;
     gameState.societyScore = 50;
+    gameState.achievements = {};
     gameState.currentChar = null;
     showScreen('title-screen');
   });
