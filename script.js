@@ -7,24 +7,41 @@ const SCENE_ART = {
 
 'council': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#08050f 0%,#12091e 55%,#1a0f10 100%)">
   <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
-    <rect x="0" y="210" width="600" height="110" fill="#0d0916"/>
-    <rect x="60" y="60" width="18" height="155" fill="#1e1630" rx="2"/><rect x="60" y="55" width="22" height="10" fill="#2a2040" rx="1"/>
-    <rect x="522" y="60" width="18" height="155" fill="#1e1630" rx="2"/><rect x="518" y="55" width="22" height="10" fill="#2a2040" rx="1"/>
-    <rect x="130" y="80" width="14" height="135" fill="#1a1328" rx="2"/><rect x="456" y="80" width="14" height="135" fill="#1a1328" rx="2"/>
-    <path d="M180 215 Q300 80 420 215 Z" fill="none" stroke="#2a1f40" stroke-width="2"/>
-    <rect x="180" y="180" width="240" height="36" fill="#130e22"/>
-    <circle cx="300" cy="135" r="38" fill="none" stroke="#2a1f40" stroke-width="1.5"/>
-    <polygon points="300,100 308,127 337,127 314,144 322,171 300,154 278,171 286,144 263,127 292,127" fill="none" stroke="#3a2f50" stroke-width="1"/>
-    <rect x="88" y="100" width="6" height="22" fill="#2a1f30" rx="1"/>
-    <ellipse cx="91" cy="98" rx="5" ry="7" fill="#c06020" opacity="0.9"><animate attributeName="opacity" values="0.9;0.6;0.85;0.5;0.9" dur="1.8s" repeatCount="indefinite"/></ellipse>
-    <rect x="506" y="100" width="6" height="22" fill="#2a1f30" rx="1"/>
-    <ellipse cx="509" cy="98" rx="5" ry="7" fill="#c06020" opacity="0.9"><animate attributeName="opacity" values="0.7;0.95;0.5;0.9;0.7" dur="2.1s" repeatCount="indefinite"/></ellipse>
-    <radialGradient id="tg1" cx="50%" cy="50%"><stop offset="0%" stop-color="#c06020" stop-opacity="0.18"/><stop offset="100%" stop-color="#c06020" stop-opacity="0"/></radialGradient>
-    <ellipse cx="91" cy="115" rx="40" ry="30" fill="url(#tg1)"/><ellipse cx="509" cy="115" rx="40" ry="30" fill="url(#tg1)"/>
-    <ellipse cx="300" cy="222" rx="100" ry="18" fill="#130e1c" stroke="#241a34" stroke-width="1.5"/>
+    <!-- Floor tiles (marble) -->
+    <rect x="0" y="212" width="600" height="108" fill="#100c22"/>
+    <line x1="0" y1="240" x2="600" y2="240" stroke="#1e1840" stroke-width="1"/><line x1="0" y1="268" x2="600" y2="268" stroke="#1e1840" stroke-width="1"/>
+    <line x1="100" y1="212" x2="100" y2="320" stroke="#1e1840" stroke-width="1"/><line x1="200" y1="212" x2="200" y2="320" stroke="#1e1840" stroke-width="1"/>
+    <line x1="300" y1="212" x2="300" y2="320" stroke="#1e1840" stroke-width="1"/><line x1="400" y1="212" x2="400" y2="320" stroke="#1e1840" stroke-width="1"/><line x1="500" y1="212" x2="500" y2="320" stroke="#1e1840" stroke-width="1"/>
+    <!-- Columns (purple stone with gold trim) -->
+    <rect x="60" y="60" width="18" height="155" fill="#241a40" rx="2"/><rect x="60" y="55" width="22" height="10" fill="#2e2454" rx="1"/>
+    <rect x="60" y="60" width="18" height="4" fill="#c8a030"/><rect x="60" y="210" width="18" height="4" fill="#c8a030"/>
+    <rect x="522" y="60" width="18" height="155" fill="#241a40" rx="2"/><rect x="518" y="55" width="22" height="10" fill="#2e2454" rx="1"/>
+    <rect x="522" y="60" width="18" height="4" fill="#c8a030"/><rect x="522" y="210" width="18" height="4" fill="#c8a030"/>
+    <rect x="130" y="80" width="14" height="135" fill="#1e1638" rx="2"/><rect x="456" y="80" width="14" height="135" fill="#1e1638" rx="2"/>
+    <!-- Arch -->
+    <path d="M180 215 Q300 80 420 215 Z" fill="none" stroke="#3a2c5c" stroke-width="2.5"/>
+    <!-- Council table (dark purple wood) -->
+    <rect x="180" y="180" width="240" height="36" fill="#180e2e" rx="2"/>
+    <rect x="180" y="178" width="240" height="5" fill="#2e2248"/>
+    <!-- Gold seal / star emblem -->
+    <circle cx="300" cy="135" r="38" fill="none" stroke="#c8a030" stroke-width="2" opacity="0.65"/>
+    <circle cx="300" cy="135" r="30" fill="none" stroke="#c8a030" stroke-width="1" opacity="0.3"/>
+    <polygon points="300,100 308,127 337,127 314,144 322,171 300,154 278,171 286,144 263,127 292,127" fill="none" stroke="#c8a030" stroke-width="1.5" opacity="0.75"/>
+    <!-- Council members -->
     <ellipse cx="210" cy="205" rx="10" ry="14" fill="#0e0b18"/><rect x="202" y="204" width="16" height="20" fill="#0e0b18" rx="3"/>
     <ellipse cx="300" cy="202" rx="11" ry="15" fill="#0d0a16"/><rect x="292" y="200" width="18" height="22" fill="#0d0a16" rx="3"/>
     <ellipse cx="390" cy="205" rx="10" ry="14" fill="#0e0b18"/><rect x="382" y="204" width="16" height="20" fill="#0e0b18" rx="3"/>
+    <!-- Torches (bright amber) -->
+    <rect x="88" y="100" width="6" height="22" fill="#2e2040" rx="1"/>
+    <ellipse cx="91" cy="98" rx="7" ry="10" fill="#e87030" opacity="0.95"><animate attributeName="opacity" values="0.95;0.6;0.88;0.55;0.95" dur="1.8s" repeatCount="indefinite"/></ellipse>
+    <rect x="506" y="100" width="6" height="22" fill="#2e2040" rx="1"/>
+    <ellipse cx="509" cy="98" rx="7" ry="10" fill="#e87030" opacity="0.9"><animate attributeName="opacity" values="0.7;0.95;0.55;0.92;0.7" dur="2.1s" repeatCount="indefinite"/></ellipse>
+    <!-- Torch glow (amber-orange on purple walls) -->
+    <radialGradient id="tg1" cx="50%" cy="50%"><stop offset="0%" stop-color="#e87030" stop-opacity="0.28"/><stop offset="100%" stop-color="#e87030" stop-opacity="0"/></radialGradient>
+    <ellipse cx="91" cy="120" rx="55" ry="45" fill="url(#tg1)"/><ellipse cx="509" cy="120" rx="55" ry="45" fill="url(#tg1)"/>
+    <!-- Emblem purple glow -->
+    <radialGradient id="cg1" cx="50%" cy="50%"><stop offset="0%" stop-color="#6040c0" stop-opacity="0.14"/><stop offset="100%" stop-color="#6040c0" stop-opacity="0"/></radialGradient>
+    <ellipse cx="300" cy="135" rx="110" ry="90" fill="url(#cg1)"/>
   </svg>
 </div>`,
 
@@ -46,43 +63,85 @@ const SCENE_ART = {
   </svg>
 </div>`,
 
-'hospital': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#060a08 0%,#0a1210 55%,#0c1008 100%)">
+'hospital': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#061812 0%,#0c2c1a 55%,#0a2010 100%)">
   <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
-    <rect x="0" y="230" width="600" height="90" fill="#0a0e0c"/><rect x="0" y="228" width="600" height="3" fill="#182420"/>
-    <rect x="120" y="30" width="70" height="90" fill="#0e1a12" rx="2"/>
-    <line x1="155" y1="35" x2="155" y2="115" stroke="#182420" stroke-width="1.5"/>
-    <line x1="125" y1="75" x2="185" y2="75" stroke="#182420" stroke-width="1.5"/>
-    <rect x="410" y="30" width="70" height="90" fill="#0e1a12" rx="2"/>
-    <line x1="445" y1="35" x2="445" y2="115" stroke="#182420" stroke-width="1.5"/>
-    <line x1="415" y1="75" x2="475" y2="75" stroke="#182420" stroke-width="1.5"/>
-    <rect x="60" y="180" width="120" height="55" fill="#0f1a12" rx="3" stroke="#1a2a1e" stroke-width="1"/>
-    <rect x="420" y="180" width="120" height="55" fill="#0f1a12" rx="3" stroke="#1a2a1e" stroke-width="1"/>
-    <ellipse cx="300" cy="185" rx="12" ry="16" fill="#0d1810"/><rect x="290" y="183" width="20" height="30" fill="#0d1810" rx="3"/>
-    <radialGradient id="hg1" cx="50%" cy="50%"><stop offset="0%" stop-color="#206030" stop-opacity="0.14"/><stop offset="100%" stop-color="#206030" stop-opacity="0"/></radialGradient>
-    <ellipse cx="300" cy="120" rx="150" ry="100" fill="url(#hg1)"/>
+    <!-- Floor (clean stone) -->
+    <rect x="0" y="232" width="600" height="88" fill="#091c12"/>
+    <rect x="0" y="230" width="600" height="3" fill="#184530"/>
+    <line x1="0" y1="255" x2="600" y2="255" stroke="#0f2a1c" stroke-width="1"/>
+    <line x1="150" y1="230" x2="150" y2="320" stroke="#0f2a1c" stroke-width="1"/><line x1="300" y1="230" x2="300" y2="320" stroke="#0f2a1c" stroke-width="1"/><line x1="450" y1="230" x2="450" y2="320" stroke="#0f2a1c" stroke-width="1"/>
+    <!-- Left wing (teal-stone) -->
+    <rect x="115" y="28" width="75" height="95" fill="#102418" rx="2"/>
+    <rect x="115" y="25" width="75" height="7" fill="#1c3c28"/>
+    <!-- Cross symbol (left, visible green) -->
+    <rect x="147" y="38" width="11" height="36" fill="#2a6040" rx="1"/><rect x="133" y="52" width="38" height="11" fill="#2a6040" rx="1"/>
+    <rect x="149" y="40" width="7" height="32" fill="#3a7850" opacity="0.9"/><rect x="135" y="54" width="34" height="7" fill="#3a7850" opacity="0.9"/>
+    <!-- Windows lit (teal glow) -->
+    <rect x="125" y="55" width="14" height="18" fill="#1a5030" rx="2"/>
+    <rect x="146" y="55" width="14" height="18" fill="#1a5030" rx="2"/>
+    <rect x="167" y="55" width="14" height="18" fill="#1a5030" rx="2"/>
+    <!-- Right wing (teal-stone) -->
+    <rect x="410" y="28" width="75" height="95" fill="#102418" rx="2"/>
+    <rect x="410" y="25" width="75" height="7" fill="#1c3c28"/>
+    <rect x="442" y="38" width="11" height="36" fill="#2a6040" rx="1"/><rect x="428" y="52" width="38" height="11" fill="#2a6040" rx="1"/>
+    <rect x="444" y="40" width="7" height="32" fill="#3a7850" opacity="0.9"/><rect x="430" y="54" width="34" height="7" fill="#3a7850" opacity="0.9"/>
+    <rect x="420" y="55" width="14" height="18" fill="#1a5030" rx="2"/>
+    <rect x="441" y="55" width="14" height="18" fill="#1a5030" rx="2"/>
+    <rect x="462" y="55" width="14" height="18" fill="#1a5030" rx="2"/>
+    <!-- Waiting benches -->
+    <rect x="60" y="182" width="120" height="50" fill="#102018" rx="3" stroke="#1c3828" stroke-width="1"/>
+    <rect x="420" y="182" width="120" height="50" fill="#102018" rx="3" stroke="#1c3828" stroke-width="1"/>
+    <!-- Patient figure -->
+    <ellipse cx="300" cy="186" rx="12" ry="16" fill="#0d1c10"/><rect x="290" y="184" width="20" height="30" fill="#0d1c10" rx="3"/>
+    <!-- Teal medical glow -->
+    <radialGradient id="hg1" cx="50%" cy="50%"><stop offset="0%" stop-color="#206840" stop-opacity="0.2"/><stop offset="100%" stop-color="#206840" stop-opacity="0"/></radialGradient>
+    <ellipse cx="300" cy="120" rx="180" ry="120" fill="url(#hg1)"/>
+    <radialGradient id="hg2" cx="50%" cy="50%"><stop offset="0%" stop-color="#308050" stop-opacity="0.14"/><stop offset="100%" stop-color="#308050" stop-opacity="0"/></radialGradient>
+    <ellipse cx="152" cy="65" rx="55" ry="40" fill="url(#hg2)"/><ellipse cx="448" cy="65" rx="55" ry="40" fill="url(#hg2)"/>
   </svg>
 </div>`,
 
-'assembly': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#06040c 0%,#0e0b18 55%,#120e10 100%)">
+'assembly': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#1c0a04 0%,#301608 55%,#221006 100%)">
   <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
-    <rect x="0" y="260" width="600" height="60" fill="#0c0918"/>
-    <rect x="20" y="235" width="560" height="28" fill="#0b0816" rx="1"/>
-    <rect x="50" y="210" width="500" height="28" fill="#0a0715" rx="1"/>
-    <rect x="85" y="188" width="430" height="25" fill="#090614" rx="1"/>
-    <rect x="125" y="168" width="350" height="22" fill="#080513" rx="1"/>
-    <ellipse cx="80" cy="260" rx="9" ry="12" fill="#060410"/><ellipse cx="180" cy="260" rx="9" ry="12" fill="#060410"/>
-    <ellipse cx="280" cy="260" rx="9" ry="12" fill="#070512"/><ellipse cx="380" cy="260" rx="9" ry="12" fill="#060410"/>
-    <ellipse cx="480" cy="260" rx="9" ry="12" fill="#060410"/><ellipse cx="520" cy="260" rx="9" ry="12" fill="#060410"/>
-    <ellipse cx="130" cy="235" rx="8" ry="11" fill="#050310"/><ellipse cx="250" cy="235" rx="8" ry="11" fill="#050310"/>
-    <ellipse cx="370" cy="235" rx="8" ry="11" fill="#050310"/><ellipse cx="460" cy="235" rx="8" ry="11" fill="#050310"/>
-    <rect x="220" y="150" width="160" height="20" fill="#14101e" rx="2"/>
-    <ellipse cx="300" cy="143" rx="13" ry="17" fill="#0f0c1c"/><rect x="289" y="140" width="22" height="28" fill="#0f0c1c" rx="3"/>
-    <rect x="200" y="130" width="6" height="24" fill="#1a1428" rx="1"/>
-    <ellipse cx="203" cy="128" rx="5" ry="8" fill="#c05020" opacity="0.9"><animate attributeName="opacity" values="0.9;0.5;0.85;0.4;0.9" dur="1.7s" repeatCount="indefinite"/></ellipse>
-    <rect x="394" y="130" width="6" height="24" fill="#1a1428" rx="1"/>
-    <ellipse cx="397" cy="128" rx="5" ry="8" fill="#c05020" opacity="0.9"><animate attributeName="opacity" values="0.5;0.9;0.4;0.88;0.5" dur="2.0s" repeatCount="indefinite"/></ellipse>
-    <radialGradient id="ag1" cx="50%" cy="100%"><stop offset="0%" stop-color="#c05020" stop-opacity="0.15"/><stop offset="100%" stop-color="#c05020" stop-opacity="0"/></radialGradient>
-    <ellipse cx="300" cy="160" rx="100" ry="60" fill="url(#ag1)"/>
+    <!-- Seating tiers (warm wood brown) -->
+    <rect x="0" y="260" width="600" height="60" fill="#1a0a04"/>
+    <rect x="20" y="236" width="560" height="26" fill="#221008" rx="1"/>
+    <rect x="50" y="212" width="500" height="26" fill="#2a1408" rx="1"/>
+    <rect x="85" y="190" width="430" height="24" fill="#2e1808" rx="1"/>
+    <rect x="125" y="170" width="350" height="22" fill="#321c08" rx="1"/>
+    <!-- Tier front shadows -->
+    <rect x="20" y="261" width="560" height="2" fill="#120604"/><rect x="50" y="237" width="500" height="2" fill="#120604"/>
+    <rect x="85" y="213" width="430" height="2" fill="#120604"/><rect x="125" y="191" width="350" height="2" fill="#120604"/>
+    <!-- Assembly members (darker silhouettes) -->
+    <ellipse cx="80" cy="259" rx="9" ry="12" fill="#100604"/><ellipse cx="180" cy="259" rx="9" ry="12" fill="#100604"/>
+    <ellipse cx="280" cy="259" rx="9" ry="12" fill="#110704"/><ellipse cx="380" cy="259" rx="9" ry="12" fill="#100604"/>
+    <ellipse cx="480" cy="259" rx="9" ry="12" fill="#100604"/><ellipse cx="520" cy="259" rx="9" ry="12" fill="#100604"/>
+    <ellipse cx="130" cy="234" rx="8" ry="11" fill="#0e0503"/><ellipse cx="250" cy="234" rx="8" ry="11" fill="#0e0503"/>
+    <ellipse cx="370" cy="234" rx="8" ry="11" fill="#0e0503"/><ellipse cx="460" cy="234" rx="8" ry="11" fill="#0e0503"/>
+    <!-- Podium -->
+    <rect x="220" y="152" width="160" height="18" fill="#240e06" rx="2"/>
+    <rect x="240" y="144" width="120" height="12" fill="#1e0a04" rx="1"/>
+    <!-- Speaker -->
+    <ellipse cx="300" cy="143" rx="13" ry="17" fill="#160804"/><rect x="289" y="140" width="22" height="28" fill="#160804" rx="3"/>
+    <!-- Civic banner (gold) -->
+    <rect x="280" y="58" width="40" height="4" fill="#c8a030" opacity="0.7"/>
+    <rect x="295" y="62" width="10" height="68" fill="#2a1008" opacity="0.9"/>
+    <!-- Torches (bright amber-orange) -->
+    <rect x="200" y="128" width="6" height="28" fill="#2e1408" rx="1"/>
+    <ellipse cx="203" cy="126" rx="7" ry="10" fill="#e07828" opacity="0.95">
+      <animate attributeName="opacity" values="0.95;0.58;0.88;0.5;0.95" dur="1.7s" repeatCount="indefinite"/>
+    </ellipse>
+    <rect x="394" y="128" width="6" height="28" fill="#2e1408" rx="1"/>
+    <ellipse cx="397" cy="126" rx="7" ry="10" fill="#e07828" opacity="0.95">
+      <animate attributeName="opacity" values="0.6;0.95;0.5;0.9;0.6" dur="2.0s" repeatCount="indefinite"/>
+    </ellipse>
+    <!-- Warm glow spreading across hall -->
+    <radialGradient id="ag1" cx="50%" cy="80%"><stop offset="0%" stop-color="#e07828" stop-opacity="0.22"/><stop offset="100%" stop-color="#e07828" stop-opacity="0"/></radialGradient>
+    <ellipse cx="300" cy="170" rx="150" ry="100" fill="url(#ag1)"/>
+    <radialGradient id="ag2" cx="34%" cy="50%"><stop offset="0%" stop-color="#e07828" stop-opacity="0.18"/><stop offset="100%" stop-color="#e07828" stop-opacity="0"/></radialGradient>
+    <ellipse cx="203" cy="140" rx="70" ry="60" fill="url(#ag2)"/>
+    <radialGradient id="ag3" cx="66%" cy="50%"><stop offset="0%" stop-color="#e07828" stop-opacity="0.18"/><stop offset="100%" stop-color="#e07828" stop-opacity="0"/></radialGradient>
+    <ellipse cx="397" cy="140" rx="70" ry="60" fill="url(#ag3)"/>
   </svg>
 </div>`,
 
@@ -102,43 +161,93 @@ const SCENE_ART = {
   </svg>
 </div>`,
 
-'rooftop': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#05080f 0%,#08101a 40%,#0c141e 100%)">
+'rooftop': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#040b1c 0%,#070f28 40%,#0a1530 100%)">
   <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
-    <circle cx="45" cy="20" r="1" fill="#c8c0a8" opacity="0.7"/><circle cx="200" cy="15" r="1.2" fill="#c8c0a8" opacity="0.8"/>
-    <circle cx="390" cy="10" r="1" fill="#c8c0a8" opacity="0.7"/><circle cx="555" cy="18" r="1.1" fill="#c8c0a8" opacity="0.8"/>
-    <circle cx="480" cy="55" r="22" fill="#d4c890" opacity="0.12"/><circle cx="480" cy="55" r="16" fill="#d4c890" opacity="0.18"/>
-    <polygon points="0,200 110,160 220,155 300,160 380,155 490,180 600,180 600,320 0,320" fill="#07090f"/>
-    <rect x="0" y="228" width="600" height="3" fill="#161e28"/>
-    <radialGradient id="mg1" cx="80%" cy="0%"><stop offset="0%" stop-color="#d4c890" stop-opacity="0.06"/><stop offset="100%" stop-color="#d4c890" stop-opacity="0"/></radialGradient>
-    <rect x="0" y="0" width="600" height="320" fill="url(#mg1)"/>
+    <!-- Stars -->
+    <circle cx="45" cy="18" r="1.5" fill="#d0c8c0" opacity="0.85"/><circle cx="115" cy="9" r="1" fill="#d0c8c0" opacity="0.7"/>
+    <circle cx="180" cy="16" r="1.5" fill="#d0c8c0" opacity="0.9"/><circle cx="248" cy="6" r="1" fill="#d0c8c0" opacity="0.7"/>
+    <circle cx="312" cy="13" r="1.3" fill="#d0c8c0" opacity="0.85"/><circle cx="392" cy="7" r="1" fill="#d0c8c0" opacity="0.75"/>
+    <circle cx="448" cy="20" r="1.5" fill="#d0c8c0" opacity="0.82"/><circle cx="512" cy="5" r="1" fill="#d0c8c0" opacity="0.7"/>
+    <circle cx="558" cy="24" r="1.3" fill="#d0c8c0" opacity="0.88"/><circle cx="70" cy="44" r="1" fill="#d0c8c0" opacity="0.6"/>
+    <circle cx="155" cy="36" r="1" fill="#d0c8c0" opacity="0.62"/><circle cx="492" cy="40" r="1" fill="#d0c8c0" opacity="0.65"/>
+    <!-- Moon (visible crescent) -->
+    <circle cx="480" cy="46" r="26" fill="#dcd290" opacity="0.92"/>
+    <circle cx="480" cy="46" r="22" fill="#ece898" opacity="0.95"/>
+    <circle cx="468" cy="42" r="21" fill="#0b1530" opacity="0.6"/>
+    <radialGradient id="mg1" cx="80%" cy="14%"><stop offset="0%" stop-color="#dcd290" stop-opacity="0.22"/><stop offset="100%" stop-color="#dcd290" stop-opacity="0"/></radialGradient>
+    <ellipse cx="480" cy="46" rx="100" ry="80" fill="url(#mg1)"/>
+    <!-- City skyline -->
+    <polygon points="0,202 60,180 110,165 160,178 220,155 280,162 300,158 320,162 380,155 440,178 490,182 540,168 600,178 600,320 0,320" fill="#080d14"/>
+    <!-- Building windows (amber warm lights) -->
+    <rect x="72" y="173" width="5" height="7" fill="#c8a030" opacity="0.75"/><rect x="82" y="168" width="5" height="7" fill="#c8a030" opacity="0.5"/>
+    <rect x="92" y="174" width="5" height="7" fill="#c8a030" opacity="0.82"/>
+    <rect x="132" y="170" width="5" height="7" fill="#c8a030" opacity="0.65"/><rect x="144" y="178" width="5" height="7" fill="#c8a030" opacity="0.72"/>
+    <rect x="242" y="160" width="5" height="7" fill="#c8a030" opacity="0.68"/><rect x="252" y="165" width="5" height="7" fill="#c8a030" opacity="0.52"/>
+    <rect x="352" y="160" width="5" height="7" fill="#c8a030" opacity="0.72"/><rect x="362" y="166" width="5" height="7" fill="#c8a030" opacity="0.58"/>
+    <rect x="447" y="176" width="5" height="7" fill="#c8a030" opacity="0.72"/><rect x="457" y="182" width="5" height="7" fill="#c8a030" opacity="0.5"/>
+    <rect x="512" y="171" width="5" height="7" fill="#c8a030" opacity="0.72"/>
+    <!-- Harbor distant (lower left) -->
+    <circle cx="98" cy="194" r="3" fill="#e08020" opacity="0.45"/><circle cx="140" cy="190" r="2" fill="#e08020" opacity="0.32"/>
+    <!-- Watchtower silhouette (right) -->
+    <rect x="550" y="138" width="22" height="82" fill="#09101e"/>
+    <polygon points="545,138 577,138 563,122" fill="#09101e"/>
+    <!-- Ship mast (distant left) -->
+    <line x1="115" y1="192" x2="115" y2="162" stroke="#09101e" stroke-width="2"/>
+    <line x1="100" y1="174" x2="130" y2="174" stroke="#09101e" stroke-width="1.2"/>
+    <!-- Rooftop surface edge -->
+    <rect x="0" y="226" width="600" height="3" fill="#141e2e"/>
   </svg>
 </div>`,
 
-'market': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#080612 0%,#0f0c1c 55%,#120e14 100%)">
+'market': `<div style="position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#1c0e06 0%,#301808 55%,#221008 100%)">
   <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice">
-    <rect x="0" y="225" width="600" height="95" fill="#0c0a16"/>
-    <rect x="0" y="223" width="600" height="3" fill="#1e1a30"/>
-    <rect x="10" y="115" width="155" height="110" fill="#0f0d1e" rx="2"/>
-    <polygon points="0,115 175,115 165,95 10,95" fill="#1a1632"/>
-    <rect x="0" y="93" width="175" height="5" fill="#26203c"/>
-    <rect x="25" y="132" width="32" height="22" fill="#0c0a18" rx="1"/><rect x="68" y="127" width="28" height="27" fill="#0c0a18" rx="1"/>
-    <rect x="108" y="134" width="38" height="20" fill="#0c0a18" rx="1"/>
-    <rect x="435" y="115" width="155" height="110" fill="#0f0d1e" rx="2"/>
-    <polygon points="425,115 600,115 590,95 435,95" fill="#1a1632"/>
-    <rect x="425" y="93" width="175" height="5" fill="#26203c"/>
-    <rect x="448" y="132" width="32" height="22" fill="#0c0a18" rx="1"/><rect x="492" y="127" width="28" height="27" fill="#0c0a18" rx="1"/>
-    <rect x="532" y="134" width="38" height="20" fill="#0c0a18" rx="1"/>
-    <polygon points="175,320 425,320 395,225 205,225" fill="#0d0b1a"/>
-    <line x1="185" y1="55" x2="300" y2="55" stroke="#1a1630" stroke-width="1.5"/>
-    <line x1="300" y1="55" x2="415" y2="55" stroke="#1a1630" stroke-width="1.5"/>
-    <ellipse cx="242" cy="67" rx="7" ry="9" fill="#1a1430"/>
-    <ellipse cx="242" cy="65" rx="5" ry="6" fill="#c06020" opacity="0.85"><animate attributeName="opacity" values="0.85;0.5;0.8;0.4;0.85" dur="1.9s" repeatCount="indefinite"/></ellipse>
-    <ellipse cx="358" cy="67" rx="7" ry="9" fill="#1a1430"/>
-    <ellipse cx="358" cy="65" rx="5" ry="6" fill="#c06020" opacity="0.85"><animate attributeName="opacity" values="0.5;0.88;0.4;0.82;0.5" dur="2.2s" repeatCount="indefinite"/></ellipse>
-    <ellipse cx="192" cy="222" rx="8" ry="11" fill="#07050f"/><rect x="185" y="219" width="14" height="18" fill="#07050f" rx="2"/>
-    <ellipse cx="408" cy="222" rx="8" ry="11" fill="#07050f"/><rect x="401" y="219" width="14" height="18" fill="#07050f" rx="2"/>
-    <radialGradient id="mkg1" cx="50%" cy="65%"><stop offset="0%" stop-color="#c06020" stop-opacity="0.14"/><stop offset="100%" stop-color="#c06020" stop-opacity="0"/></radialGradient>
-    <ellipse cx="300" cy="185" rx="200" ry="80" fill="url(#mkg1)"/>
+    <rect x="0" y="225" width="600" height="95" fill="#1a0e06"/>
+    <rect x="0" y="223" width="600" height="3" fill="#3a2010"/>
+    <!-- Left stall (warm wood) -->
+    <rect x="10" y="115" width="155" height="110" fill="#2a1808" rx="2"/>
+    <polygon points="0,115 175,115 165,95 10,95" fill="#6a2808"/>
+    <rect x="0" y="93" width="175" height="5" fill="#8a3810"/>
+    <polygon points="18,115 38,115 48,95 28,95" fill="#4a1808" opacity="0.55"/>
+    <polygon points="58,115 78,115 88,95 68,95" fill="#4a1808" opacity="0.55"/>
+    <polygon points="98,115 118,115 128,95 108,95" fill="#4a1808" opacity="0.55"/>
+    <polygon points="138,115 158,115 168,95 148,95" fill="#4a1808" opacity="0.55"/>
+    <rect x="25" y="132" width="32" height="22" fill="#1c0e04" rx="1"/>
+    <rect x="30" y="135" width="8" height="6" fill="#804020"/><rect x="40" y="135" width="8" height="6" fill="#604820"/>
+    <rect x="68" y="127" width="28" height="27" fill="#1c0e04" rx="1"/>
+    <rect x="72" y="130" width="20" height="5" fill="#a06020"/>
+    <rect x="108" y="134" width="38" height="20" fill="#1c0e04" rx="1"/>
+    <!-- Right stall (warm wood) -->
+    <rect x="435" y="115" width="155" height="110" fill="#2a1808" rx="2"/>
+    <polygon points="425,115 600,115 590,95 435,95" fill="#6a2808"/>
+    <rect x="425" y="93" width="175" height="5" fill="#8a3810"/>
+    <polygon points="438,115 458,115 468,95 448,95" fill="#4a1808" opacity="0.55"/>
+    <polygon points="478,115 498,115 508,95 488,95" fill="#4a1808" opacity="0.55"/>
+    <polygon points="518,115 538,115 548,95 528,95" fill="#4a1808" opacity="0.55"/>
+    <polygon points="558,115 578,115 588,95 568,95" fill="#4a1808" opacity="0.55"/>
+    <rect x="448" y="132" width="32" height="22" fill="#1c0e04" rx="1"/>
+    <rect x="492" y="127" width="28" height="27" fill="#1c0e04" rx="1"/>
+    <rect x="532" y="134" width="38" height="20" fill="#1c0e04" rx="1"/>
+    <!-- Pathway (warm stone) -->
+    <polygon points="175,320 425,320 395,225 205,225" fill="#1e1204"/>
+    <!-- Overhead string lights -->
+    <line x1="0" y1="55" x2="600" y2="55" stroke="#3a2010" stroke-width="2"/>
+    <!-- Lanterns (bright amber glow) -->
+    <circle cx="242" cy="63" r="9" fill="#e88030" opacity="0.92">
+      <animate attributeName="opacity" values="0.92;0.65;0.88;0.6;0.92" dur="2.1s" repeatCount="indefinite"/>
+    </circle>
+    <rect x="239" y="52" width="6" height="13" fill="#c06010"/>
+    <circle cx="358" cy="63" r="9" fill="#e88030" opacity="0.88">
+      <animate attributeName="opacity" values="0.7;0.92;0.62;0.9;0.7" dur="1.9s" repeatCount="indefinite"/>
+    </circle>
+    <rect x="355" y="52" width="6" height="13" fill="#c06010"/>
+    <!-- Passing figures -->
+    <ellipse cx="192" cy="222" rx="8" ry="11" fill="#0e0604"/><rect x="185" y="219" width="14" height="18" fill="#0e0604" rx="2"/>
+    <ellipse cx="408" cy="222" rx="8" ry="11" fill="#0e0604"/><rect x="401" y="219" width="14" height="18" fill="#0e0604" rx="2"/>
+    <!-- Warm amber glow pooled below lanterns -->
+    <radialGradient id="mkg1" cx="42%" cy="45%"><stop offset="0%" stop-color="#e88030" stop-opacity="0.28"/><stop offset="100%" stop-color="#e88030" stop-opacity="0"/></radialGradient>
+    <radialGradient id="mkg2" cx="60%" cy="45%"><stop offset="0%" stop-color="#e88030" stop-opacity="0.22"/><stop offset="100%" stop-color="#e88030" stop-opacity="0"/></radialGradient>
+    <ellipse cx="242" cy="160" rx="140" ry="110" fill="url(#mkg1)"/>
+    <ellipse cx="358" cy="160" rx="140" ry="110" fill="url(#mkg2)"/>
   </svg>
 </div>`,
 
@@ -199,38 +308,285 @@ const SCENE_ART = {
 
 }; // end SCENE_ART
 
-// ─── SILHOUETTES ─────────────────────────────────────────────
+// ─── SILHOUETTES (pixel-art sprites) ─────────────────────────
 const SILHOUETTES = {
 
-poor: `<svg viewBox="0 0 80 128" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
-  <ellipse cx="38" cy="17" rx="11" ry="12" fill="#120a08"/>
-  <rect x="35" y="27" width="7" height="7" fill="#120a08"/>
-  <path d="M16,35 Q38,32 60,37 L63,56 Q50,54 38,55 Q24,54 14,57 Z" fill="#120a08"/>
-  <rect x="5" y="35" width="13" height="23" fill="#120a08" rx="2"/>
-  <ellipse cx="4" cy="59" rx="8" ry="7" fill="#0e0806"/>
-  <rect x="63" y="37" width="11" height="19" fill="#120a08" rx="2"/>
-  <path d="M14,57 L12,113 L38,117 L64,113 L63,56 Z" fill="#120a08"/>
-  <rect x="12" y="82" width="52" height="4" fill="#0c0806" rx="1"/>
-  <rect x="11" y="111" width="16" height="8" fill="#120a08" rx="2"/>
-  <rect x="49" y="113" width="16" height="6" fill="#120a08" rx="2"/>
+poor: `<svg viewBox="0 0 56 112" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" style="display:block;width:100%;height:auto">
+  <!-- Hair bun (dark brown #2a1400) -->
+  <rect x="16" y="0" width="24" height="4" fill="#2a1400"/>
+  <rect x="12" y="4" width="32" height="4" fill="#2a1400"/>
+  <!-- Face: full head (warm skin #d4a878) -->
+  <rect x="12" y="8" width="32" height="24" fill="#d4a878"/>
+  <!-- Eyes with highlight -->
+  <rect x="14" y="14" width="8" height="7" fill="#3d1a00"/>
+  <rect x="34" y="14" width="8" height="7" fill="#3d1a00"/>
+  <rect x="15" y="15" width="3" height="3" fill="#f8e8d8"/>
+  <rect x="35" y="15" width="3" height="3" fill="#f8e8d8"/>
+  <!-- Mouth -->
+  <rect x="21" y="26" width="14" height="3" fill="#a05028"/>
+  <!-- Neck -->
+  <rect x="20" y="32" width="16" height="7" fill="#d4a878"/>
+  <!-- Orange blouse body -->
+  <rect x="4" y="38" width="48" height="16" fill="#c87040"/>
+  <!-- Left arm -->
+  <rect x="0" y="40" width="8" height="18" fill="#c87040"/>
+  <!-- Right arm -->
+  <rect x="48" y="40" width="8" height="18" fill="#c87040"/>
+  <!-- Cream collar V at center -->
+  <rect x="22" y="38" width="12" height="6" fill="#d8c8a0"/>
+  <!-- Cream apron panel -->
+  <rect x="16" y="44" width="24" height="10" fill="#d8c8a0"/>
+  <!-- Hands (skin) at sleeve ends -->
+  <rect x="0" y="54" width="8" height="5" fill="#d4a878"/>
+  <rect x="48" y="54" width="8" height="5" fill="#d4a878"/>
+  <!-- Belt dark -->
+  <rect x="4" y="54" width="48" height="5" fill="#2a1400"/>
+  <!-- Belt buckle gold -->
+  <rect x="24" y="54" width="8" height="5" fill="#c8a030"/>
+  <!-- Skirt (warm dark brown #4a2e12) -->
+  <rect x="4" y="59" width="48" height="43" fill="#4a2e12"/>
+  <!-- Skirt fold lines -->
+  <rect x="4" y="71" width="48" height="2" fill="#3a2008"/>
+  <rect x="4" y="83" width="48" height="2" fill="#3a2008"/>
+  <!-- Shoes (near-black) -->
+  <rect x="4" y="102" width="18" height="8" fill="#160a04"/>
+  <rect x="34" y="102" width="18" height="8" fill="#160a04"/>
 </svg>`,
 
-rich: `<svg viewBox="0 0 80 128" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
-  <ellipse cx="40" cy="15" rx="10" ry="11" fill="#0c0a18"/>
-  <rect x="36" y="24" width="8" height="6" fill="#0c0a18"/>
-  <rect x="30" y="3" width="20" height="13" fill="#0c0a18" rx="1"/>
-  <rect x="26" y="14" width="28" height="4" fill="#0c0a18" rx="1"/>
-  <path d="M19,31 Q40,28 61,31 L64,56 Q52,54 40,55 Q28,54 16,56 Z" fill="#0c0a18"/>
-  <path d="M35,31 L40,44 L45,31" fill="#09071a"/>
-  <rect x="6" y="31" width="13" height="28" fill="#0c0a18" rx="3"/>
-  <rect x="61" y="31" width="13" height="28" fill="#0c0a18" rx="3"/>
-  <path d="M19,56 L16,113 L36,117 L40,90 L44,117 L64,113 L61,56 Z" fill="#0c0a18"/>
-  <line x1="40" y1="56" x2="40" y2="113" stroke="#07060f" stroke-width="2"/>
-  <rect x="14" y="111" width="21" height="8" fill="#0c0a18" rx="2"/>
-  <rect x="45" y="111" width="21" height="8" fill="#0c0a18" rx="2"/>
+rich: `<svg viewBox="0 0 56 128" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" style="display:block;width:100%;height:auto">
+  <!-- Top hat body (dark navy #0c1828) -->
+  <rect x="14" y="0" width="28" height="13" fill="#0c1828"/>
+  <!-- Hat brim (wider) -->
+  <rect x="8" y="13" width="40" height="5" fill="#0c1828"/>
+  <!-- Hat gold band -->
+  <rect x="14" y="11" width="28" height="3" fill="#c8a030"/>
+  <!-- Face (pale skin #d4a884) -->
+  <rect x="10" y="18" width="36" height="22" fill="#d4a884"/>
+  <!-- Eyes with highlight -->
+  <rect x="14" y="24" width="8" height="7" fill="#5a3020"/>
+  <rect x="34" y="24" width="8" height="7" fill="#5a3020"/>
+  <rect x="15" y="25" width="3" height="3" fill="#f8e8d8"/>
+  <rect x="35" y="25" width="3" height="3" fill="#f8e8d8"/>
+  <!-- Mustache (two halves) -->
+  <rect x="14" y="35" width="10" height="3" fill="#2a1400"/>
+  <rect x="32" y="35" width="10" height="3" fill="#2a1400"/>
+  <!-- Neck -->
+  <rect x="20" y="40" width="16" height="5" fill="#d4a884"/>
+  <!-- Navy coat — full body width (bottom layer) -->
+  <rect x="0" y="43" width="56" height="40" fill="#182338"/>
+  <!-- Cravat (cream) over coat center -->
+  <rect x="18" y="43" width="20" height="11" fill="#e0d8b8"/>
+  <!-- Coat lapels (slightly lighter navy, framing center) -->
+  <rect x="10" y="47" width="10" height="26" fill="#1e2f48"/>
+  <rect x="36" y="47" width="10" height="26" fill="#1e2f48"/>
+  <!-- Shirt front (cream) -->
+  <rect x="20" y="54" width="16" height="24" fill="#d0c8a8"/>
+  <!-- Gold buttons -->
+  <rect x="25" y="59" width="6" height="4" fill="#c8a030"/>
+  <rect x="25" y="67" width="6" height="4" fill="#c8a030"/>
+  <rect x="25" y="75" width="6" height="4" fill="#c8a030"/>
+  <!-- Hands (skin) at sleeve ends -->
+  <rect x="0" y="76" width="10" height="7" fill="#d4a884"/>
+  <rect x="46" y="76" width="10" height="7" fill="#d4a884"/>
+  <!-- Waistband (very dark) -->
+  <rect x="8" y="83" width="40" height="4" fill="#0c1520"/>
+  <!-- Trousers (dark navy) -->
+  <rect x="8" y="87" width="40" height="33" fill="#0e1828"/>
+  <!-- Gold trouser stripes -->
+  <rect x="22" y="87" width="3" height="33" fill="#c8a030" opacity="0.7"/>
+  <rect x="31" y="87" width="3" height="33" fill="#c8a030" opacity="0.7"/>
+  <!-- Shoes (near-black) -->
+  <rect x="8" y="120" width="18" height="8" fill="#060e18"/>
+  <rect x="30" y="120" width="18" height="8" fill="#060e18"/>
 </svg>`,
 
 }; // end SILHOUETTES
+
+// ─── WORLD MAP SVG ───────────────────────────────────────────
+const MAP_SVG = `<svg viewBox="0 0 700 450" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:360px;display:block;margin:0 auto">
+  <rect x="0" y="0" width="700" height="450" fill="#0a1828"/>
+  <line x1="0" y1="50" x2="700" y2="56" stroke="#0c2038" stroke-width="1.2"/><line x1="0" y1="100" x2="700" y2="108" stroke="#0c2038" stroke-width="1.2"/>
+  <line x1="0" y1="155" x2="700" y2="162" stroke="#0c2038" stroke-width="1.2"/><line x1="0" y1="210" x2="700" y2="216" stroke="#0c2038" stroke-width="1.2"/>
+  <line x1="0" y1="268" x2="700" y2="274" stroke="#0c2038" stroke-width="1.2"/><line x1="0" y1="324" x2="700" y2="328" stroke="#0c2038" stroke-width="1.2"/>
+  <line x1="0" y1="382" x2="700" y2="386" stroke="#0c2038" stroke-width="1.2"/>
+  <!-- Trade routes -->
+  <line x1="348" y1="198" x2="528" y2="100" stroke="#c8a030" stroke-width="1.8" stroke-dasharray="9,5" opacity="0.7"/>
+  <line x1="348" y1="238" x2="158" y2="345" stroke="#c8a030" stroke-width="1.8" stroke-dasharray="9,5" opacity="0.7"/>
+  <line x1="348" y1="248" x2="428" y2="378" stroke="#4a88cc" stroke-width="1.2" stroke-dasharray="7,6" opacity="0.5"/>
+  <line x1="348" y1="180" x2="198" y2="78" stroke="#4a88cc" stroke-width="1.2" stroke-dasharray="7,6" opacity="0.5"/>
+  <!-- ILIATANIA (main island) -->
+  <ellipse cx="348" cy="218" rx="82" ry="56" fill="#2a4020"/>
+  <ellipse cx="348" cy="218" rx="76" ry="50" fill="#3a5828"/>
+  <polygon points="318,193 334,168 350,193" fill="#2a4018"/><polygon points="344,188 360,163 376,188" fill="#2a4018"/>
+  <path d="M378,238 Q398,243 388,258 Q368,266 353,256 Z" fill="#1a3028"/>
+  <circle cx="348" cy="213" r="11" fill="#c8a030" opacity="0.95"/>
+  <circle cx="348" cy="213" r="8" fill="#e8c040"/>
+  <text x="348" y="217.5" text-anchor="middle" fill="#1a0e04" font-size="9" font-weight="bold" font-family="serif">I</text>
+  <rect x="312" y="232" width="72" height="18" rx="3" fill="#0a1828" opacity="0.85"/>
+  <text x="348" y="245" text-anchor="middle" fill="#c8a030" font-size="9.5" font-family="serif" font-weight="bold">ILIATANIA</text>
+  <text x="348" y="257" text-anchor="middle" fill="#8a9080" font-size="7" font-family="serif" font-style="italic">Capital · Merit Seat</text>
+  <!-- AURELION (NE colony) -->
+  <ellipse cx="528" cy="100" rx="52" ry="36" fill="#1e3010"/>
+  <ellipse cx="528" cy="100" rx="46" ry="30" fill="#2a4018"/>
+  <ellipse cx="518" cy="96" rx="16" ry="10" fill="#385825" opacity="0.8"/><ellipse cx="537" cy="104" rx="13" ry="8" fill="#385825" opacity="0.72"/>
+  <circle cx="528" cy="97" r="8" fill="#4a88cc" opacity="0.95"/>
+  <circle cx="528" cy="97" r="6" fill="#6aaae8"/>
+  <rect x="490" y="114" width="76" height="16" rx="3" fill="#0a1828" opacity="0.85"/>
+  <text x="528" y="126" text-anchor="middle" fill="#d0e0f0" font-size="9" font-family="serif" font-weight="bold">AURELION</text>
+  <text x="528" y="138" text-anchor="middle" fill="#4a88cc" font-size="7" font-family="serif" font-style="italic">spice · crops · olives</text>
+  <!-- VEYRA (SW colony) -->
+  <ellipse cx="158" cy="345" rx="57" ry="40" fill="#241e10"/>
+  <ellipse cx="158" cy="345" rx="50" ry="33" fill="#302818"/>
+  <polygon points="146,335 157,316 168,335" fill="#241808" opacity="0.75"/><polygon points="160,337 170,322 180,337" fill="#241808" opacity="0.65"/>
+  <circle cx="158" cy="343" r="8" fill="#4a88cc" opacity="0.95"/>
+  <circle cx="158" cy="343" r="6" fill="#6aaae8"/>
+  <rect x="120" y="358" width="76" height="16" rx="3" fill="#0a1828" opacity="0.85"/>
+  <text x="158" y="370" text-anchor="middle" fill="#d0e0f0" font-size="9" font-family="serif" font-weight="bold">VEYRA</text>
+  <text x="158" y="382" text-anchor="middle" fill="#4a88cc" font-size="7" font-family="serif" font-style="italic">minerals · weapons · timber</text>
+  <!-- PORT SANA (SE trading post) -->
+  <ellipse cx="428" cy="378" rx="26" ry="18" fill="#1e2810"/>
+  <circle cx="428" cy="376" r="6" fill="#4a88cc" opacity="0.75"/>
+  <text x="428" y="400" text-anchor="middle" fill="#8090b0" font-size="7.5" font-family="serif">PORT SANA</text>
+  <!-- Northern watchtower island -->
+  <ellipse cx="198" cy="78" rx="22" ry="15" fill="#1e2818"/>
+  <circle cx="198" cy="76" r="5" fill="#e07828" opacity="0.85"/>
+  <text x="198" y="98" text-anchor="middle" fill="#8090b0" font-size="7" font-family="serif">N. WATCHTOWER</text>
+  <!-- Route watchtowers -->
+  <circle cx="438" cy="150" r="5" fill="#e07828" opacity="0.72"/>
+  <circle cx="253" cy="290" r="5" fill="#e07828" opacity="0.72"/>
+  <!-- Ships on trade routes -->
+  <g transform="translate(438,150) rotate(-35)">
+    <polygon points="0,-8 4,7 -4,7" fill="#3a2810"/>
+    <line x1="0" y1="-8" x2="0" y2="-20" stroke="#2a1808" stroke-width="1.5"/>
+    <polygon points="-5,-14 0,-20 5,-14" fill="#5a3820" opacity="0.85"/>
+  </g>
+  <g transform="translate(253,290) rotate(220)">
+    <polygon points="0,-8 4,7 -4,7" fill="#3a2810"/>
+    <line x1="0" y1="-8" x2="0" y2="-20" stroke="#2a1808" stroke-width="1.5"/>
+    <polygon points="-5,-14 0,-20 5,-14" fill="#5a3820" opacity="0.85"/>
+  </g>
+  <!-- Compass rose -->
+  <g transform="translate(638,400)">
+    <circle r="26" fill="#0c1828" stroke="#c8a030" stroke-width="1.8" opacity="0.85"/>
+    <polygon points="0,-20 4,0 0,5 -4,0" fill="#c8a030"/>
+    <polygon points="0,20 4,0 0,-5 -4,0" fill="#5a6870"/>
+    <polygon points="-20,0 0,4 5,0 0,-4" fill="#5a6870"/>
+    <polygon points="20,0 0,4 -5,0 0,-4" fill="#5a6870"/>
+    <text x="0" y="-24" text-anchor="middle" fill="#c8a030" font-size="9" font-weight="bold" font-family="serif">N</text>
+    <text x="0" y="32" text-anchor="middle" fill="#5a6870" font-size="8" font-family="serif">S</text>
+    <text x="26" y="4" text-anchor="middle" fill="#5a6870" font-size="8" font-family="serif">E</text>
+    <text x="-26" y="4" text-anchor="middle" fill="#5a6870" font-size="8" font-family="serif">W</text>
+  </g>
+  <!-- Ocean labels -->
+  <text x="80" y="185" text-anchor="middle" fill="#1e3045" font-size="12" font-family="serif" font-style="italic" opacity="0.9">INNER SEA</text>
+  <text x="590" y="295" text-anchor="middle" fill="#1e3045" font-size="11" font-family="serif" font-style="italic" opacity="0.9">OUTER</text>
+  <text x="590" y="312" text-anchor="middle" fill="#1e3045" font-size="11" font-family="serif" font-style="italic" opacity="0.9">WATERS</text>
+  <!-- Map border (parchment frame) -->
+  <rect x="2" y="2" width="696" height="446" fill="none" stroke="#c8a030" stroke-width="2" opacity="0.45" rx="4"/>
+  <rect x="6" y="6" width="688" height="438" fill="none" stroke="#c8a030" stroke-width="1" opacity="0.22" rx="3"/>
+</svg>`;
+
+// ─── CIV KNOWLEDGE LORE CARDS ────────────────────────────────
+const LORE_CARDS = [
+  {
+    id: 'geo', tag: 'GEOGRAPHY', icon: '◉',
+    title: 'The Crossroads City',
+    body: 'Iliatania sits at the junction of two colonial territories: Aurelion to the northeast (spices, olives, crops) and Veyra to the southwest (minerals, weapons, timber). Every ship between them pays port fees at Port Sana — which is why Iliatania is wealthy, and why every faction fights to shape its laws.',
+    fact: 'Port Sana handles 40% of all regional trade. Harbor fees alone fund half the Civic Contribution Fund.',
+  },
+  {
+    id: 'rel', tag: 'CIVIC VALUES', icon: '⚖',
+    title: 'The Virtue Tradition',
+    body: 'Iliatania has no state religion, but it has a civic faith: honest work and public contribution are moral duties. The annual Contribution Ceremony in the Assembly Hall publicly honors citizens with the highest civic merit scores — not for wealth, but for verified service to shared systems.',
+    fact: 'Above the Assembly entrance: "Merit earns standing. Standing earns voice. Voice earns legacy."',
+  },
+  {
+    id: 'ach', tag: 'ACHIEVEMENTS', icon: '◆',
+    title: 'What the Archive Holds',
+    body: 'The Civic Archive is Iliatania\'s most important institution: 800 years of public records. Every law, vote, and assessment is preserved and open to any citizen. It was designed so that no single family could accumulate hidden power across generations.',
+    fact: 'The Archive\'s founding record reads: "Let no name be above the law, and let the law have no private corners."',
+  },
+  {
+    id: 'pol', tag: 'POLITICS', icon: '◈',
+    title: 'The Nine-Seat Council',
+    body: 'Iliatania is governed by nine Council seats: three from Merchant Guilds, three from elected district representatives, three from the Civic Merit Board. Laws require seven of nine votes. The Civic Contribution Assessment — the 15% wealth tax — passed by exactly seven. The two merchant seats voted against.',
+    fact: 'The Council has dissolved only twice in 800 years — both times during famines, when emergency powers were granted temporarily.',
+  },
+  {
+    id: 'eco', tag: 'ECONOMICS', icon: '⊕',
+    title: 'Where the Credits Flow',
+    body: 'Three revenue streams fund civic systems: harbor trade fees (40%), Guild contribution levies (8% of artisan earnings), and the contested Civic Contribution Assessment on large properties. Lower-district vendors collectively pay more in daily guild fees than the top ten merchants pay each quarter.',
+    fact: '800 lower-district vendors × 1.2 daily credits × 320 trading days = 307,200 civic credits annually.',
+  },
+  {
+    id: 'soc', tag: 'SOCIETY', icon: '♥',
+    title: 'The Promise and the Gap',
+    body: 'Iliatanian law says any citizen can rise through civic merit. In practice: a lower-district vendor without an employer stamp cannot access housing assistance. A merchant can contest an assessment for months without penalty. The framework promises equal access. Whether it delivers is what both characters are living through.',
+    fact: 'Fewer than 3% of lower-district citizens have ever moved to the upper district through the merit system alone.',
+  },
+];
+
+function showLoreCard(cardId, onClose) {
+  const card = LORE_CARDS.find(c => c.id === cardId);
+  if (!card) { if (onClose) onClose(); return; }
+  const overlay = document.createElement('div');
+  overlay.className = 'lore-overlay';
+  overlay.innerHTML =
+    `<div class="lore-card">` +
+      `<div class="lore-tag"><span class="lore-gem">◆</span> CIV KNOWLEDGE — ${card.tag}</div>` +
+      `<div class="lore-icon">${card.icon}</div>` +
+      `<h3 class="lore-title">${card.title}</h3>` +
+      `<p class="lore-body">${card.body}</p>` +
+      `<div class="lore-fact"><span class="lore-fact-label">KEY FACT ◉</span> ${card.fact}</div>` +
+      `<button class="btn-primary lore-close-btn">Got It — Continue &#8594;</button>` +
+    `</div>`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('lore-vis')));
+  overlay.querySelector('.lore-close-btn').addEventListener('click', () => {
+    overlay.classList.remove('lore-vis');
+    setTimeout(() => { overlay.remove(); if (onClose) onClose(); }, 380);
+  });
+}
+
+// ─── DIFFICULTY ───────────────────────────────────────────────
+function showDifficultySelect(callback) {
+  const overlay = document.createElement('div');
+  overlay.id = 'diff-overlay';
+  overlay.className = 'diff-overlay';
+  overlay.innerHTML =
+    `<div class="diff-modal">` +
+      `<div class="diff-eyebrow">BEFORE YOU BEGIN</div>` +
+      `<div class="diff-gem">&#9670;</div>` +
+      `<h2 class="diff-title">Choose Your Mode</h2>` +
+      `<p class="diff-sub">This affects how much information the game shows you.</p>` +
+      `<div class="diff-options">` +
+        `<button class="diff-btn diff-guided" data-diff="guided">` +
+          `<span class="diff-btn-icon">&#9670;</span>` +
+          `<span class="diff-btn-name">GUIDED</span>` +
+          `<span class="diff-btn-desc">Stat changes shown on hover. Good for first play.</span>` +
+        `</button>` +
+        `<button class="diff-btn diff-standard diff-default" data-diff="standard">` +
+          `<span class="diff-btn-icon">&#9670;</span>` +
+          `<span class="diff-btn-name">STANDARD</span>` +
+          `<span class="diff-btn-desc">Normal play. Consequences shown after choosing.</span>` +
+        `</button>` +
+        `<button class="diff-btn diff-hard" data-diff="hard">` +
+          `<span class="diff-btn-icon">&#9670;</span>` +
+          `<span class="diff-btn-name">HARD MODE</span>` +
+          `<span class="diff-btn-desc">No hints. Infer consequences from context alone.</span>` +
+        `</button>` +
+      `</div>` +
+    `</div>`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('diff-vis')));
+  overlay.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      gameState.difficulty = btn.dataset.diff;
+      overlay.classList.remove('diff-vis');
+      setTimeout(() => { overlay.remove(); if (callback) callback(); }, 380);
+    });
+  });
+}
 
 // ─── SOCIETY RULES ───────────────────────────────────────────
 const SOCIETY_RULES = [
@@ -847,6 +1203,9 @@ const gameState = {
   completedMemory: {},
   societyScore: 50,
   achievements: {},
+  difficulty: 'standard',
+  shownLore: {},
+  completedStats: {},
 };
 
 // ─── UTILITIES ────────────────────────────────────────────────
@@ -1091,6 +1450,38 @@ function showCharBackground(char) {
   showScreen('char-bg-screen');
 }
 
+// ─── WORLD MAP SCREEN ─────────────────────────────────────────
+function showMapScreen() {
+  let mapScreen = document.getElementById('map-screen');
+  if (!mapScreen) {
+    mapScreen = document.createElement('div');
+    mapScreen.id = 'map-screen';
+    mapScreen.className = 'screen hidden';
+    mapScreen.innerHTML =
+      `<div class="mapsc-wrap">` +
+        `<div class="mapsc-header">` +
+          `<p class="mapsc-eyebrow">IMPERIAL SURVEY — YEAR 412</p>` +
+          `<h2 class="mapsc-title">The Iliatanian Empire</h2>` +
+          `<p class="mapsc-sub">Trade routes, colonies, and tributary territories</p>` +
+        `</div>` +
+        `<div class="mapsc-svg">${MAP_SVG}</div>` +
+        `<div class="mapsc-legend">` +
+          `<span class="mleg-item"><span class="mleg-dot" style="background:#c8a030"></span>Capital</span>` +
+          `<span class="mleg-item"><span class="mleg-dot" style="background:#4a88cc"></span>Colony</span>` +
+          `<span class="mleg-item"><span class="mleg-line"></span>Trade Route</span>` +
+          `<span class="mleg-item"><span class="mleg-dot" style="background:#e07828"></span>Watchtower</span>` +
+        `</div>` +
+        `<button class="btn-primary" id="map-close-btn">&#8592; Return to Characters</button>` +
+      `</div>`;
+    document.body.appendChild(mapScreen);
+    document.getElementById('map-close-btn').addEventListener('click', () => {
+      renderCharSelect();
+      showScreen('char-screen');
+    });
+  }
+  showScreen('map-screen');
+}
+
 // ─── CHARACTER SELECT ─────────────────────────────────────────
 function renderCharSelect() {
   const grid = document.getElementById('char-grid');
@@ -1130,6 +1521,17 @@ function renderCharSelect() {
   const allDone = CHARACTERS.every(c => gameState.completed[c.id]);
   const unlockEl = document.getElementById('council-unlock');
   if (unlockEl) unlockEl.classList.toggle('hidden', !allDone);
+
+  // Inject world map button once
+  if (!document.getElementById('map-screen-btn')) {
+    const mapBtn = document.createElement('button');
+    mapBtn.id = 'map-screen-btn';
+    mapBtn.className = 'btn-map-open';
+    mapBtn.innerHTML = '&#9670; WORLD MAP';
+    mapBtn.addEventListener('click', showMapScreen);
+    const charContent = document.querySelector('.char-content');
+    if (charContent) charContent.appendChild(mapBtn);
+  }
 }
 
 // ─── START CHARACTER (from background screen) ─────────────────
@@ -1183,7 +1585,9 @@ function showScene(idx) {
     if (artEl) artEl.innerHTML = SCENE_ART[scene.art] || '';
 
     if (silEl) {
-      silEl.innerHTML = SILHOUETTES[char.silhouette] || '';
+      const firstName = char.name.split(' ')[0];
+      silEl.innerHTML = (SILHOUETTES[char.silhouette] || '') +
+        `<div class="char-sprite-label">${firstName}</div>`;
       requestAnimationFrame(() => requestAnimationFrame(() => silEl.classList.add('sil-vis')));
     }
     renderScene(scene);
@@ -1326,9 +1730,9 @@ function renderChoices(choices) {
     btn.className = `choice-btn${locked ? ' locked' : ''}`;
     btn.dataset.idx = i;
 
-    // Stat impact preview shown on hover
+    // Stat impact preview shown on hover (hidden in hard mode)
     let previewHtml = '';
-    if (ch.changes && !locked) {
+    if (ch.changes && !locked && gameState.difficulty !== 'hard') {
       const char = gameState.currentChar;
       previewHtml = `<span class="choice-stat-preview">` +
         Object.entries(ch.changes)
@@ -1348,7 +1752,7 @@ function renderChoices(choices) {
 
     if (!locked) {
       btn.addEventListener('click', () => handleChoice(i));
-      if (ch.changes) {
+      if (ch.changes && gameState.difficulty !== 'hard') {
         btn.addEventListener('mouseenter', () => previewStats(ch.changes));
         btn.addEventListener('mouseleave', clearStatPreview);
       }
@@ -1452,16 +1856,30 @@ function nextScene() {
   const char = gameState.currentChar;
   const nextIdx = gameState.currentScene + 1;
 
-  if (nextIdx >= char.scenes.length) {
-    checkAchievements();
-    finishCharacter();
-  } else {
-    if (Math.random() < 0.35 && gameState.currentScene > 0) {
+  // Lore card triggers: show once per card id, at specific scene transitions
+  const LORE_TRIGGERS = {
+    'poor.1': 'soc', 'poor.3': 'eco', 'poor.5': 'pol',
+    'rich.1': 'eco', 'rich.3': 'pol', 'rich.5': 'geo',
+  };
+
+  const proceed = () => {
+    if (nextIdx >= char.scenes.length) {
+      checkAchievements();
+      finishCharacter();
+    } else if (Math.random() < 0.35 && gameState.currentScene > 0) {
       showCityPulse();
       setTimeout(() => showScene(nextIdx), 1800);
     } else {
       showScene(nextIdx);
     }
+  };
+
+  const loreId = LORE_TRIGGERS[`${char.id}.${gameState.currentScene}`];
+  if (loreId && !gameState.shownLore[loreId]) {
+    gameState.shownLore[loreId] = true;
+    showLoreCard(loreId, proceed);
+  } else {
+    proceed();
   }
 }
 
@@ -1480,6 +1898,7 @@ function finishCharacter() {
   gameState.completedQuality[char.id] = quality;
   gameState.completed[char.id] = ending.title;
   gameState.completedMemory[char.id] = Object.assign({}, gameState.memory);
+  gameState.completedStats[char.id] = { ...gameState.stats };
 
   const eyeEl = document.getElementById('ce-eyebrow');
   const ttlEl = document.getElementById('ce-title');
@@ -1490,7 +1909,12 @@ function finishCharacter() {
   if (eyeEl) eyeEl.textContent = successPrefix + (ending.eyebrow || `${char.name.toUpperCase()} — FINAL RECORD`);
   if (ttlEl) ttlEl.textContent = ending.title;
   if (bodyEl) bodyEl.textContent = ending.body;
-  if (screen) screen.style.setProperty('--char-color', char.color);
+  if (screen) {
+    screen.style.setProperty('--char-color', char.color);
+    screen.classList.remove('char-end-success', 'char-end-bad');
+    if (quality === 'good') screen.classList.add('char-end-success');
+    else if (quality === 'bad') screen.classList.add('char-end-bad');
+  }
 
   showScreen('char-end-screen');
 }
@@ -1535,7 +1959,32 @@ function showFinalEnding() {
       }).join('');
   }
 
-  if (statsEl) statsEl.innerHTML = '';
+  if (statsEl) {
+    const completedEntries = Object.entries(gameState.completedStats || {});
+    if (completedEntries.length > 0) {
+      let html = `<div class="efs-title">&#9670; FINAL STANDINGS</div>`;
+      completedEntries.forEach(([charId, stats]) => {
+        const ch = CHARACTERS.find(c => c.id === charId);
+        if (!ch) return;
+        html += `<div class="efs-char-section">` +
+          `<div class="efs-char-name" style="color:${ch.color}">${ch.icon} ${ch.name}</div>` +
+          ch.statDefs.map(def => {
+            const val = Math.round(clamp(stats[def.key] || 0));
+            return `<div class="efs-item">` +
+              `<div style="display:flex;justify-content:space-between;margin-bottom:4px">` +
+                `<span class="efs-label">${def.label}</span>` +
+                `<span class="efs-val">${val}</span>` +
+              `</div>` +
+              `<div class="efs-bar-track"><div class="efs-bar-fill" style="width:${val}%;background:${def.color}"></div></div>` +
+            `</div>`;
+          }).join('') +
+        `</div>`;
+      });
+      statsEl.innerHTML = html;
+    } else {
+      statsEl.innerHTML = '';
+    }
+  }
 
   gameState.councilPlayed = true;
   checkAchievements();
@@ -2598,9 +3047,14 @@ function renderComposeMechanic(panel, mechanic, choicesEl) {
 // ─── EVENT LISTENERS ──────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
 
-  // Title → Rules
+  // Project credit on title screen
+  const titleNote = document.querySelector('.title-note');
+  if (titleNote) titleNote.innerHTML +=
+    '<span class="title-credit">A Project by Tomas C &amp; Tengyi Zou &mdash; Iliatania Civilization Study</span>';
+
+  // Title → Difficulty → Rules
   const startBtn = document.getElementById('start-btn');
-  if (startBtn) startBtn.addEventListener('click', showRulesScreen);
+  if (startBtn) startBtn.addEventListener('click', () => showDifficultySelect(showRulesScreen));
 
   // Rules → Char select
   const rulesContinueBtn = document.getElementById('rules-continue-btn');
@@ -2659,6 +3113,9 @@ document.addEventListener('DOMContentLoaded', () => {
     gameState.councilPlayed = false;
     gameState.societyScore = 50;
     gameState.achievements = {};
+    gameState.difficulty = 'standard';
+    gameState.shownLore = {};
+    gameState.completedStats = {};
     gameState.currentChar = null;
     showScreen('title-screen');
   });
